@@ -1,4 +1,5 @@
 import { StyleSheet, View } from 'react-native';
+import 'expo-router/entry'
 
 import { Button, Stack as MaterialStack, Text, TextInput } from "@react-native-material/core";
 
