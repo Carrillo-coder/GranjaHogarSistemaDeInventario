@@ -12,7 +12,7 @@ export default function loginPage() {
     return (
         <MaterialStack>
             <View style={styles.buttonContainer}>
-               <Button title="Go to admin main" style={styles.formButton} onPress={() => router.navigate('/main/adminForm')} />;
+               <Button title="Go to Login" style={styles.formButton} onPress={() => router.navigate('/Index')} />;
             </View>
         </MaterialStack>
     )
