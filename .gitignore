@@ -1,21 +1,39 @@
-# npm
-node_modules
-package-lock.json
-npm-shrinkwrap.json
-*.log
-*.gz
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# Coveralls
-.nyc_output
-coverage
+# dependencies
+node_modules/
 
-# Benchmarking
-benchmarks/graphs
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
 
-*.env
-*.env.example
-*.env.local
-*.env.staging
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
 
-# ignore additional files using core.excludesFile
-# https://git-scm.com/docs/gitignore
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+app-example
