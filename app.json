@@ -5,10 +5,10 @@
     "scheme": "granja-hogar-sistema-de-inventario",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./app/usuarios/}.jpg",
+    "icon": "./app/assets/images/GranjaHogarSplashLogo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./app/usuarios/}.jpg",
+      "image": "./app/assets/images/GranjaHogarSplashLogo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,12 +17,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./app/usuarios/}.jpg",
+        "foregroundImage": "./app/assets/images/GranjaHogarSplashLogo.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./app/usuarios/}.jpg"
+      "favicon": "./app/assets/images/GranjaHogarSplashLogo.png"
     },
     "plugins": [
       "expo-router"
