@@ -10,7 +10,6 @@ const EntradaForm = () => {
   const handleBackPress = () => router.back();
   const handleHomePress = () => router.navigate('/Index');
 
-  // Datos de ejemplo en el resumen
   const [productos, setProductos] = useState([
     { id: 1, nombre: 'Arroz', cantidad: 10, tipoSalida: 'Uso', depto: 'Cocina' },
     { id: 2, nombre: 'Frijol', cantidad: 5, tipoSalida: 'Donación', depto: 'Comedor' },
@@ -32,18 +31,18 @@ const EntradaForm = () => {
       <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
 
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Entrada</Text>
+        <Text style={styles.headerTitle}>Salida</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.sectionTitle}>Registrar entrada</Text>
+        <Text style={styles.sectionTitle}>Registrar salida</Text>
 
-        <TouchableOpacity style={styles.addButton} onPress={handleAgregarProducto}>
+        <TouchableOpacity style={styles.addButton}>
           <Text style={styles.addButtonText}>Agregar Producto</Text>
         </TouchableOpacity>
 
         <View style={styles.resumenBox}>
-          <Text style={styles.resumenTitle}>Resumen de entrada</Text>
+          <Text style={styles.resumenTitle}>Resumen de salida</Text>
           {productos.length === 0 ? (
             <Text style={styles.placeholder}>No hay productos agregados</Text>
           ) : (
