@@ -77,7 +77,7 @@ export default function AlertasForm({
 const styles = StyleSheet.create({
   screen: { flex: 1, padding: 16 },
   titleBar: {
-    backgroundColor: '#1e3a8a',
+    backgroundColor: '#1976D2',
     paddingVertical: 18,
     borderRadius: 10,
     marginBottom: 12,
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb',
   },
   sectionHeader: {
-    backgroundColor: '#1e40af',
+    backgroundColor: '#1976D2',
     paddingVertical: 8,
     borderRadius: 8,
     marginBottom: 10,

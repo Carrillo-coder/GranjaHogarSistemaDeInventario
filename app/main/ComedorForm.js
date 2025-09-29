@@ -77,7 +77,7 @@ export default function MainForm({ hasExpiring = true, hasLowStock = false, hasH
 const styles = StyleSheet.create({
   container: { padding: 16 },
   titleBar: {
-    backgroundColor: '#1e3a8a',
+    backgroundColor: '#1976D2',
     paddingVertical: 18,
     borderRadius: 10,
     marginBottom: 12,
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   grid2: { flexDirection: 'row', gap: 12, marginBottom: 12 },
   btnPrimary: {
     flex: 1,
-    backgroundColor: '#1e40af',
+    backgroundColor: '#1976D2',
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
