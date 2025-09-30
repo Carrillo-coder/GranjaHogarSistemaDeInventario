@@ -6,7 +6,7 @@ import {
   Text, TouchableOpacity, Pressable, Image
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import styles from './Estilos/ComedorFormStyles.styles.js';
+import styles from './Estilos/ComedorForm.styles';
 
 const CustomButton = ({ title, onPress, style, textStyle, icon }) => (
   <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
