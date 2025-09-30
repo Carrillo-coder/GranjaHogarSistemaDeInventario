@@ -26,14 +26,12 @@ export default function Layout() {
       <Stack.Screen name="inventario/InventarioForm" options={{ title: 'Inventario' }} />
       <Stack.Screen name="inventario/DetalleProductoForm" options={{ title: 'Detalle de Producto' }} />
       <Stack.Screen name="inventario/CrearProductoForm" options={{ title: 'Crear Producto' }} />
-      <Stack.Screen name="inventario/ActualizarProductoForm" options={{ title: 'Actualizar Producto' }} />
       <Stack.Screen name="entrada/RegistrarEntradaForm" options={{ title: 'Registrar Entrada' }} />
       <Stack.Screen name="reportes/ReportesForm" options={{ title: 'Reportes' }} />
       <Stack.Screen name="alertas/AlertasForm" options={{ title: 'Alertas' }} />
       <Stack.Screen name="usuarios/UsuariosForm" options={{ title: 'Usuarios' }} />
       <Stack.Screen name="salida/SalidaForm" options={{ title: 'Salida' }} />
       <Stack.Screen name="usuarios/CrearUsuarioForm" options={{ title: 'Crear Usuario' }} />
-      <Stack.Screen name="entrada/IngresarForm" options={{ title: 'Ingresar' }} />
     </Stack>
   );
 }
