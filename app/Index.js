@@ -14,6 +14,9 @@ export default function loginPage() {
             <View style={styles.buttonContainer}>
                <Button title="Go to admin main" style={styles.formButton} onPress={() => router.navigate('/main/adminForm')} />;
             </View>
+            <View style={styles.buttonContainer}>
+                <Button title="Go to inventario" style={styles.formButton} onPress={() => router.navigate('/inventario/InventarioForm')} />;
+            </View>
         </MaterialStack>
     )
 }
