@@ -1,14 +1,17 @@
 import 'expo-router/entry';
-import { useRouter } from 'expo-router';
+import { useRouter, router } from 'expo-router';
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView, ScrollView, Text, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const EntradaForm = () => {
-  const router = useRouter();
 
   const handleBackPress = () => router.back();
   const handleHomePress = () => router.navigate('/');
+  const handleCreateProduct = () => {
+    console.log('Crear producto');
+    router.navigate('/inventario/CrearProductoForm');
+  };
 
   const [productos, setProductos] = useState([
     { id: 1, nombre: 'Arroz', cantidad: 10, tipoSalida: 'Uso', depto: 'Cocina' },
@@ -37,7 +40,7 @@ const EntradaForm = () => {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.sectionTitle}>Registrar salida</Text>
 
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity style={styles.addButton} onPress={handleCreateProduct}>
           <Text style={styles.addButtonText}>Agregar Producto</Text>
         </TouchableOpacity>
 

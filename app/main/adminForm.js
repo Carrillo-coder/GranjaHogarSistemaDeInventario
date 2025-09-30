@@ -1,12 +1,11 @@
 import 'expo-router/entry';
 import { useRouter } from 'expo-router';
-import React from 'react';
 import {
   View, StatusBar, SafeAreaView, ScrollView,
   Text, TouchableOpacity, Pressable, Image
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import styles from './Estilos/adminFormStyles.styles.js';
+import styles from './Estilos/adminFormStyles.styles.js'; 
 
 const CustomButton = ({ title, onPress, style, textStyle, icon }) => (
   <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
@@ -19,12 +18,11 @@ const MainForm = () => {
   const router = useRouter();
 
   const handleBackPress = () => router.back();
-  const handleHomePress = () => router.navigate('/index');
+  const handleHomePress = () => router.navigate('/main/adminForm');
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#04538A" barStyle="light-content" />
-
       <ScrollView style={styles.content}>
         <Pressable style={styles.alert} onPress={() => router.navigate('/alertas/AlertasForm')}>
           <Ionicons name="alert-circle" size={20} color="#b91c1c" style={styles.listIcon} />

@@ -18,6 +18,7 @@ const Footer = ({ onBackPress, onHomePress, logoSource }) => {
   }, [onHomePress, router]);
 
   return (
+
     <View style={styles.bottomNav}>
       <TouchableOpacity
         style={styles.navButton}

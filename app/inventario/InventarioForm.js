@@ -3,6 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, TextInput, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Image, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { router } from 'expo-router';
 
 const initialProducts = [
   'Producto 1', 'Producto 2', 'Producto 3', 'Producto 4', 'Producto 5',
@@ -29,6 +30,12 @@ const CatalogoScreen = () => {
     // aquí usamos react-navigation como ejemplo:
     navigation.navigate('inventario/DetalleProductoForm', { producto });
   };
+
+  const handleCreateProduct = () => {
+    console.log('Crear producto');
+    router.navigate('/inventario/CrearProductoForm');
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -66,7 +73,8 @@ const CatalogoScreen = () => {
           )}
         </ScrollView>
 
-        <TouchableOpacity style={styles.createButton}>
+        <TouchableOpacity style={styles.createButton} 
+        onPress={handleCreateProduct}>
           <Text style={styles.createButtonText}>Crear producto</Text>
         </TouchableOpacity>
       </View>

@@ -93,7 +93,7 @@ const RegistrarEntradaForm = () => {
 
   const handleHomePress = () => {
     console.log('Ir a inicio');
-    router.navigate('/Index');
+    router.navigate('/');
   };
 
   const handleBackPress = () => {
