@@ -4,7 +4,7 @@ export default StyleSheet.create({
   // layout
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   header: {
-    backgroundColor: '#1976D2', paddingVertical: 15, paddingHorizontal: 20,
+    backgroundColor: '#04538A', paddingVertical: 15, paddingHorizontal: 20,
     elevation: 4, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4
   },
   headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold', textAlign: 'center' },
@@ -29,8 +29,8 @@ export default StyleSheet.create({
     elevation: 2, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.2, shadowRadius: 2,
   },
   buttonIcon: { marginRight: 8 },
-  buttonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
-  primaryButton: { backgroundColor: '#1976D2', marginBottom: 12 },
+  buttonText: { color: 'white', fontSize: 20, fontWeight: 'bold' },
+  primaryButton: { backgroundColor: '#04538A', marginBottom: 12 },
 
   // bottom nav
   bottomNav: {

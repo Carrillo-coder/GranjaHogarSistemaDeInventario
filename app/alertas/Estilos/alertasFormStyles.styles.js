@@ -4,7 +4,7 @@ export default StyleSheet.create({
   // layout
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   header: {
-    backgroundColor: '#1976D2', paddingVertical: 15, paddingHorizontal: 20,
+    backgroundColor: '#04538A', paddingVertical: 15, paddingHorizontal: 20,
     elevation: 4, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4
   },
   headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold', textAlign: 'center' },
@@ -17,7 +17,7 @@ export default StyleSheet.create({
     borderWidth: 1, borderColor: '#e5e5e5', marginBottom: 16,
   },
   cardHeader: {
-    backgroundColor: '#1e40af', flexDirection: 'row', alignItems: 'center',
+    backgroundColor: '#04538A', flexDirection: 'row', alignItems: 'center',
     paddingVertical: 10, paddingHorizontal: 12, borderTopLeftRadius: 8, borderTopRightRadius: 8,
   },
   cardHeaderText: { color: 'white', fontWeight: '700' },

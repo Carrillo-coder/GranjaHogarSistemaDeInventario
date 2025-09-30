@@ -23,7 +23,7 @@ const MainForm = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
+      <StatusBar backgroundColor="#04538A" barStyle="light-content" />
 
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Comedor</Text>
@@ -61,21 +61,6 @@ const MainForm = () => {
           onPress={() => router.navigate('/inventario/InventarioForm')}
           style={styles.primaryButton}
         />
-
-        <CustomButton
-          title="Reportes"
-          icon="bar-chart-outline"
-          onPress={() => router.navigate('/reportes/ReportesForm')}
-          style={styles.primaryButton}
-        />
-
-        <CustomButton
-          title="Usuarios"
-          icon="people-outline"
-          onPress={() => router.navigate('/usuarios/UsuariosForm')}
-          style={styles.primaryButton}
-        />
-
         <View style={{ height: 80 }} />
       </ScrollView>
 

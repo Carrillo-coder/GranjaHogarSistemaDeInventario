@@ -34,7 +34,7 @@ const AlertasForm = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
+      <StatusBar backgroundColor="#04538A" barStyle="light-content" />
 
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Alertas</Text>
