@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0056b3', 
+    color: '#04538A', 
     marginBottom: 50,
   },
   
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     width: '60%',
     height: 55,
     borderRadius: 30, 
-    backgroundColor: '#007bff', 
+    backgroundColor: '#04538A', 
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
