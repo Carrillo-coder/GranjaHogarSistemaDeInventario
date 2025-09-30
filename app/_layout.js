@@ -32,6 +32,7 @@ export default function Layout() {
       <Stack.Screen name="usuarios/UsuariosForm" options={{ title: 'Usuarios' }} />
       <Stack.Screen name="salida/SalidaForm" options={{ title: 'Salida' }} />
       <Stack.Screen name="usuarios/CrearUsuarioForm" options={{ title: 'Crear Usuario' }} />
+
     </Stack>
   );
 }

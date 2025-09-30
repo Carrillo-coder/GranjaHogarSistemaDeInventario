@@ -5,205 +5,192 @@ import { CustomDropdown } from '../../components/CustomDropdown';
 import { DatePickerField } from '../../components/DatePickerField';
 import CustomButton from '../../components/CustomButton';
 import Footer from '../../components/Footer';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
+
+const FOOTER_HEIGHT = 80; // aprox. alto visual del Footer (ajústalo si hace falta)
 
 const ReportesForm = () => {
-    const {
-        reportTypes, departments,
-        reportType, setReportType,
-        department, startDate, endDate,
-        exportFormat, setExportFormat,
+  const router = useRouter();
 
-        reportTypeFocus, setReportTypeFocus,
-        departmentFocus, setDepartmentFocus,
-        showStartDatePicker, showEndDatePicker,
+  const {
+    reportTypes, departments,
+    reportType, setReportType,
+    department, startDate, endDate,
+    exportFormat, setExportFormat,
 
-        areDatesDisabled, isDepartmentDisabled,
+    reportTypeFocus, setReportTypeFocus,
+    departmentFocus, setDepartmentFocus,
+    showStartDatePicker, showEndDatePicker,
 
-        formatDate, onStartDateChange, onEndDateChange,
-        showStartDatepicker, showEndDatepicker,
-        handleDepartmentChange, handleGenerateReport, handleDownload,
+    areDatesDisabled, isDepartmentDisabled,
 
-    } = useReportesForm();
+    formatDate, onStartDateChange, onEndDateChange,
+    showStartDatepicker, showEndDatepicker,
+    handleDepartmentChange, handleGenerateReport, handleDownload,
+  } = useReportesForm();
 
-    return (
-        <View style={styles.container}>
-            <ScrollView style={styles.content}>
-                <View style={styles.card}>
-                    <CustomDropdown
-                        label="Tipo"
-                        data={reportTypes}
-                        value={reportType}
-                        onValueChange={setReportType}
-                        placeholder="Entrada/Salida/Inventario"
-                        isFocused={reportTypeFocus}
-                        onFocus={() => setReportTypeFocus(true)}
-                        onBlur={() => setReportTypeFocus(false)}
-                    />
+  return (
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + 24 }} // espacio para el footer
+      >
+        <View style={styles.card}>
+          <CustomDropdown
+            label="Tipo"
+            data={reportTypes}
+            value={reportType}
+            onValueChange={setReportType}
+            placeholder="Entrada/Salida/Inventario"
+            isFocused={reportTypeFocus}
+            onFocus={() => setReportTypeFocus(true)}
+            onBlur={() => setReportTypeFocus(false)}
+          />
 
-                    <View style={styles.dateContainer}>
-                        <DatePickerField
-                            label="Fecha inicio"
-                            value={startDate}
-                            onPress={showStartDatepicker}
-                            formatDate={formatDate}
-                            showPicker={showStartDatePicker}
-                            onDateChange={onStartDateChange}
-                            disabled={areDatesDisabled}
-                        />
+          <View style={styles.dateContainer}>
+            <DatePickerField
+              label="Fecha inicio"
+              value={startDate}
+              onPress={showStartDatepicker}
+              formatDate={formatDate}
+              showPicker={showStartDatePicker}
+              onDateChange={onStartDateChange}
+              disabled={areDatesDisabled}
+            />
 
-                        <DatePickerField
-                            label="Fecha final"
-                            value={endDate}
-                            onPress={showEndDatepicker}
-                            formatDate={formatDate}
-                            showPicker={showEndDatePicker}
-                            onDateChange={onEndDateChange}
-                            disabled={areDatesDisabled}
-                        />
-                    </View>
+            <DatePickerField
+              label="Fecha final"
+              value={endDate}
+              onPress={showEndDatepicker}
+              formatDate={formatDate}
+              showPicker={showEndDatePicker}
+              onDateChange={onEndDateChange}
+              disabled={areDatesDisabled}
+            />
+          </View>
 
-                    <CustomDropdown
-                        label="Departamento"
-                        data={departments}
-                        value={department}
-                        onValueChange={handleDepartmentChange}
-                        placeholder="Departamento"
-                        isFocused={departmentFocus}
-                        onFocus={() => setDepartmentFocus(true)}
-                        onBlur={() => setDepartmentFocus(false)}
-                        disabled={isDepartmentDisabled}
-                    />
+          <CustomDropdown
+            label="Departamento"
+            data={departments}
+            value={department}
+            onValueChange={handleDepartmentChange}
+            placeholder="Departamento"
+            isFocused={departmentFocus}
+            onFocus={() => setDepartmentFocus(true)}
+            onBlur={() => setDepartmentFocus(false)}
+            disabled={isDepartmentDisabled}
+          />
 
-                    <View style={styles.radioContainer}>
-                        <TouchableOpacity style={styles.radioOption} onPress={() => setExportFormat('PDF')}>
-                            <View style={[styles.radioButton, exportFormat === 'PDF' && styles.radioButtonSelected]}>
-                                {exportFormat === 'PDF' && <View style={styles.radioButtonInner} />}
-                            </View>
-                            <Text style={styles.radioLabel}>PDF</Text>
-                        </TouchableOpacity>
+          <View style={styles.radioContainer}>
+            <TouchableOpacity style={styles.radioOption} onPress={() => setExportFormat('PDF')}>
+              <View style={[styles.radioButton, exportFormat === 'PDF' && styles.radioButtonSelected]}>
+                {exportFormat === 'PDF' && <View style={styles.radioButtonInner} />}
+              </View>
+              <Text style={styles.radioLabel}>PDF</Text>
+            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.radioOption} onPress={() => setExportFormat('Excel')}>
-                            <View style={[styles.radioButton, exportFormat === 'Excel' && styles.radioButtonSelected]}>
-                                {exportFormat === 'Excel' && <View style={styles.radioButtonInner} />}
-                            </View>
-                            <Text style={styles.radioLabel}>Excel</Text>
-                        </TouchableOpacity>
-                    </View>
+            <TouchableOpacity style={styles.radioOption} onPress={() => setExportFormat('Excel')}>
+              <View style={[styles.radioButton, exportFormat === 'Excel' && styles.radioButtonSelected]}>
+                {exportFormat === 'Excel' && <View style={styles.radioButtonInner} />}
+              </View>
+              <Text style={styles.radioLabel}>Excel</Text>
+            </TouchableOpacity>
+          </View>
 
-                    <CustomButton
-                        title="Generar reporte"
-                        icon="file-download"
-                        onPress={handleGenerateReport}
-                    />
+          <CustomButton
+            title="Generar reporte"
+            icon="file-download"
+            onPress={handleGenerateReport}
+          />
 
-                    <CustomButton
-                        title="Descargar"
-                        icon="download"
-                        onPress={handleDownload}
-                    />
-
-                </View>
-
-                <Footer
-                    onBackPress={router.back}
-                    onHomePress={() => router.replace('/main/adminForm')}
-                />
-            </ScrollView>
+          <CustomButton
+            title="Descargar"
+            icon="download"
+            onPress={handleDownload}
+          />
         </View>
-    );
+      </ScrollView>
+
+      {/* Footer FIJO, fuera del ScrollView */}
+      <View pointerEvents="box-none" style={{ height: FOOTER_HEIGHT }}>
+        <Footer
+          onBackPress={() => router.back()}
+          onHomePress={() => router.replace('/main/adminForm')}
+        />
+      </View>
+    </View>
+  );
 };
 
 export default ReportesForm;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F5F5F5',
-    },
-    content: {
-        flex: 1,
-        padding: 20,
-    },
-    card: {
-        backgroundColor: 'white',
-        borderRadius: 8,
-        padding: 20,
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3.84,
-        marginBottom: 30,
-    },
-    dateContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 20,
-    },
-    radioContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 30,
-        marginTop: 10,
-    },
-    radioOption: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginRight: 30,
-    },
-    radioButton: {
-        height: 18,
-        width: 18,
-        borderRadius: 9,
-        borderWidth: 2,
-        borderColor: '#04538A',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 8,
-    },
-    radioButtonSelected: {
-        borderColor: '#04538A',
-    },
-    radioButtonInner: {
-        height: 8,
-        width: 8,
-        borderRadius: 4,
-        backgroundColor: '#04538A',
-    },
-    radioLabel: {
-        fontSize: 14,
-        color: '#333',
-    },
-    generateButton: {
-        backgroundColor: '#04538A',
-        paddingVertical: 12,
-        paddingHorizontal: 40,
-        borderRadius: 4,
-        alignItems: 'center',
-        marginBottom: 15,
-    },
-    downloadButton: {
-        backgroundColor: '#04538A',
-        paddingVertical: 12,
-        paddingHorizontal: 40,
-        borderRadius: 4,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    logoContainer: {
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    logoText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#4CAF50',
-        letterSpacing: 1,
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+    // position: 'relative', // (opcional) por si tu Footer usa absolute internamente
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+  },
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    marginBottom: 30,
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  radioContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 30,
+    marginTop: 10,
+  },
+  radioOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 30,
+  },
+  radioButton: {
+    height: 18,
+    width: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: '#04538A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  radioButtonSelected: { borderColor: '#04538A' },
+  radioButtonInner: { height: 8, width: 8, borderRadius: 4, backgroundColor: '#04538A' },
+  radioLabel: { fontSize: 14, color: '#333' },
+  generateButton: {
+    backgroundColor: '#04538A',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 4,
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  downloadButton: {
+    backgroundColor: '#04538A',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 4,
+    alignItems: 'center',
+  },
+  buttonText: { color: 'white', fontSize: 16, fontWeight: '600' },
+  logoContainer: { alignItems: 'center', marginTop: 20 },
+  logoText: { fontSize: 14, fontWeight: 'bold', color: '#4CAF50', letterSpacing: 1 },
 });
