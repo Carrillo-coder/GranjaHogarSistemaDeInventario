@@ -20,6 +20,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Footer from '../../components/Footer';
 
 const STORAGE_KEYS = {
   products: '@gh_inventario_products',
@@ -136,8 +137,6 @@ const CrearProductoForm = () => {
     })();
   }, []);
 
-  const handleHomePress = () => router.navigate('/Index');
-  const handleBackPress = () => router.back();
 
   const validateProducto = (v) => {
     if (!v) return 'Requerido.';
@@ -223,12 +222,17 @@ const CrearProductoForm = () => {
       Alert.alert('Aviso', 'No se pudo guardar localmente. Revisa permisos/espacio.');
     }
   };
+  const handleBackPress = () => {
+    router.back();
+  };
 
   const handleCreate = async () => {
+    
     const ok = runAllValidations();
     if (!ok) {
       Alert.alert('Entrada inválida', 'Hay una casilla incorrecta. Revisa los campos en rojo.');
       return;
+      
     }
 
     const nuevo = {
@@ -265,6 +269,7 @@ const CrearProductoForm = () => {
     });
 
     Alert.alert('Listo', 'Producto creado (guardado localmente).');
+    handleBackPress();
   };
 
   const inputsAreInvalid = useMemo(() => Object.values(errors).some(Boolean), [errors]);
@@ -272,11 +277,6 @@ const CrearProductoForm = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
-
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Crear producto</Text>
-      </View>
-
       <ScrollView style={styles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.formCard}>
 
@@ -385,7 +385,7 @@ const CrearProductoForm = () => {
           <CustomButton
             title="Crear Producto"
             onPress={handleCreate}
-            style={{ backgroundColor: COLORS.primary }}
+            style={{ backgroundColor: '#8BC34A' }}
             icon="checkmark-circle-outline"
           />
           <CustomButton
@@ -398,25 +398,10 @@ const CrearProductoForm = () => {
           />
         </View>
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navButton} onPress={handleBackPress}>
-          <Ionicons name="exit-outline" size={24} color={COLORS.accent} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navButton} onPress={handleHomePress}>
-          <Ionicons name="home" size={28} color={COLORS.primary} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.logoContainer}>
-        <View style={styles.logoPlaceholder}>
-          <Image
-            source={require('../../assets/images/GranjaHogarLogo.png')}
-            style={{ width: 40, height: 40, resizeMode: 'contain' }}
-          />
-        </View>
-      </View>
+      <Footer
+        onLogOutPress={  () => router.replace('/')}
+        onHomePress={ () => router.replace('/main/adminForm')} 
+      />
 
       {showDatePicker && Platform.OS !== 'web' && (
         <DateTimePicker
@@ -475,7 +460,7 @@ const CrearProductoForm = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.light },
   header: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: '#8BC34A',
     paddingVertical: 15,
     paddingHorizontal: 20,
     elevation: 4,
