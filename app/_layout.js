@@ -23,6 +23,7 @@ export default function Layout() {
       <Stack.Screen name="main/CocinaForm" options={{ title: 'Inicio' }} />
       <Stack.Screen name="main/ComedorForm" options={{ title: 'Inicio' }} />
       
+      
       <Stack.Screen name="reportes/ReportesForm" options={{ title: 'Reportes' }} />
     </Stack>
   );
