@@ -1,20 +1,33 @@
 import 'expo-router/entry';
-import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView, ScrollView, Text, StatusBar, Pressable, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { Alert } from 'react-native';
+import Footer from '../../components/Footer';
+
+
 
 const SalidaForm = () => {
   const router = useRouter();
 
-  const handleBackPress = () => router.back();
-  const handleHomePress = () => router.navigate('/');
+  const handleOnDarsalida = () => {
+  Alert.alert('Salida registrada con exito');  
+  console.log('Producto agregado a la salida')
+  router.back();
+  }
 
   // Opciones de ejemplo
   const tiposSalida = [
     { id: 1, name: 'Uso' },
     { id: 2, name: 'Donación' },
     { id: 3, name: 'Venta' },
+  ];
+
+  const productos = [
+    { id: 1, name: 'Arroz' },
+    { id: 2, name: 'Frijoles' },
+    { id: 3, name: 'Aceite' },
   ];
 
   const departamentos = [
@@ -25,10 +38,16 @@ const SalidaForm = () => {
   const [showTipoList, setShowTipoList] = useState(false);
   const [selectedTipo, setSelectedTipo] = useState(null);
 
+  const [showProductoList, setShowProductoList] = useState(false);
+  const [selectedProducto, setSelectedProducto] = useState(null);
+
   const [showDeptoList, setShowDeptoList] = useState(false);
   const [selectedDepto, setSelectedDepto] = useState(null);
 
+  const [cantidad, setCantidad] = useState('');
+
   const toggleTipoList = () => setShowTipoList(!showTipoList);
+  const toggleProductoList = () => setShowProductoList(!showProductoList);
   const toggleDeptoList = () => setShowDeptoList(!showDeptoList);
 
   const handleTipoSelect = (tipo) => {
@@ -36,25 +55,44 @@ const SalidaForm = () => {
     setShowTipoList(false);
   };
 
+  const handleProductoSelect = (producto) => {
+    setSelectedProducto(producto);
+    setShowProductoList(false);
+  };
+
   const handleDeptoSelect = (depto) => {
     setSelectedDepto(depto);
     setShowDeptoList(false);
   };
 
-  // Estados para los campos editables
-  const [producto, setProducto] = useState('');
-  const [cantidad, setCantidad] = useState('');
-
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
-
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Salida</Text>
-      </View>
-
+      <StatusBar backgroundColor="#04538A" barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.sectionTitle}>Detalles salida</Text>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Producto a dar salida</Text>
+          <TouchableOpacity style={styles.inputBox} onPress={toggleProductoList}>
+            <Text style={selectedProducto ? styles.selectedText : styles.placeholderText}>
+              {selectedProducto ? selectedProducto.name : 'Selecciona el producto...'}
+            </Text>
+            <Ionicons name={showProductoList ? "chevron-up-outline" : "chevron-down-outline"} size={20} color="#000" />
+          </TouchableOpacity>
+          {showProductoList && (
+            <View style={styles.dropdownList}>
+              {productos.map((producto) => (
+                <Pressable
+                  key={producto.id}
+                  onPress={() => handleProductoSelect(producto)}
+                  style={[styles.dropdownItem, selectedProducto?.id === producto.id && styles.selectedItem]}
+                >
+                  <Text style={styles.itemText}>{producto.name}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
+        </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Ingresa la cantidad usada</Text>
@@ -114,28 +152,14 @@ const SalidaForm = () => {
           )}
         </View>
 
-        <TouchableOpacity style={styles.submitButton}>
+        <TouchableOpacity style={styles.submitButton} onPress={handleOnDarsalida}>
           <Text style={styles.submitButtonText}>Dar salida</Text>
         </TouchableOpacity>
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navButton} onPress={handleBackPress}>
-          <Ionicons name="exit-outline" size={24} color="#8BC34A" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={handleHomePress}>
-          <Ionicons name="home" size={28} color="#1976D2" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.logoContainer}>
-        <View style={styles.logoPlaceholder}>
-          <Image
-            source={require('../../assets/images/GranjaHogarLogo.png')}
-            style={{ width: 40, height: 40, resizeMode: 'contain' }}
-          />
-        </View>
-      </View>
+      <Footer
+        onLogOutPress={() => router.replace('/')}
+        onHomePress={() => router.replace('/main/adminForm')}
+      />
     </SafeAreaView>
   );
 };
@@ -146,7 +170,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#04538A',
     paddingVertical: 15,
     paddingHorizontal: 20,
     elevation: 4,
@@ -230,7 +254,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   submitButton: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#8BC34A',
     paddingVertical: 14,
     borderRadius: 8,
     marginTop: 20,

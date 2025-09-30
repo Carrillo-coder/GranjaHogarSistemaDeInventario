@@ -3,14 +3,20 @@ import { useRouter, router } from 'expo-router';
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView, ScrollView, Text, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Footer from '../../components/Footer';
+import { Alert } from 'react-native';
 
 const EntradaForm = () => {
 
-  const handleBackPress = () => router.back();
-  const handleHomePress = () => router.navigate('/');
-  const handleCreateProduct = () => {
-    console.log('Crear producto');
-    router.navigate('/inventario/CrearProductoForm');
+  const handleAgregarSalida = () => {
+    console.log('Pasando a pestaña de salida...');
+    router.navigate('/salida/SalidaForm');
+  };
+
+  const handleConfirmarSalida = () => {
+    console.log('Salida confirmada y subida a la BD...');
+    Alert.alert('Salida confirmada');
+    router.navigate('/main/adminForm');
   };
 
   const [productos, setProductos] = useState([
@@ -31,17 +37,12 @@ const EntradaForm = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
-
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Salida</Text>
-      </View>
-
+      <StatusBar backgroundColor="#04538A" barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.sectionTitle}>Registrar salida</Text>
 
-        <TouchableOpacity style={styles.addButton} onPress={handleCreateProduct}>
-          <Text style={styles.addButtonText}>Agregar Producto</Text>
+        <TouchableOpacity style={styles.addButton} onPress={handleAgregarSalida}>
+          <Text style={styles.addButtonText}>Agregar Salida</Text>
         </TouchableOpacity>
 
         <View style={styles.resumenBox}>
@@ -60,26 +61,14 @@ const EntradaForm = () => {
           )}
         </View>
 
-        <TouchableOpacity style={styles.confirmButton}>
+        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmarSalida}>
           <Text style={styles.confirmButtonText}>Confirmar</Text>
         </TouchableOpacity>
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navButton} onPress={handleBackPress}>
-          <Ionicons name="exit-outline" size={24} color="#8BC34A" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={handleHomePress}>
-          <Ionicons name="home" size={28} color="#1976D2" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.logoContainer}>
-        <Image
-          source={require('../../assets/images/GranjaHogarLogo.png')}
-          style={{ width: 60, height: 60, resizeMode: 'contain' }}
-        />
-      </View>
+      <Footer
+        onLogOutPress={() => router.replace('/')}
+        onHomePress={() => router.replace('/main/adminForm')}
+      />
     </SafeAreaView>
   );
 };
@@ -87,7 +76,7 @@ const EntradaForm = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   header: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#04538A',
     paddingVertical: 15,
     paddingHorizontal: 20,
     elevation: 4,
@@ -111,7 +100,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   addButton: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#04538A',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 6,

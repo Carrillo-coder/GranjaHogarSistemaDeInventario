@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   confirmButton: {
-    backgroundColor: '#66f542',
+    backgroundColor: '#8BC34A',
     flex: 1,
   },
   deleteButton: {
