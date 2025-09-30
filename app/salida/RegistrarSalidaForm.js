@@ -8,7 +8,7 @@ const EntradaForm = () => {
   const router = useRouter();
 
   const handleBackPress = () => router.back();
-  const handleHomePress = () => router.navigate('/Index');
+  const handleHomePress = () => router.navigate('/');
 
   const [productos, setProductos] = useState([
     { id: 1, nombre: 'Arroz', cantidad: 10, tipoSalida: 'Uso', depto: 'Cocina' },

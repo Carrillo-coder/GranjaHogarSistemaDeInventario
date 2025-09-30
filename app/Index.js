@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
   input: {
     width: '90%',
     marginBottom: 25, 
+    backgroundColor: '#fff',
   },
   
   button: {

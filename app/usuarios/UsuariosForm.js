@@ -72,7 +72,7 @@ const UsuariosForm = () => {
 
   const handleHomePress = () => {
     console.log('Ir a inicio');
-    router.navigate('/Index');
+    router.replace('/');
   };
 
   const handleBackPress = () => {

@@ -8,7 +8,7 @@ const SalidaForm = () => {
   const router = useRouter();
 
   const handleBackPress = () => router.back();
-  const handleHomePress = () => router.navigate('/Index');
+  const handleHomePress = () => router.navigate('/');
 
   // Opciones de ejemplo
   const tiposSalida = [

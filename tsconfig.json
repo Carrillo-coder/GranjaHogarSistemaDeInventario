@@ -11,5 +11,5 @@
   "include": [
     "**/*.ts",
     "**/*.tsx"
-, "app/Index.js"  ]
+, "app/index.js"  ]
 }

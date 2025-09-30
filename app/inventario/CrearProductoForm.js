@@ -415,7 +415,6 @@ const CrearProductoForm = () => {
             source={require('../../assets/images/GranjaHogarLogo.png')}
             style={{ width: 40, height: 40, resizeMode: 'contain' }}
           />
-          <Text style={styles.logoText}>GRAN HOGAR</Text>
         </View>
       </View>
 
