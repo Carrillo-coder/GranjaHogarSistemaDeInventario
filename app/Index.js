@@ -1,86 +1,80 @@
-// app/index.jsx
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
-import 'expo-router/entry'
+import { StyleSheet, View, Text, Image, Alert } from 'react-native';
+import { TextInput, Button, Provider as PaperProvider } from 'react-native-paper'; 
 import { router } from 'expo-router'; 
 
 export default function LoginScreen() {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
 
-
   const handleLogin = () => {
     if (usuario && contrasena) {
       Alert.alert('Inicio de Sesión Exitoso', 'Redirigiendo a la pantalla principal...');
-      if (usuario == "admin"){
-        router.replace('/main/adminForm')
+      
+      if (usuario === 'admin') {
+        router.replace('/main/adminForm');
+      } else if (usuario === 'cocina') {
+        router.replace('/main/CocinaForm');
+      } else if (usuario === 'comedor') {
+        router.replace('/main/ComedorForm'); 
       }
-      else if(usuario == "cocina"){
-        router.replace('/main/CocinaForm')
-      }
-      else if(usuario == "comdedor"){
-        router.replace('/main/ComdedorForm')
-
-      }
-
     } else {
       Alert.alert('Error', 'Por favor, introduce tu usuario y contraseña.');
     }
   };
 
   return (
-    <View style={styles.container}>
-      
+    <PaperProvider>
+      <View style={styles.container}>
+        
+        <View style={styles.logoContainer}>
+          <Image 
+            source={require('../assets/images/GranjaHogarLogo.png')} // ⬅️ Revisa tu ruta
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.logoText}>GRANJA HOGAR</Text>
+        </View>
+        
+        <View style={styles.formContainer}>
+          
+          <TextInput
+            label="Usuario"
+            value={usuario}
+            onChangeText={setUsuario}
+            style={styles.input}
+            mode="outlined" // Puedes usar 'flat' o 'outlined'
+            autoCapitalize="none"
+          />
+          
+          <TextInput
+            label="Contraseña"
+            value={contrasena}
+            onChangeText={setContrasena}
+            style={styles.input}
+            mode="outlined"
+            secureTextEntry
+          />
+          
+          <Button
+            mode="contained" // Fondo sólido
+            onPress={handleLogin}
+            style={styles.button}
+            labelStyle={styles.buttonLabel}
+            icon="arrow-right-bold-box" 
+          >
+            Iniciar sesión
+          </Button>
+          
+        </View>
 
-      <View style={styles.logoContainer}>
-       
-        <Image 
-          source={require('../assets/images/GranjaHogarLogo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-        <Text style={styles.logoText}>GRANJA HOGAR</Text>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Powered by</Text>
+          <Text style={styles.footerText}>Tecnológico de Monterrey</Text>
+          <Text style={styles.footerText}>©ITESM 2025</Text>
+        </View>
       </View>
-      
-
-      <View style={styles.formContainer}>
-        
-        <TextInput
-          style={styles.input}
-          placeholder="Usuario"
-          value={usuario}
-          onChangeText={setUsuario}
-          autoCapitalize="none"
-        />
-        
- 
-        <TextInput
-          style={styles.input}
-          placeholder="Contraseña"
-          secureTextEntry
-          value={contrasena}
-          onChangeText={setContrasena}
-        />
-        
-        <TouchableOpacity 
-          style={styles.button}
-          onPress={handleLogin}
-          activeOpacity={0.7}
-        >
-            <Text style={styles.buttonText}>Iniciar sesión</Text>
-            <Text style={styles.arrowIcon}>»</Text> 
-            <Text style={styles.arrowIcon}>»</Text>
-
-        </TouchableOpacity>
-        
-      </View>
-
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Powered by</Text>
-        <Text style={styles.footerText}>Tecnológico de Monterrey</Text>
-        <Text style={styles.footerText}>©ITESM 2025</Text>
-      </View>
-    </View>
+    </PaperProvider>
   );
 }
 
@@ -94,7 +88,6 @@ const styles = StyleSheet.create({
     paddingVertical: 50, 
   },
   
-
   logoContainer: {
     alignItems: 'center',
     marginTop: 50,
@@ -113,47 +106,26 @@ const styles = StyleSheet.create({
   formContainer: {
     width: '100%',
     alignItems: 'center',
+    maxWidth: 400,
   },
   input: {
     width: '90%',
-    height: 50,
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 15,
     marginBottom: 25, 
-    fontSize: 18,
   },
   
-
   button: {
     width: '60%',
     height: 55,
     borderRadius: 30, 
-    backgroundColor: '#04538A', 
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     marginTop: 20,
+    justifyContent: 'center', 
+    backgroundColor: '#04538A', 
+  },
+  buttonLabel: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginRight: 5,
-  },
-  arrowIcon: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginLeft: -5, 
-  },
   footer: {
     alignItems: 'center',
     marginTop: 'auto', 
