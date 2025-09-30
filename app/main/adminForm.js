@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import {useRouter} from 'expo-router';
 import { Button, Stack as MaterialStack, Text, TextInput } from "@react-native-material/core";
+import { router } from 'expo-router'; 
 
 
 export default function loginPage() {
@@ -12,7 +13,7 @@ export default function loginPage() {
     return (
         <MaterialStack>
             <View style={styles.buttonContainer}>
-               <Button title="Go to Login" style={styles.formButton} onPress={() => router.navigate('/Index')} />;
+               <Button title="Go to Login" style={styles.formButton} onPress={() => router.replace('/')} />;
             </View>
         </MaterialStack>
     )
