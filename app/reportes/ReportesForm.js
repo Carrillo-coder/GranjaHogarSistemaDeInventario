@@ -1,11 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { useReportesForm } from '../../hooks/useReportesForm';
-import { CustomDropdown } from '../components/CustomDropdown';
-import { DatePickerField } from '../components/DatePickerField';
+import { CustomDropdown } from '../../components/CustomDropdown';
+import { DatePickerField } from '../../components/DatePickerField';
+import CustomButton from '../../components/CustomButton';
+import Footer from '../../components/Footer';
+import { router } from 'expo-router';
 
 const ReportesForm = () => {
-    const { 
+    const {
         reportTypes, departments,
         reportType, setReportType,
         department, startDate, endDate,
@@ -19,7 +22,7 @@ const ReportesForm = () => {
 
         formatDate, onStartDateChange, onEndDateChange,
         showStartDatepicker, showEndDatepicker,
-        handleDepartmentChange, handleGenerateReport,handleDownload,
+        handleDepartmentChange, handleGenerateReport, handleDownload,
 
     } = useReportesForm();
 
@@ -48,7 +51,7 @@ const ReportesForm = () => {
                             onDateChange={onStartDateChange}
                             disabled={areDatesDisabled}
                         />
-                        
+
                         <DatePickerField
                             label="Fecha final"
                             value={endDate}
@@ -88,19 +91,24 @@ const ReportesForm = () => {
                         </TouchableOpacity>
                     </View>
 
-                    <TouchableOpacity style={styles.generateButton} onPress={handleGenerateReport}>
-                        <Text style={styles.buttonText}>Generar reporte</Text>
-                    </TouchableOpacity>
+                    <CustomButton
+                        title="Generar reporte"
+                        icon="file-download"
+                        onPress={handleGenerateReport}
+                    />
 
-                    <TouchableOpacity style={styles.downloadButton} onPress={handleDownload}>
-                        <Text style={styles.buttonText}>Descargar</Text>
-                    </TouchableOpacity>
+                    <CustomButton
+                        title="Descargar"
+                        icon="download"
+                        onPress={handleDownload}
+                    />
+
                 </View>
 
-                <View style={styles.logoContainer}>
-                    <Text style={styles.logoText}>GRANJA</Text>
-                    <Text style={styles.logoText}>HOGAR</Text>
-                </View>
+                <Footer
+                    onBackPress={router.back}
+                    onHomePress={() => router.replace('/main/adminForm')}
+                />
             </ScrollView>
         </View>
     );
@@ -150,26 +158,26 @@ const styles = StyleSheet.create({
         width: 18,
         borderRadius: 9,
         borderWidth: 2,
-        borderColor: '#096cb7',
+        borderColor: '#04538A',
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 8,
     },
     radioButtonSelected: {
-        borderColor: '#096cb7',
+        borderColor: '#04538A',
     },
     radioButtonInner: {
         height: 8,
         width: 8,
         borderRadius: 4,
-        backgroundColor: '#096cb7',
+        backgroundColor: '#04538A',
     },
     radioLabel: {
         fontSize: 14,
         color: '#333',
     },
     generateButton: {
-        backgroundColor: '#096cb7',
+        backgroundColor: '#04538A',
         paddingVertical: 12,
         paddingHorizontal: 40,
         borderRadius: 4,
@@ -177,7 +185,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     downloadButton: {
-        backgroundColor: '#096cb7',
+        backgroundColor: '#04538A',
         paddingVertical: 12,
         paddingHorizontal: 40,
         borderRadius: 4,
