@@ -25,10 +25,6 @@ const MainForm = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#04538A" barStyle="light-content" />
 
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Administrador</Text>
-      </View>
-
       <ScrollView style={styles.content}>
         <Pressable style={styles.alert} onPress={() => router.navigate('/alertas/AlertasForm')}>
           <Ionicons name="alert-circle" size={20} color="#b91c1c" style={styles.listIcon} />
