@@ -1,11 +1,22 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useReportesForm } from '../../hooks/useReportesForm';
 import { CustomDropdown } from '../../components/CustomDropdown';
 import { DatePickerField } from '../../components/DatePickerField';
 import CustomButton from '../../components/CustomButton';
 import Footer from '../../components/Footer';
 import { router } from 'expo-router';
+
+
+const handleGenerateReport = () => {
+    console.log('Generando reporte...');
+    Alert.alert('Reporte generado con éxito');
+}
+
+const handleDownload = () => {
+    console.log('Descargando reporte...');
+    Alert.alert('Reporte generado con éxito');
+}
 
 const ReportesForm = () => {
     const {
@@ -22,10 +33,10 @@ const ReportesForm = () => {
 
         formatDate, onStartDateChange, onEndDateChange,
         showStartDatepicker, showEndDatepicker,
-        handleDepartmentChange, handleGenerateReport, handleDownload,
+        handleDepartmentChange,
 
     } = useReportesForm();
-
+    
     return (
         <View style={styles.container}>
             <ScrollView style={styles.content}>
