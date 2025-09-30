@@ -105,11 +105,11 @@ const ReportesForm = () => {
 
                 </View>
 
-                <Footer
-                    onBackPress={router.back}
-                    onHomePress={() => router.replace('/main/adminForm')}
-                />
-            </ScrollView>
+                </ScrollView>
+            <Footer
+                onLogOutPress={() => router.replace('/')}
+                onHomePress={() => router.replace('/main/adminForm')}
+            />
         </View>
     );
 };
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F5F5F5',
     },
     content: {
-        flex: 1,
+        flexGrow: 1,
         padding: 20,
     },
     card: {

@@ -2,11 +2,11 @@ import React from "react";
 import { View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-const Footer = ({ onBackPress, onHomePress }) => {
+const Footer = ({ onLogOutPress, onHomePress }) => {
   return (
     <>
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navButton} onPress={onBackPress}>
+        <TouchableOpacity style={styles.navButton} onPress={onLogOutPress}>
           <Ionicons name="exit-outline" size={24} color="#8BC34A" />
         </TouchableOpacity>
 
@@ -31,6 +31,10 @@ export default Footer;
 
 const styles = StyleSheet.create({
   bottomNav: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: "row",
     justifyContent: "space-around",
     backgroundColor: "white",
