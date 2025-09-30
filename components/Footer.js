@@ -6,11 +6,11 @@ const Footer = ({ onBackPress, onHomePress }) => {
   return (
     <>
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navButton} onPress={router.back()}>
+        <TouchableOpacity style={styles.navButton} onPress={onBackPress}>
           <Ionicons name="exit-outline" size={24} color="#8BC34A" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navButton} onPress={router.navigate('/index')}>
+        <TouchableOpacity style={styles.navButton} onPress={onHomePress}>
           <Ionicons name="home" size={28} color="#1976D2" />
         </TouchableOpacity>
       </View>
