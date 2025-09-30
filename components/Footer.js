@@ -6,11 +6,11 @@ const Footer = ({ onBackPress, onHomePress }) => {
   return (
     <>
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navButton} onPress={onBackPress}>
+        <TouchableOpacity style={styles.navButton} onPress={router.back()}>
           <Ionicons name="exit-outline" size={24} color="#8BC34A" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navButton} onPress={onHomePress}>
+        <TouchableOpacity style={styles.navButton} onPress={router.navigate('/index')}>
           <Ionicons name="home" size={28} color="#1976D2" />
         </TouchableOpacity>
       </View>
@@ -18,7 +18,7 @@ const Footer = ({ onBackPress, onHomePress }) => {
       <View style={styles.logoContainer}>
         <View style={styles.logoPlaceholder}>
           <Image
-            source={require("../assets/images/favicon.png")}
+            source={require("../assets/images/GranjaHogarLogo.png")}
             style={styles.logoImage}
           />
         </View>
