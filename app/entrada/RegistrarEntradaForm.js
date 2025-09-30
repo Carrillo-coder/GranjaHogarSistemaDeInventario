@@ -1,7 +1,7 @@
 import 'expo-router/entry'
 import {useRouter} from 'expo-router';
 import React, { useState } from 'react';
-import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Image, Alert} from 'react-native';
+import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Image, Modal} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const CustomAvatar = ({ name, size = 40 }) => {
@@ -27,15 +27,37 @@ const CustomButton = ({ title, onPress, style, textStyle, icon }) => {
   );
 };
 
+const ConfirmationModal = ({ visible, onConfirm, onCancel, message }) => {
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onCancel}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalText}>{message}</Text>
+          <View style={styles.modalButtons}>
+            <CustomButton title="No" onPress={onCancel} style={styles.modalButton} />
+            <CustomButton title="Sí" onPress={onConfirm} style={[styles.modalButton, styles.confirmButtonModal]} />
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
 const RegistrarEntradaForm = () => {
   const router = useRouter();
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showProductList, setShowProductList] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [products] = useState([
-    { id: 1, producto: 'Arroz', presentacion: 'Bolsa 1kg', categoria: 'Granos', cantidadExistente: 50, fechaCaducidad: '2026-09-10' },
-    { id: 2, producto: 'Zucaritas', presentacion: 'Caja 500g', categoria: 'Cereales', cantidadExistente: 24, fechaCaducidad: '2026-06-12' },
-    { id: 3, producto: 'Leche', presentacion: 'Caja 1L', categoria: 'Lácteos', cantidadExistente: 13, fechaCaducidad: '2025-12-02' },
+    { id: 1, producto: 'Arroz', presentacion: 'Bolsa 1kg', categoria: 'Granos', cantidadExistente: 50, fechaCaducidad: '2025-12-31' },
+    { id: 2, producto: 'Zucaritas', presentacion: 'Caja 500g', categoria: 'Cereales', cantidadExistente: 30, fechaCaducidad: '2025-11-30' },
+    { id: 3, producto: 'Leche', presentacion: 'Caja 1L', categoria: 'Lácteos', cantidadExistente: 20, fechaCaducidad: '2025-10-31' },
   ]);
 
   const handleCreateProduct = () => {
@@ -43,40 +65,23 @@ const RegistrarEntradaForm = () => {
     router.navigate('/inventario/CrearProductoForm');
   };
 
-  const handleConfirmProduct = () => { 
+  const handleConfirmPress = () => {
     if (selectedProduct) {
-      console.log('Registro de producto:', selectedProduct);
-      router.navigate('/entrada/RegistrarEntradaForm');
+      setModalVisible(true);
     } else {
       alert('Agrega un producto para continuar');
     }
   };
 
-  /*const handleConfirmProduct = () => {
-  if (selectedProduct) {
-    Alert.alert(
-      "Confirmación", // título del recuadro
-      "¿Estás seguro que quieres registrar estos productos?", // mensaje
-      [
-        {
-          text: "Cancelar",
-          style: "cancel", // estilo gris en iOS
-          onPress: () => console.log("Registro cancelado"),
-        },
-        {
-          text: "Sí",
-          onPress: () => {
-            console.log("Registro de producto:", selectedProduct);
-            router.navigate('/entrada/RegistrarEntradaForm');
-          },
-        },
-      ],
-      { cancelable: false } // el usuario debe elegir una opción
-    );
-  } else {
-    Alert.alert("Error", "Agrega un producto para continuar");
-  }
-};*/
+  const handleConfirm = () => {
+    console.log('Registro de producto:', selectedProduct);
+    setModalVisible(false);
+    router.navigate('/entrada/RegistrarEntradaForm');
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+  };
 
   const handleProductSelect = (product) => {
     setSelectedProduct(product);
@@ -99,6 +104,13 @@ const RegistrarEntradaForm = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
+
+      <ConfirmationModal
+        visible={modalVisible}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        message="¿Estás seguro que quieres continuar?"
+      />
 
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Entradas</Text>
@@ -172,7 +184,7 @@ const RegistrarEntradaForm = () => {
         <View style={styles.actionButtons}>
           <CustomButton
             title="Confirmar"
-            onPress={handleConfirmProduct}
+            onPress={handleConfirmPress}
             style={styles.confirmButton}
             icon="checkmark-circle-outline"
           />
@@ -415,6 +427,36 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
     color: '#4caf50',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 20,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  confirmButtonModal: {
+    backgroundColor: '#1976D2',
   },
 });
 
