@@ -3,6 +3,7 @@ import {useRouter} from 'expo-router';
 import React, { useState } from 'react';
 import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Image} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Footer from '../../components/Footer';
 
 const CustomAvatar = ({ name, size = 40 }) => {
   const getInitials = (name) => {
@@ -82,12 +83,7 @@ const UsuariosForm = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
-
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Usuarios</Text>
-      </View>
-
+      <StatusBar backgroundColor="#04538A" barStyle="light-content" />
       <ScrollView style={styles.content}>
         <CustomButton
           title="Crear Usuario"
@@ -166,29 +162,10 @@ const UsuariosForm = () => {
           />
         </View>
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navButton} onPress={handleBackPress}>
-          <Ionicons name="exit-outline" size={24} color="#8BC34A" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.navButton} onPress={handleHomePress}>
-          <Ionicons name="home" size={28} color="#1976D2" />
-        </TouchableOpacity>
-      </View>
-
-        <View style={styles.logoContainer}>
-            <View style={styles.logoPlaceholder}>
-                <Image 
-                    source={require('../../assets/images/GranjaHogarLogo.png')} 
-                    style={{
-                        width: 40,
-                        height: 40,
-                        resizeMode: 'contain'
-                    }}
-                    />
-            </View>
-        </View>
+      <Footer
+        onLogOutPress={  () => router.replace('/')}
+        onHomePress={ () => router.replace('/main/adminForm')}
+      />
     </SafeAreaView>
   );
 };
@@ -197,21 +174,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-  },
-  header: {
-    backgroundColor: '#1976D2',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    elevation: 4,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  headerTitle: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
   content: {
     flex: 1,
@@ -239,12 +201,12 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   createButton: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#04538A',
     marginBottom: 20,
   },
 
   avatar: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#04538A',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -303,7 +265,7 @@ const styles = StyleSheet.create({
   },
   userRole: {
     fontSize: 12,
-    color: '#1976D2',
+    color: '#04538A',
     fontWeight: '500',
   },
 
@@ -356,7 +318,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   modifyButton: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#04538A',
     flex: 1,
   },
   deleteButton: {

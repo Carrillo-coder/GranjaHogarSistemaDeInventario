@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, TextInput, Image, Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Footer from '../../components/Footer';
 
 const CustomButton = ({ title, onPress, style, textStyle, icon }) => {
   return (
@@ -146,28 +147,14 @@ const CrearUsuarioScreen = () => {
           }
         ]
       );
+      router.back();  
     }
   };
 
-  const handleHomePress = () => {
-    console.log('Ir a inicio');
-    router.navigate('/Index');
-  };
-
-  const handleBackPress = () => {
-    console.log('Volver atrás');
-    router.back();
-  };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Usuarios</Text>
-      </View>
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Formulario */}
         <View style={styles.formContainer}>
@@ -225,27 +212,10 @@ const CrearUsuarioScreen = () => {
         </View>
 
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navButton} onPress={handleBackPress}>
-          <Ionicons name="exit-outline" size={24} color="#8BC34A" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.navButton} onPress={handleHomePress}>
-          <Ionicons name="home" size={28} color="#1976D2" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Logo */}
-      <View style={styles.logoContainer}>
-        <View style={styles.logoPlaceholder}>
-          <Image 
-            source={require('../../assets/images/GranjaHogarLogo.png')} 
-            style={styles.logoImage}
-          />
-        </View>
-      </View>
+      <Footer
+        onLogOutPress={  () => router.replace('/')}
+        onHomePress={ () => router.replace('/main/adminForm')}    
+      />
     </SafeAreaView>
   );
 };
@@ -256,7 +226,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#04538A',
     paddingVertical: 15,
     paddingHorizontal: 20,
     elevation: 4,
@@ -358,7 +328,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   saveButton: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#8BC34A',
   },
 
   bottomNav: {
