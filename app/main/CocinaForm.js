@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './Estilos/CocinaFormStyles.styles.js';
+import Footer from '../../components/Footer.js';
 
 const CustomButton = ({ title, onPress, style, textStyle, icon }) => (
   <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
@@ -18,16 +19,9 @@ const CustomButton = ({ title, onPress, style, textStyle, icon }) => (
 const MainForm = () => {
   const router = useRouter();
 
-  const handleBackPress = () => router.back();
-  const handleHomePress = () => router.navigate('/index');
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#04538A" barStyle="light-content" />
-
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Cocina</Text>
-      </View>
 
       <ScrollView style={styles.content}>
         <Pressable style={styles.alert} onPress={() => router.navigate('/alertas/AlertasForm')}>
@@ -55,24 +49,10 @@ const MainForm = () => {
         />
         <View style={{ height: 80 }} />
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navButton} onPress={handleBackPress}>
-          <Ionicons name="arrow-back" size={24} color="#8BC34A" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={handleHomePress}>
-          <Ionicons name="home" size={28} color="#1976D2" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.logoContainer}>
-        <View style={styles.logoPlaceholder}>
-          <Image
-            source={require('../../assets/images/GranjaHogarLogo.png')}
-            style={{ width: 40, height: 40, resizeMode: 'contain' }}
-          />
-        </View>
-      </View>
+      <Footer
+        onLogOutPress={  () => router.replace('/')}
+        onHomePress={ () => router.replace('/main/adminForm')}    
+      />
     </SafeAreaView>
   );
 };
