@@ -5,7 +5,9 @@ import { CustomDropdown } from '../../components/CustomDropdown';
 import { DatePickerField } from '../../components/DatePickerField';
 import CustomButton from '../../components/CustomButton';
 import Footer from '../../components/Footer';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
+
+const FOOTER_HEIGHT = 80; // aprox. alto visual del Footer (ajústalo si hace falta)
 
 
 const handleGenerateReport = () => {
@@ -122,12 +124,23 @@ const ReportesForm = () => {
                 onHomePress={() => router.replace('/main/adminForm')}
             />
         </View>
-    );
+      </ScrollView>
+
+      {/* Footer FIJO, fuera del ScrollView */}
+      <View pointerEvents="box-none" style={{ height: FOOTER_HEIGHT }}>
+        <Footer
+          onBackPress={() => router.back()}
+          onHomePress={() => router.replace('/main/adminForm')}
+        />
+      </View>
+    </View>
+  );
 };
 
 export default ReportesForm;
 
 const styles = StyleSheet.create({
+
     container: {
         flex: 1,
         backgroundColor: '#F5F5F5',
