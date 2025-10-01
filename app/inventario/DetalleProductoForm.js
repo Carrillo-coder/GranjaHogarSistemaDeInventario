@@ -1,13 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Alert } from 'react-native';
+import Footer from '../../components/Footer';
 
 const DetalleProductoForm = () => {
-  const route = useRoute();
-  const navigation = useNavigation();
-  const producto = route.params?.producto ?? 'Manzana';
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const producto = params.producto ?? 'Manzana';
 
-  // Datos de ejemplo (puedes reemplazarlos con datos reales cuando lleguen desde BD)
+  const handleConfirmarActualizacion = () => {
+  Alert.alert('Producto actualizado con exito');  
+  console.log('Producto actualizado en la BD...')
+  router.back();
+}
+
   const datos = {
     Producto: producto,
     Presentacion: 'Unidades',
@@ -18,11 +25,7 @@ const DetalleProductoForm = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>DETALLES DEL PRODUCTO</Text>
-      </View>
-
+      <StatusBar backgroundColor="#04538A" barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.table}>
           {Object.entries(datos).map(([label, value], idx) => (
@@ -37,17 +40,21 @@ const DetalleProductoForm = () => {
           ))}
         </View>
 
-        <TouchableOpacity style={styles.editButton} onPress={() => { /* estético por ahora */ }}>
+        <TouchableOpacity style={styles.editButton} onPress={handleConfirmarActualizacion}>
           <Text style={styles.editButtonText}>Editar Información</Text>
         </TouchableOpacity>
       </ScrollView>
+      <Footer
+        onLogOutPress={  () => router.replace('/')}
+        onHomePress={ () => router.replace('/main/adminForm')} 
+      />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
-  header: { backgroundColor: '#1976D2', paddingVertical: 15, alignItems: 'center' },
+  header: { backgroundColor: '#04538A', paddingVertical: 15, alignItems: 'center' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   body: { padding: 16, paddingBottom: 40 },
   table: { backgroundColor: '#fff', borderRadius: 8, overflow: 'hidden' },
@@ -56,7 +63,7 @@ const styles = StyleSheet.create({
   cellValue: { flex: 1, justifyContent: 'center' },
   labelText: { fontWeight: 'bold', fontSize: 15 },
   valueText: { fontSize: 15 },
-  editButton: { marginTop: 24, backgroundColor: '#1976D2', paddingVertical: 14, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  editButton: { marginTop: 24, backgroundColor: '#04538A', paddingVertical: 14, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   editButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
 });
 

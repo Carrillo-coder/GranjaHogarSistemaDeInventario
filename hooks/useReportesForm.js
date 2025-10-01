@@ -72,13 +72,15 @@ export const useReportesForm = () => {
     }
   };
 
-  const handleGenerateReport = () => {
-    console.log('Generating report');
-  };
+const handleGenerateReport = () => {
+    console.log('Generando reporte...');
+    Alert.alert('Reporte generado con éxito');
+}
 
-  const handleDownload = () => {
-    console.log('Downloading report');
-  };
+const handleDownload = () => {
+    console.log('Descargando reporte...');
+    Alert.alert('Reporte generado con éxito');
+}
 
 
   return { 

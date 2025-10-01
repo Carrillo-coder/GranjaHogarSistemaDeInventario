@@ -17,7 +17,13 @@ const Footer = ({ onBackPress, onHomePress, logoSource }) => {
     router.replace("/index");
   }, [onHomePress, router]);
 
+const Footer = ({ onLogOutPress, onHomePress }) => {
   return (
+    <>
+      <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navButton} onPress={onLogOutPress}>
+          <Ionicons name="exit-outline" size={24} color="#8BC34A" />
+        </TouchableOpacity>
 
     <View style={styles.bottomNav}>
       <TouchableOpacity
@@ -52,7 +58,9 @@ const styles = StyleSheet.create({
   bottomNav: {
     position: "absolute",
     bottom: 0,
-    width: "100%",
+
+    left: 0,
+    right: 0,
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
@@ -66,7 +74,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 12,
     paddingHorizontal: 8,
-    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  logoImage: {
+    width: 40,
+    height: 40,
+    resizeMode: "contain",
   },
   logoImage: { width: 40, height: 40, resizeMode: "contain" },
 });

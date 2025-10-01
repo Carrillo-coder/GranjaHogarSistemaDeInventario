@@ -8,7 +8,7 @@ export default StyleSheet.create({
     elevation: 4, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4
   },
   headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold', textAlign: 'center' },
-  content: { flex: 1, padding: 16 },
+  content: { flexGrow: 1, padding: 16 },
 
   // alertas
   alert: {
