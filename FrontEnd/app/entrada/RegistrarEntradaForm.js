@@ -63,7 +63,7 @@ const RegistrarEntradaForm = () => {
 
   const handleCreateProduct = () => {
     console.log('Crear producto');
-    router.navigate('/inventario/CrearProductoForm');
+    router.navigate('/inventario/InventarioForm');
   };
 
   const handleConfirmPress = () => {
