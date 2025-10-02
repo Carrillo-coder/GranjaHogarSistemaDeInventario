@@ -7,20 +7,10 @@ import CustomButton from '../../components/CustomButton';
 import Footer from '../../components/Footer';
 import { useRouter } from 'expo-router';
 
-const FOOTER_HEIGHT = 80; // aprox. alto visual del Footer (ajústalo si hace falta)
 
-
-const handleGenerateReport = () => {
-    console.log('Generando reporte...');
-    Alert.alert('Reporte generado con éxito');
-}
-
-const handleDownload = () => {
-    console.log('Descargando reporte...');
-    Alert.alert('Reporte generado con éxito');
-}
 
 const ReportesForm = () => {
+    const router = useRouter();
     const {
         reportTypes, departments,
         reportType, setReportType,
@@ -38,10 +28,20 @@ const ReportesForm = () => {
         handleDepartmentChange,
 
     } = useReportesForm();
+
+    const handleGenerateReport = () => {
+        console.log('Generando reporte...');
+        Alert.alert('Reporte generado con éxito');
+    }
+
+    const handleDownload = () => {
+        console.log('Descargando reporte...');
+        Alert.alert('Reporte generado con éxito');
+    }
     
     return (
         <View style={styles.container}>
-            <ScrollView style={styles.content}>
+            <ScrollView contentContainerStyle={styles.content}>
                 <View style={styles.card}>
                     <CustomDropdown
                         label="Tipo"
@@ -115,32 +115,19 @@ const ReportesForm = () => {
                         icon="download"
                         onPress={handleDownload}
                     />
-
                 </View>
-
-                </ScrollView>
+            </ScrollView>
             <Footer
-                onLogOutPress={() => router.replace('/')}
+                onBackPress={() => router.replace('/')}
                 onHomePress={() => router.replace('/main/adminForm')}
             />
         </View>
-      </ScrollView>
-
-      {/* Footer FIJO, fuera del ScrollView */}
-      <View pointerEvents="box-none" style={{ height: FOOTER_HEIGHT }}>
-        <Footer
-          onBackPress={() => router.back()}
-          onHomePress={() => router.replace('/main/adminForm')}
-        />
-      </View>
-    </View>
-  );
+    );
 };
 
 export default ReportesForm;
 
 const styles = StyleSheet.create({
-
     container: {
         flex: 1,
         backgroundColor: '#F5F5F5',
