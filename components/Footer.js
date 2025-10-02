@@ -7,24 +7,22 @@ const Footer = ({ onBackPress, onHomePress, logoSource }) => {
   const router = useRouter();
 
   const handleBack = React.useCallback(() => {
-    if (typeof onBackPress === "function") return onBackPress();
-    router.back();
+    if (typeof onBackPress === "function") {
+      onBackPress();
+    } else {
+      router.replace('/');
+    }
   }, [onBackPress, router]);
 
   const handleHome = React.useCallback(() => {
-    if (typeof onHomePress === "function") return onHomePress();
-    // Ajusta navigate/push/replace según tu flujo
-    router.replace("/index");
+    if (typeof onHomePress === "function") {
+      onHomePress();
+    } else {
+      router.replace("/main/adminForm");
+    }
   }, [onHomePress, router]);
 
-const Footer = ({ onLogOutPress, onHomePress }) => {
   return (
-    <>
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navButton} onPress={onLogOutPress}>
-          <Ionicons name="exit-outline" size={24} color="#8BC34A" />
-        </TouchableOpacity>
-
     <View style={styles.bottomNav}>
       <TouchableOpacity
         style={styles.navButton}
@@ -58,7 +56,6 @@ const styles = StyleSheet.create({
   bottomNav: {
     position: "absolute",
     bottom: 0,
-
     left: 0,
     right: 0,
     flexDirection: "row",
@@ -74,14 +71,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 12,
     paddingHorizontal: 8,
-    borderRadius: 12,
   },
   logoImage: {
     width: 40,
     height: 40,
     resizeMode: "contain",
   },
-  logoImage: { width: 40, height: 40, resizeMode: "contain" },
 });
 
 export default Footer;
