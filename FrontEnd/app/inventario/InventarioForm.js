@@ -1,10 +1,10 @@
 // CatalogoScreen.js
 import React, { useState, useMemo } from 'react';
 import { View, Text, TextInput, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Image, StatusBar } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 import Footer from '../../components/Footer';
+import CustomButton from '../../components/CustomButton';
+
 
 const initialProducts = [
   'Arroz', 'Frijoles', 'Leche', 'Huevos', 'Queso',
@@ -71,13 +71,15 @@ const CatalogoScreen = () => {
           )}
         </ScrollView>
 
-        <TouchableOpacity style={styles.createButton} 
-        onPress={handleCreateProduct}>
-          <Text style={styles.createButtonText}>Crear producto</Text>
-        </TouchableOpacity>
+        <CustomButton
+          title="Crear Producto"
+          onPress={handleCreateProduct}
+          style={styles.createButtonText}
+        />
+
       </View>
       <Footer
-        onLogOutPress={  () => router.replace('/')}
+        onLogOutPress={ () => router.replace('/')}
         onHomePress={ () => router.replace('/main/adminForm')} 
       />
 
