@@ -1,3 +1,6 @@
+//Estas son mis credenciales, lo probé localmente en workbench para ver que funcione todo, si lo quieren usar, camben el usar (aunque creo que deberían de tener el mismo) y el password
+
+
 const mysql = require('mysql2/promise');
 
 const dbConfig = {
