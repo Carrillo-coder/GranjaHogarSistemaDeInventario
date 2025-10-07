@@ -1,15 +1,8 @@
 const RolService = require('../Services/roles.service');
 
-/**
- * Controlador de Roles
- * Maneja las peticiones HTTP relacionadas con roles
- */
+
 class RolController {
 
-    /**
-     * GET /api/inventario/roles
-     * Obtener todos los roles
-     */
     static async getAll(req, res) {
         try {
             const result = await RolService.getAllRoles();

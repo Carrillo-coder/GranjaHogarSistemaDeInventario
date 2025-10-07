@@ -3,15 +3,8 @@ const RolModel = require('../Models/roles.model');
 const UsuarioVO = require('../ValueObjects/usuarios.vo');
 const bcrypt = require('bcrypt');
 
-/**
- * Servicio de Usuario
- * Contiene la lógica de negocio para usuarios
- */
 class UsuarioService {
 
-    /**
-     * Obtener todos los usuarios
-     */
     static async getAllUsuarios() {
         try {
             const usuarios = await UsuarioModel.findAll();
@@ -41,9 +34,6 @@ class UsuarioService {
         }
     }
 
-    /**
-     * Obtener usuario por ID
-     */
     static async getUsuarioById(id) {
         try {
             const usuario = await UsuarioModel.findById(id);
@@ -73,12 +63,8 @@ class UsuarioService {
         }
     }
 
-    /**
-     * Crear nuevo usuario
-     */
     static async createUsuario(data) {
         try {
-            // Crear VO y validar
             const usuarioVO = new UsuarioVO(data);
             const validation = usuarioVO.validate();
 
@@ -91,7 +77,6 @@ class UsuarioService {
                 };
             }
 
-            // Verificar si el rol existe
             const rolExists = await RolModel.exists(data.ID_Rol);
             if (!rolExists) {
                 return {
@@ -101,7 +86,6 @@ class UsuarioService {
                 };
             }
 
-            // Verificar si el nombre de usuario ya existe
             const usernameExists = await UsuarioModel.existsByUsername(data.nombreUsuario);
             if (usernameExists) {
                 return {
@@ -111,14 +95,11 @@ class UsuarioService {
                 };
             }
 
-            // Encriptar contraseña
             const hashedPassword = await bcrypt.hash(data.password, 10);
             usuarioVO.password = hashedPassword;
 
-            // Crear usuario
             const usuarioId = await UsuarioModel.create(usuarioVO.toDatabase());
 
-            // Obtener usuario creado
             const nuevoUsuario = await UsuarioModel.findById(usuarioId);
 
             return {
@@ -137,12 +118,8 @@ class UsuarioService {
         }
     }
 
-    /**
-     * Actualizar usuario existente
-     */
     static async updateUsuario(id, data) {
         try {
-            // Verificar si el usuario existe
             const usuarioExiste = await UsuarioModel.findById(id);
             if (!usuarioExiste) {
                 return {
@@ -152,7 +129,6 @@ class UsuarioService {
                 };
             }
 
-            // Crear VO y validar
             const usuarioVO = new UsuarioVO(data);
             const validation = usuarioVO.validate();
 
@@ -165,7 +141,6 @@ class UsuarioService {
                 };
             }
 
-            // Verificar si el rol existe
             const rolExists = await RolModel.exists(data.ID_Rol);
             if (!rolExists) {
                 return {
@@ -175,7 +150,6 @@ class UsuarioService {
                 };
             }
 
-            // Verificar si el nombre de usuario ya existe (excluyendo el actual)
             const usernameExists = await UsuarioModel.existsByUsername(data.nombreUsuario, id);
             if (usernameExists) {
                 return {
@@ -185,19 +159,15 @@ class UsuarioService {
                 };
             }
 
-            // Encriptar contraseña si se proporciona
             if (data.password) {
                 const hashedPassword = await bcrypt.hash(data.password, 10);
                 usuarioVO.password = hashedPassword;
             } else {
-                // Si no se proporciona contraseña, mantener la actual
                 usuarioVO.password = usuarioExiste.password;
             }
 
-            // Actualizar usuario
             await UsuarioModel.update(id, usuarioVO.toDatabase());
 
-            // Obtener usuario actualizado
             const usuarioActualizado = await UsuarioModel.findById(id);
 
             return {
@@ -216,12 +186,8 @@ class UsuarioService {
         }
     }
 
-    /**
-     * Desactivar usuario (soft delete)
-     */
     static async deleteUsuario(id) {
         try {
-            // Verificar si el usuario existe
             const usuario = await UsuarioModel.findById(id);
             if (!usuario) {
                 return {
@@ -231,7 +197,6 @@ class UsuarioService {
                 };
             }
 
-            // Desactivar usuario
             await UsuarioModel.deactivate(id);
 
             return {

@@ -1,14 +1,8 @@
 const { pool } = require('../config/db.config');
 
-/**
- * Modelo de Usuario
- * Maneja todas las operaciones de base de datos para usuarios
- */
 class UsuarioModel {
     
-    /**
-     * Obtener todos los usuarios activos
-     */
+
     static async findAll() {
         try {
             const [rows] = await pool.query(
@@ -25,9 +19,6 @@ class UsuarioModel {
         }
     }
 
-    /**
-     * Buscar usuario por ID
-     */
     static async findById(id) {
         try {
             const [rows] = await pool.query(
@@ -44,9 +35,6 @@ class UsuarioModel {
         }
     }
 
-    /**
-     * Buscar usuario por nombre de usuario
-     */
     static async findByUsername(nombreUsuario) {
         try {
             const [rows] = await pool.query(
@@ -59,9 +47,6 @@ class UsuarioModel {
         }
     }
 
-    /**
-     * Crear nuevo usuario
-     */
     static async create(usuarioData) {
         try {
             const [result] = await pool.query(
@@ -81,9 +66,6 @@ class UsuarioModel {
         }
     }
 
-    /**
-     * Actualizar usuario existente
-     */
     static async update(id, usuarioData) {
         try {
             const [result] = await pool.query(
@@ -107,9 +89,6 @@ class UsuarioModel {
         }
     }
 
-    /**
-     * Desactivar usuario (soft delete)
-     */
     static async deactivate(id) {
         try {
             const [result] = await pool.query(
@@ -122,9 +101,6 @@ class UsuarioModel {
         }
     }
 
-    /**
-     * Verificar si existe un usuario con ese nombre
-     */
     static async existsByUsername(nombreUsuario, excludeId = null) {
         try {
             let query = `SELECT COUNT(*) as count FROM Usuarios WHERE nombreUsuario = ?`;

@@ -16,10 +16,10 @@ const pool = mysql.createPool(dbConfig);
 const getConnection = async () => {
     try {
         const connection = await pool.getConnection();
-        console.log('✅ Conexión exitosa a la base de datos');
+        console.log('Conexión exitosa a la base de datos');
         return connection;
     } catch (error) {
-        console.error('❌ Error al conectar a la base de datos:', error.message);
+        console.error('Error al conectar a la base de datos:', error.message);
         throw error;
     }
 };
@@ -27,11 +27,11 @@ const getConnection = async () => {
 const testConnection = async () => {
     try {
         const connection = await pool.getConnection();
-        console.log('✅ Pool de conexiones creado correctamente');
+        console.log('Pool de conexiones creado correctamente');
         connection.release();
         return true;
     } catch (error) {
-        console.error('❌ Error en el pool de conexiones:', error.message);
+        console.error('Error en el pool de conexiones:', error.message);
         return false;
     }
 };

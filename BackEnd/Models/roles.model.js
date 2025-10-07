@@ -1,14 +1,8 @@
 const { pool } = require('../config/db.config');
 
-/**
- * Modelo de Rol
- * Maneja todas las operaciones de base de datos para roles
- */
 class RolModel {
     
-    /**
-     * Obtener todos los roles
-     */
+ 
     static async findAll() {
         try {
             const [rows] = await pool.query(
@@ -20,9 +14,6 @@ class RolModel {
         }
     }
 
-    /**
-     * Buscar rol por ID
-     */
     static async findById(id) {
         try {
             const [rows] = await pool.query(
@@ -35,9 +26,6 @@ class RolModel {
         }
     }
 
-    /**
-     * Verificar si existe un rol
-     */
     static async exists(id) {
         try {
             const [rows] = await pool.query(

@@ -1,7 +1,3 @@
-/**
- * Value Object para Usuario
- * Define la estructura y validación de datos de un usuario
- */
 class UsuarioVO {
     constructor(data) {
         this.ID_Usuario = data.ID_Usuario || null;
@@ -12,7 +8,6 @@ class UsuarioVO {
         this.ID_Rol = data.ID_Rol || null;
     }
 
-    // Validar datos del usuario
     validate() {
         const errors = [];
 
@@ -42,7 +37,6 @@ class UsuarioVO {
         };
     }
 
-    // Convertir a objeto para insert/update
     toDatabase() {
         return {
             nombreUsuario: this.nombreUsuario,
@@ -53,7 +47,6 @@ class UsuarioVO {
         };
     }
 
-    // Convertir a objeto para respuesta (sin password)
     toResponse() {
         return {
             ID_Usuario: this.ID_Usuario,

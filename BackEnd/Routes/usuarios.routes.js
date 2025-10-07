@@ -2,11 +2,6 @@ const express = require('express');
 const router = express.Router();
 const UsuarioController = require('../Controllers/usuarios.controller');
 
-/**
- * Rutas de Usuarios
- * Base: /api/inventario/usuarios
- */
-
 // GET - Obtener todos los usuarios
 router.get('/', UsuarioController.getAll);
 

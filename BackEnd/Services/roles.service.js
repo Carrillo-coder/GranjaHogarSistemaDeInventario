@@ -1,14 +1,7 @@
 const RolModel = require('../Models/roles.model');
 
-/**
- * Servicio de Roles
- * Contiene la lógica de negocio para roles
- */
 class RolService {
 
-    /**
-     * Obtener todos los roles
-     */
     static async getAllRoles() {
         try {
             const roles = await RolModel.findAll();
