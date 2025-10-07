@@ -5,6 +5,10 @@ import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView, ScrollView, Te
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../../components/Footer';
 import { Alert } from 'react-native';
+import { CustomDropdown } from '../../components/CustomDropdown';
+import CustomButton from '../../components/CustomButton';
+import SalidaForm from './SalidaForm';
+
 
 const EntradaForm = () => {
 
@@ -41,9 +45,10 @@ const EntradaForm = () => {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.sectionTitle}>Registrar salida</Text>
 
-        <TouchableOpacity style={styles.addButton} onPress={handleAgregarSalida}>
-          <Text style={styles.addButtonText}>Agregar Salida</Text>
-        </TouchableOpacity>
+        <CustomButton 
+          title="Agregar Salida" 
+          onPress={handleAgregarSalida} 
+        />
 
         <View style={styles.resumenBox}>
           <Text style={styles.resumenTitle}>Resumen de salida</Text>
@@ -61,9 +66,12 @@ const EntradaForm = () => {
           )}
         </View>
 
-        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmarSalida}>
-          <Text style={styles.confirmButtonText}>Confirmar</Text>
-        </TouchableOpacity>
+        <CustomButton 
+          title="Confirmar" 
+          onPress={handleConfirmarSalida} 
+          style={styles.confirmButton}
+        />
+
       </ScrollView>
       <Footer
         onLogOutPress={() => router.replace('/')}
@@ -127,13 +135,16 @@ const styles = StyleSheet.create({
   },
   itemText: { fontSize: 16, fontWeight: 'bold' },
   itemSub: { fontSize: 14, color: '#555' },
+
   confirmButton: {
     backgroundColor: '#8BC34A',
+    flex: 1,
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
     width: '100%',
   },
+  
   confirmButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
   bottomNav: {
     flexDirection: 'row',
@@ -149,6 +160,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     alignSelf: 'center',
   },
+  
 });
 
 export default EntradaForm;
