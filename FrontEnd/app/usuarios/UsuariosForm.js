@@ -1,32 +1,11 @@
 import 'expo-router/entry'
-import {useRouter} from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Image} from 'react-native';
+import { View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../../components/Footer';
-
-const CustomAvatar = ({ name, size = 40 }) => {
-  const getInitials = (name) => {
-    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-  };
-
-  return (
-    <View style={[styles.avatar, { width: size, height: size, borderRadius: size / 2 }]}>
-      <Text style={[styles.avatarText, { fontSize: size * 0.4 }]}>
-        {getInitials(name)}
-      </Text>
-    </View>
-  );
-};
-
-const CustomButton = ({ title, onPress, style, textStyle, icon }) => {
-  return (
-    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
-      {icon && <Ionicons name={icon} size={20} color="white" style={styles.buttonIcon} />}
-      <Text style={[styles.buttonText, textStyle]}>{title}</Text>
-    </TouchableOpacity>
-  );
-};
+import CustomButton from '../components/CustomButton';
+import CustomAvatar from '../../components/CustomAvatar';
 
 const UsuariosForm = () => {
   const router = useRouter();
@@ -42,24 +21,52 @@ const UsuariosForm = () => {
 
   const handleCreateUser = () => {
     console.log('Crear usuario');
-    router.navigate('/usuarios/CrearUsuarioForm')
+    router.navigate('/usuarios/CrearUsuarioForm');
   };
 
   const handleModifyUser = () => {
     if (selectedUser) {
       console.log('Modificar usuario:', selectedUser);
-      router.navigate('/usuarios/CrearUsuarioForm')
+      
+      // Pasar los datos del usuario como parámetros
+      router.navigate({
+        pathname: '/usuarios/CrearUsuarioForm',
+        params: {
+          editMode: 'true',
+          userId: selectedUser.id.toString(),
+          userName: selectedUser.name,
+          userRole: selectedUser.role
+        }
+      });
     } else {
-      alert('Selecciona un usuario para modificar');
+      Alert.alert('Error', 'Selecciona un usuario para modificar');
     }
   };
 
   const handleDeleteUser = () => {
     if (selectedUser) {
-      console.log('Borrar usuario:', selectedUser);
-      alert(`¿Estás seguro de borrar a ${selectedUser.name}?`);
+      Alert.alert(
+        'Confirmar eliminación',
+        `¿Estás seguro de borrar a ${selectedUser.name}?`,
+        [
+          {
+            text: 'Cancelar',
+            onPress: () => console.log('Cancelado'),
+            style: 'cancel',
+          },
+          {
+            text: 'Sí, borrar',
+            onPress: () => {
+              console.log('Usuario borrado:', selectedUser);
+              Alert.alert('Usuario eliminado', `${selectedUser.name} ha sido eliminado`);
+              setSelectedUser(null);
+            },
+            style: 'destructive',
+          },
+        ]
+      );
     } else {
-      alert('Selecciona un usuario para borrar');
+      Alert.alert('Error', 'Selecciona un usuario para borrar');
     }
   };
 
@@ -69,16 +76,6 @@ const UsuariosForm = () => {
 
   const toggleUserList = () => {
     setShowUserList(!showUserList);
-  };
-
-  const handleHomePress = () => {
-    console.log('Ir a inicio');
-    router.replace('/');
-  };
-
-  const handleBackPress = () => {
-    console.log('Volver atrás');
-    router.back()
   };
 
   return (
@@ -145,7 +142,6 @@ const UsuariosForm = () => {
           </View>
         )}
 
-        {/* Botones de acción */}
         <View style={styles.actionButtons}>
           <CustomButton
             title="Modificar"
@@ -163,8 +159,8 @@ const UsuariosForm = () => {
         </View>
       </ScrollView>
       <Footer
-        onLogOutPress={  () => router.replace('/')}
-        onHomePress={ () => router.replace('/main/adminForm')}
+        onLogOutPress={() => router.replace('/')}
+        onHomePress={() => router.replace('/main/adminForm')}
       />
     </SafeAreaView>
   );
@@ -179,42 +175,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    elevation: 2,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  buttonIcon: {
-    marginRight: 8,
-  },
   createButton: {
     backgroundColor: '#04538A',
     marginBottom: 20,
   },
-
-  avatar: {
-    backgroundColor: '#04538A',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-
   userListCard: {
     backgroundColor: 'white',
     borderRadius: 8,
@@ -268,7 +232,6 @@ const styles = StyleSheet.create({
     color: '#04538A',
     fontWeight: '500',
   },
-
   selectedUserCard: {
     backgroundColor: '#e8f5e8',
     borderRadius: 8,
@@ -304,13 +267,11 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 4,
   },
-
   selectedUserRole: {
     fontSize: 14,
     color: '#2e7d32',
     fontWeight: '500',
   },
-
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -324,47 +285,6 @@ const styles = StyleSheet.create({
   deleteButton: {
     backgroundColor: '#d32f2f',
     flex: 1,
-  },
-
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: 'white',
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    elevation: 8,
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  navButton: {
-    alignItems: 'center',
-    padding: 8,
-  },
-
-  logoContainer: {
-    position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-  },
-  logoPlaceholder: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    elevation: 2,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-  },
-  logoText: {
-    marginLeft: 4,
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#4caf50',
   },
 });
 
