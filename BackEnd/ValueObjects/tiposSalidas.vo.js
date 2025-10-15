@@ -1,15 +1,9 @@
-class tipoSalidaVO {
-    constructor(data) {
-        this.idTipoS = data.idTipoS || null;
-        this.Nombre = data.Nombre || '';
-    }
+class TiposSalidasVO {
 
-    toResponse() {
-        return {
-            idTipoS: this.idTipoS,
-            N0ombre: this.Nombre
-        };
+    constructor({ idTipoSalida, Nombre }) {
+        this.idTipoSalida = idTipoSalida;
+        this.Nombre = Nombre;
     }
 }
 
-module.exports = tipoSalidaVO;
+module.exports = TiposSalidasVO;

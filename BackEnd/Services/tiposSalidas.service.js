@@ -1,12 +1,14 @@
-const TiposSalidasModel = require('../Models/tiposSalidas.model');
+const db = require('../Models');
+const TiposSalidas = db.TiposSalidas;
+const TiposSalidasVO = require('../ValueObjects/tiposSalidas.vo');
 
 class TiposSalidasService {
 
     static async getAllTiposSalidas() {
         try {
-            const tiposSalidas = await TiposSalidasModel.findAll();
+            const tiposSalidas = await TiposSalidas.findAll();
 
-            if (!roles || roles.length === 0) {
+            if (!tiposSalidas || tiposSalidas.length === 0) {
                 return {
                     success: false,
                     message: 'No se encontraron tipos de salidas',
@@ -15,10 +17,12 @@ class TiposSalidasService {
                 };
             }
 
+            const tiposSalidasVO = tiposSalidas.map(tipoSalida => new TiposSalidasVO(tipoSalida));
+
             return {
                 success: true,
                 message: 'Tipos de salidas obtenidos correctamente',
-                data: tiposSalidas,
+                data: tiposSalidasVO,
                 statusCode: 200
             };
         } catch (error) {
@@ -26,7 +30,7 @@ class TiposSalidasService {
                 success: false,
                 message: 'Error al obtener tipos de salidas',
                 error: error.message,
-                statusCode: 400
+                statusCode: 500
             };
         }
     }

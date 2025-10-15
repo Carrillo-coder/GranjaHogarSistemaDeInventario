@@ -1,11 +1,10 @@
 const TiposSalidasService = require('../Services/tiposSalidas.service');
 
-
 class TiposSalidasController {
 
     static async getAll(req, res) {
         try {
-            const result = await TiposSalidasService.getAllRoles();
+            const result = await TiposSalidasService.getAllTiposSalidas();
             return res.status(result.statusCode).json(result);
         } catch (error) {
             return res.status(500).json({

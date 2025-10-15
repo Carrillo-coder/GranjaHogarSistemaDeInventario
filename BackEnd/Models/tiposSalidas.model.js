@@ -1,18 +1,22 @@
-const { pool } = require('../config/db.config');
-
-class TiposSalidasModel {
-    
- 
-    static async findAll() {
-        try {
-            const [rows] = await pool.query(
-                `SELECT idTipoS, Nombre FROM TiposSalidas ORDER BY Nombre`
-            );
-            return rows;
-        } catch (error) {
-            throw error;
+/**
+ * @typedef TiposSalidas
+ * @property {integer} idTipoSalida
+ * @property {string} Nombre.required
+ */
+module.exports = (sequelize, Sequelize) => {
+    const TiposSalidas = sequelize.define("TiposSalidas", {
+        idTipoSalida: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        Nombre: {
+            type: Sequelize.STRING,
+            allowNull: false
         }
-    }
-}
+    }, {
+        tableName: 'tipossalidas'
+    });
 
-module.exports = TiposSalidasModel;
+    return TiposSalidas;
+};
