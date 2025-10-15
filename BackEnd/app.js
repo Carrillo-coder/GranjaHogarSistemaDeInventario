@@ -2,7 +2,7 @@
 
 const express = require('express');
 const cors = require('cors');
-const { testConnection } = require('./config/db.config');
+const morgan = require('morgan');
 
 // Importar rutas
 const usuariosRoutes = require('./Routes/usuarios.routes');
@@ -15,12 +15,7 @@ const app = express();
 app.use(cors()); // Habilitar CORS para React Native
 app.use(express.json()); // Parsear JSON en el body
 app.use(express.urlencoded({ extended: true })); // Parsear URL-encoded
-
-// Middleware para logging de requests
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url} - ${new Date().toISOString()}`);
-    next();
-});
+app.use(morgan('tiny')); // Logger de requests
 
 // Ruta de bienvenida
 app.get('/', (req, res) => {
@@ -35,12 +30,10 @@ app.get('/', (req, res) => {
 });
 
 // Ruta de salud
-app.get('/health', async (req, res) => {
-    const dbConnected = await testConnection();
+app.get('/health', (req, res) => {
     res.json({
         status: 'OK',
-        timestamp: new Date().toISOString(),
-        database: dbConnected ? 'Connected' : 'Disconnected'
+        timestamp: new Date().toISOString()
     });
 });
 

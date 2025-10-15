@@ -1,10 +1,12 @@
-const RolModel = require('../Models/roles.model');
-
+const db = require('../Models');
+const Rol = db.Rol;
 class RolService {
 
     static async getAllRoles() {
         try {
-            const roles = await RolModel.findAll();
+            const roles = await Rol.findAll({
+                order: [['nombre', 'ASC']]
+            });
 
             if (!roles || roles.length === 0) {
                 return {

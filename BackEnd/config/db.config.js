@@ -1,3 +1,18 @@
+<<<<<<< HEAD
+module.exports = {
+  HOST: "localhost",
+  USER: "root",
+  PASSWORD: "tecito",
+  DB: "inventario",
+  dialect: "mysql",
+  pool: {
+    max: 10,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
+  }
+};
+=======
 //Estas son mis credenciales, lo probé localmente en workbench para ver que funcione todo, si lo quieren usar, camben el usar (aunque creo que deberían de tener el mismo) y el password
 
 
@@ -44,3 +59,4 @@ module.exports = {
     getConnection,
     testConnection
 };
+>>>>>>> 1d71a27d232f4d0e79a0d0eadda96f5de5a3e56a
