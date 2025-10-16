@@ -1,9 +1,6 @@
-//Es el server para probar que sus endpoints funcionen, no tienen que cambiar nada
-
 const app = require('./app');
 const db = require('./Models');
 
-// Puerto del servidor
 const PORT = process.env.PORT || 5000;
 
 // Función para iniciar el servidor
@@ -47,7 +44,5 @@ const startServer = async () => {
 process.on('unhandledRejection', (error) => {
     console.error('❌ Error no manejado:', error);
     process.exit(1);
-});
-
-// Iniciar servidor
-startServer();
+  }
+})();
