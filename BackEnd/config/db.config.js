@@ -1,8 +1,13 @@
 module.exports = {
-  HOST: 'localhost',
-  USER: 'gh_user',        
-  PASSWORD: 'gh_password',
-  DB: 'granja_hogar',     
-  dialect: 'mysql',
-  pool: { max: 5, min: 0, acquire: 30000, idle: 10000 }
+  HOST: "localhost",
+  USER: "root",
+  PASSWORD: 'vsbd55_',
+  DB: "inventarios",
+  dialect: "mysql",
+  pool: {
+    max: 10,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
+  }
 };
