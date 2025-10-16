@@ -1,26 +1,42 @@
-/**
- * Modelo de Rol usando Sequelize
- * @param {object} sequelize - Instancia de Sequelize
- * @param {object} Sequelize - Constructor de Sequelize
- */
-module.exports = (sequelize, Sequelize) => {
-    const Rol = sequelize.define("Rol", {
-        idRol: {
-            type: Sequelize.INTEGER,
-            autoIncrement: true,
-            primaryKey: true,
-            field: 'idRol'
-        },
-        nombre: {
-            type: Sequelize.STRING(50),
-            allowNull: false,
-            unique: true,
-            field: 'nombre'
-        }
-    }, {
-        tableName: 'Roles',
-        timestamps: false
-    });
+const { pool } = require('../config/db.config');
 
-    return Rol;
-};
+class RolModel {
+    
+ 
+    static async findAll() {
+        try {
+            const [rows] = await pool.query(
+                `SELECT ID_Rol, nombre FROM Roles ORDER BY nombre`
+            );
+            return rows;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async findById(id) {
+        try {
+            const [rows] = await pool.query(
+                `SELECT ID_Rol, nombre FROM Roles WHERE ID_Rol = ?`,
+                [id]
+            );
+            return rows[0];
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async exists(id) {
+        try {
+            const [rows] = await pool.query(
+                `SELECT COUNT(*) as count FROM Roles WHERE ID_Rol = ?`,
+                [id]
+            );
+            return rows[0].count > 0;
+        } catch (error) {
+            throw error;
+        }
+    }
+}
+
+module.exports = RolModel;
