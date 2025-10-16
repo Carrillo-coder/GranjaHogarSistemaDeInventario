@@ -2,26 +2,22 @@ const dbConfig = require("../config/db.config.js");
 const Sequelize = require("sequelize");
 
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-    host: dbConfig.HOST,
-    dialect: dbConfig.dialect,
-    operatorsAliases: false,
-    pool: {
-        max: dbConfig.pool.max,
-        min: dbConfig.pool.min,
-        acquire: dbConfig.pool.acquire,
-        idle: dbConfig.pool.idle
-    }
+  host: dbConfig.HOST,
+  dialect: dbConfig.dialect,
+  pool: dbConfig.pool,
+  logging: false,
 });
 
 const db = {};
-
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.Usuario = require("./usuarios.model.js")(sequelize, Sequelize);
-db.Rol = require("./roles.model.js")(sequelize, Sequelize);
+// SOLO estos dos modelos:
+db.Categoria = require("./categorias.model.js")(sequelize, Sequelize);
+db.Producto  = require("./productos.model.js")(sequelize, Sequelize);
 
-db.Rol.hasMany(db.Usuario, { foreignKey: 'ID_Rol', as: 'usuarios' });
-db.Usuario.belongsTo(db.Rol, { foreignKey: 'ID_Rol', as: 'rol' });
+// Asociación
+db.Categoria.hasMany(db.Producto, { foreignKey: "idCategoria", as: "productos" });
+db.Producto.belongsTo(db.Categoria, { foreignKey: "idCategoria", as: "categoria" });
 
 module.exports = db;
