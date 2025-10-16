@@ -2,13 +2,11 @@
 
 const express = require('express');
 const cors = require('cors');
-const { testConnection } = require('./config/db.config');
+const morgan = require('morgan');
 
 // Importar rutas
 const usuariosRoutes = require('./Routes/usuarios.routes');
 const rolesRoutes = require('./Routes/roles.routes');
-const categoriasRoutes = require('./Routes/categoria.routes');
-const tiposSalidasRoutes = require('./Routes/tiposSalidas.routes');
 
 // Crear aplicación Express
 const app = express();
@@ -17,12 +15,7 @@ const app = express();
 app.use(cors()); // Habilitar CORS para React Native
 app.use(express.json()); // Parsear JSON en el body
 app.use(express.urlencoded({ extended: true })); // Parsear URL-encoded
-
-// Middleware para logging de requests
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url} - ${new Date().toISOString()}`);
-    next();
-});
+app.use(morgan('tiny')); // Logger de requests
 
 // Ruta de bienvenida
 app.get('/', (req, res) => {
@@ -31,28 +24,22 @@ app.get('/', (req, res) => {
         version: '1.0.0',
         endpoints: {
             usuarios: '/api/inventario/usuarios',
-            roles: '/api/inventario/roles',
-            categorias: '/api/inventario/categorias',
-            tipossalidas: '/api/inventario/tipossalidas'
+            roles: '/api/inventario/roles'
         }
     });
 });
 
 // Ruta de salud
-app.get('/health', async (req, res) => {
-    const dbConnected = await testConnection();
+app.get('/health', (req, res) => {
     res.json({
         status: 'OK',
-        timestamp: new Date().toISOString(),
-        database: dbConnected ? 'Connected' : 'Disconnected'
+        timestamp: new Date().toISOString()
     });
 });
 
 // Rutas de la API
 app.use('/api/inventario/usuarios', usuariosRoutes);
 app.use('/api/inventario/roles', rolesRoutes);
-app.use('/api/inventario/categorias', categoriasRoutes);
-app.use('/api/inventario/tipossalidas', tiposSalidasRoutes);
 
 // Manejo de rutas no encontradas (404)
 app.use((req, res) => {
