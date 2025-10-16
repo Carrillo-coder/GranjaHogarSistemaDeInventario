@@ -5,12 +5,12 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
-            field: 'ID_Entrada'
+            field: 'idEntrada'
         },
         ID_Tipo: {
             type: Sequelize.INTEGER,
             allowNull: false,
-            field: 'ID_Tipo'
+            field: 'idTipo'
         },
         proveedor: {
             type: Sequelize.STRING(100),
@@ -20,10 +20,10 @@ module.exports = (sequelize, Sequelize) => {
         ID_Usuario: {
             type: Sequelize.INTEGER,
             allowNull: false,
-            field: 'ID_Usuario',
+            field: 'idUsuario',
             references: {
                 model: 'Usuarios',
-                key: 'ID_Usuario'
+                key: 'idUsuario'
             }
         },
         fecha: {
