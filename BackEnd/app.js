@@ -7,6 +7,8 @@ const morgan = require('morgan');
 // Importar rutas
 const usuariosRoutes = require('./Routes/usuarios.routes');
 const rolesRoutes = require('./Routes/roles.routes');
+const tiposSalidasRoutes = require('./Routes/tiposSalidas.routes');
+const categoriasRoutes = require('./Routes/categorias.routes');
 
 // Crear aplicación Express
 const app = express();
@@ -40,6 +42,8 @@ app.get('/health', (req, res) => {
 // Rutas de la API
 app.use('/api/inventario/usuarios', usuariosRoutes);
 app.use('/api/inventario/roles', rolesRoutes);
+app.use('/api/inventario/tipos-salidas', tiposSalidasRoutes);
+app.use('/api/inventario/categorias', categoriasRoutes);
 
 // Manejo de rutas no encontradas (404)
 app.use((req, res) => {
