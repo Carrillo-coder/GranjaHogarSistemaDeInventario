@@ -1,13 +1,13 @@
 
 module.exports = (sequelize, Sequelize) => {
     const Entrada = sequelize.define("Entrada", {
-        ID_Entrada: {
+        idEntrada: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
             field: 'idEntrada'
         },
-        ID_Tipo: {
+        idTipo: {
             type: Sequelize.INTEGER,
             allowNull: false,
             field: 'idTipo'
@@ -17,7 +17,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
             field: 'proveedor'
         },
-        ID_Usuario: {
+        idUsuario: {
             type: Sequelize.INTEGER,
             allowNull: false,
             field: 'idUsuario',
