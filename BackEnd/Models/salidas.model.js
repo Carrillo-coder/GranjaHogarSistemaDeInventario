@@ -1,45 +1,46 @@
 module.exports = (sequelize, Sequelize) => {
     const Salida = sequelize.define("Salida", {
-        ID_Salida: {
+        idSalida: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
-            field: 'ID_Salida'
-        },
-        ID_Tipo: {
-            type: Sequelize.INTEGER,
             allowNull: false,
-            field: 'ID_Tipo'
+            field: 'idSalida'
         },
-        ID_Producto: {
+        idTipo: {
             type: Sequelize.INTEGER,
-            allowNull: false,
-            field: 'ID_Producto'
+            allowNull: true,
+            field: 'idTipo'
         },
-        ID_Departamentos: {
+        idProducto: {
             type: Sequelize.INTEGER,
-            allowNull: false,
-            field: 'ID_Departamentos'
+            allowNull: true,
+            field: 'idProducto'
         },
-        cantidad: {
+        idDepartamentos: {
             type: Sequelize.INTEGER,
-            allowNull: false,
-            field: 'cantidad'
+            allowNull: true,
+            field: 'idDepartamentos'
         },
-        ID_Usuario: {
+        Cantidad: {
             type: Sequelize.INTEGER,
-            allowNull: false,
-            field: 'ID_Usuario'
+            allowNull: true,
+            field: 'Cantidad'
         },
-        fecha: {
+        idUsuario: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            field: 'idUsuario'
+        },
+        Fecha: {
             type: Sequelize.DATE,
-            allowNull: false,
-            field: 'fecha'
+            allowNull: true,
+            field: 'Fecha'
         },
-        notas: {
+        Notas: {
             type: Sequelize.STRING(255),
             allowNull: true,
-            field: 'notas'
+            field: 'Notas'
         }
     }, {
         tableName: 'Salidas',
