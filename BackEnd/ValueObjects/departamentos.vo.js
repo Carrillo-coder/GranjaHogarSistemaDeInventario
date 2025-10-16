@@ -1,11 +1,11 @@
 class DepartamentosVO {
-    constuctor(data) {
-        this.ID_Departamento = data.ID_Departamento || null;
+    constructor(data) {
+        this.idDepartamento = data.idDepartamento || null;
         this.nombre = data.nombre || '';
     }
     toResponse() {
         return {
-            ID_Departamento: this.ID_Departamento,
+            idDepartamento: this.idDepartamento,
             nombre: this.nombre,
         };
     }

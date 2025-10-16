@@ -1,8 +1,8 @@
 /**
  * Departamentos.
  * @constructor
- * @param {number} id - departamento id
- * @param {string} nombre - Nombre del departamento
+ * @param {object} id - departamento id
+ * @param {object} nombre - Nombre del departamento
  */
 module.exports = (sequelize, Sequelize) => {
     const Departamento = sequelize.define("Departamento", {
@@ -13,16 +13,17 @@ module.exports = (sequelize, Sequelize) => {
             field: 'idDepartamento'
         },
         nombre: {
-            type: Sequelize.STRING,
+            type: Sequelize.STRING(50),
             allowNull: false,
             unique: true,
             field: 'nombre'
         },
     },
-    {
-      tableName: 'departamentos',
-    }
-);
+        {
+            tableName: 'departamentos',
+            timestamps: false
+        }
+    );
 
     return Departamento;
 };
