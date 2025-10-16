@@ -25,7 +25,7 @@ class EntradaService {
 
     static async getEntradasByTipo(idTipo) {
         try {
-            const entradas = await Entrada.findAll({ where: { ID_Tipo: idTipo } });
+            const entradas = await Entrada.findAll({ where: { idTipo: idTipo } });
             if (!entradas || entradas.length === 0) {
                 return {
                     success: false,

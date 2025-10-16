@@ -20,8 +20,22 @@ db.sequelize = sequelize;
 
 db.Usuario = require("./usuarios.model.js")(sequelize, Sequelize);
 db.Rol = require("./roles.model.js")(sequelize, Sequelize);
+db.Entrada = require("./entradas.model.js")(sequelize, Sequelize);
+db.Lote = require("./lotes.model.js")(sequelize, Sequelize);
+db.Producto = require("./productos.model.js")(sequelize, Sequelize); // Assuming productos.model.js exists
 
-db.Rol.hasMany(db.Usuario, { foreignKey: 'ID_Rol', as: 'usuarios' });
-db.Usuario.belongsTo(db.Rol, { foreignKey: 'ID_Rol', as: 'rol' });
+// Asociaciones
+
+// Rol <-> Usuario
+db.Rol.hasMany(db.Usuario, { foreignKey: 'idRol', as: 'usuarios' });
+db.Usuario.belongsTo(db.Rol, { foreignKey: 'idRol', as: 'rol' });
+
+// Entrada <-> Lote
+db.Entrada.hasMany(db.Lote, { foreignKey: 'idEntrada', as: 'lotes' });
+db.Lote.belongsTo(db.Entrada, { foreignKey: 'idEntrada', as: 'entrada' });
+
+// Producto <-> Lote
+db.Producto.hasMany(db.Lote, { foreignKey: 'idProducto', as: 'lotes' });
+db.Lote.belongsTo(db.Producto, { foreignKey: 'idProducto', as: 'producto' });
 
 module.exports = db;
