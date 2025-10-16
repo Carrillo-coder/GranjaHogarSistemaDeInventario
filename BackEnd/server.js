@@ -1,7 +1,7 @@
 //Es el server para probar que sus endpoints funcionen, no tienen que cambiar nada
 
 const app = require('./app');
-const { testConnection } = require('./config/db.config');
+const db = require('./Models');
 
 // Puerto del servidor
 const PORT = process.env.PORT || 5000;
@@ -9,15 +9,11 @@ const PORT = process.env.PORT || 5000;
 // Función para iniciar el servidor
 const startServer = async () => {
     try {
-        // Verificar conexión a la base de datos
-        console.log('🔄 Verificando conexión a la base de datos...');
-        const isConnected = await testConnection();
+        // Sincronizar base de datos
+        console.log('🔄 Conectando a la base de datos...');
         
-        if (!isConnected) {
-            console.error('❌ No se pudo conectar a la base de datos');
-            console.error('Verifica las credenciales en config/db.config.js');
-            process.exit(1);
-        }
+        await db.sequelize.sync();
+        console.log('✅ Conexión exitosa a la base de datos');
 
         // Iniciar servidor
         app.listen(PORT, () => {
@@ -39,6 +35,7 @@ const startServer = async () => {
 
     } catch (error) {
         console.error('❌ Error al iniciar el servidor:', error);
+        console.error('Verifica las credenciales en config/db.config.js');
         process.exit(1);
     }
 };
