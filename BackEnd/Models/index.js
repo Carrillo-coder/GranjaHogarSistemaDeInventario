@@ -13,10 +13,14 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 // SOLO estos dos modelos:
-db.Categoria = require("./categorias.model.js")(sequelize, Sequelize);
 db.Producto  = require("./productos.model.js")(sequelize, Sequelize);
 db.Usuario = require("./usuarios.model.js")(sequelize, Sequelize);
 db.Rol = require("./roles.model.js")(sequelize, Sequelize);
+db.TiposSalidas = require("./tiposSalidas.model.js")(sequelize, Sequelize);
+db.Categoria = require("./categoria.model.js")(sequelize, Sequelize);
+
+db.Rol.hasMany(db.Usuario, { foreignKey: 'idRol', as: 'usuarios' });
+db.Usuario.belongsTo(db.Rol, { foreignKey: 'idRol', as: 'rol' });
 db.Salida = require('./salidas.model')(sequelize, Sequelize);
 
 // Asociación

@@ -5,6 +5,8 @@ const db = require('./Models');
 const productosRoutes = require('./Routes/productos.routes');
 const usuariosRoutes = require('./Routes/usuarios.routes');
 const rolesRoutes = require('./Routes/roles.routes');
+const tiposSalidasRoutes = require('./Routes/tiposSalidas.routes');
+const categoriaRoutes = require('./Routes/categoria.routes');
 const salidasRoutes = require('./Routes/salidas.routes');
 
 const app = express();
@@ -34,6 +36,8 @@ db.sequelize.sync({ alter: true })
 // Rutas de la API
 app.use('/api/inventario/usuarios', usuariosRoutes);
 app.use('/api/inventario/roles', rolesRoutes);
+app.use('/api/inventario/tiposSalidas', tiposSalidasRoutes);
+app.use('/api/inventario/categoria', categoriaRoutes);
 app.use('/api/inventario/salidas', salidasRoutes);
 app.use('/api/inventario/productos', productosRoutes);
 

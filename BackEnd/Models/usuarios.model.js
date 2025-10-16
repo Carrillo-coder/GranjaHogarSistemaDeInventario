@@ -5,11 +5,11 @@
  */
 module.exports = (sequelize, Sequelize) => {
     const Usuario = sequelize.define("Usuario", {
-        ID_Usuario: {
+        idUsuario: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
-            field: 'ID_Usuario'
+            field: 'idUsuario'
         },
         nombreUsuario: {
             type: Sequelize.STRING(50),
@@ -32,17 +32,17 @@ module.exports = (sequelize, Sequelize) => {
             defaultValue: true,
             field: 'activo'
         },
-        ID_Rol: {
+        idRol: {
             type: Sequelize.INTEGER,
             allowNull: false,
-            field: 'ID_Rol',
+            field: 'idRol',
             references: {
                 model: 'Roles',
-                key: 'ID_Rol'
+                key: 'idRol'
             }
         }
     }, {
-        tableName: 'Usuarios',
+        tableName: 'usuarios',
         timestamps: false
     });
 
