@@ -30,6 +30,9 @@ const startServer = async () => {
             console.log(`  PUT    http://localhost:${PORT}/api/inventario/usuarios/:id`);
             console.log(`  DELETE http://localhost:${PORT}/api/inventario/usuarios/:id`);
             console.log(`  GET    http://localhost:${PORT}/api/inventario/roles`);
+            console.log(`  GET    http://localhost:${PORT}/api/inventario/salidas`);
+            console.log(`  GET    http://localhost:${PORT}/api/inventario/salidas/id`);
+            console.log(`  POST    http://localhost:${PORT}/api/inventario/salidas`);
             console.log('========================================\n');
         });
 
