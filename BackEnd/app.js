@@ -5,8 +5,13 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 // Importar rutas
-const usuariosRoutes = require('./Routes/usuarios.routes');
-const rolesRoutes = require('./Routes/roles.routes');
+const usuariosRoutes = require('./routes/usuarios.routes');
+const rolesRoutes = require('./routes/roles.routes');
+const departamentosRoutes = require('./routes/departamentos.routes');
+const entradasRoutes = require('./routes/entradas.routes');
+const salidasRoutes = require('./routes/salidas.routes');
+const lotesRoutes = require('./routes/lotes.routes');
+
 
 // Crear aplicación Express
 const app = express();
@@ -24,7 +29,11 @@ app.get('/', (req, res) => {
         version: '1.0.0',
         endpoints: {
             usuarios: '/api/inventario/usuarios',
-            roles: '/api/inventario/roles'
+            roles: '/api/inventario/roles',
+            departamentos: '/api/inventario/departamentos',
+            entradas: '/api/inventario/entradas',
+            salidas: '/api/inventario/salidas',
+            lotes: '/api/inventario/lotes'
         }
     });
 });
@@ -40,6 +49,10 @@ app.get('/health', (req, res) => {
 // Rutas de la API
 app.use('/api/inventario/usuarios', usuariosRoutes);
 app.use('/api/inventario/roles', rolesRoutes);
+app.use('/api/inventario/departamentos', departamentosRoutes);
+app.use('/api/inventario/entradas', entradasRoutes);
+app.use('/api/inventario/salidas', salidasRoutes);
+app.use('/api/inventario/lotes', lotesRoutes);
 
 // Manejo de rutas no encontradas (404)
 app.use((req, res) => {
