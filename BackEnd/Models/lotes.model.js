@@ -1,11 +1,11 @@
 
 module.exports = (sequelize, Sequelize) => {
     const Lote = sequelize.define("Lote", {
-        idLote: {
+        idLotes: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
-            field: 'idLote'
+            field: 'idLotes'
         },
         cantidad: {
             type: Sequelize.INTEGER,
