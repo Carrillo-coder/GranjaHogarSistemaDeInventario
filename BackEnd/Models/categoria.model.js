@@ -1,26 +1,26 @@
 /**
- * Modelo de Rol usando Sequelize
+ * Modelo de Categoria usando Sequelize
  * @param {object} sequelize - Instancia de Sequelize
  * @param {object} Sequelize - Constructor de Sequelize
  */
 module.exports = (sequelize, Sequelize) => {
-    const Rol = sequelize.define("Rol", {
-        idRol: {
+    const Categoria = sequelize.define("Categoria", {
+        idCategoria: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
-            field: 'idRol'
+            field: 'idCategoria'
         },
-        nombre: {
+        Nombre: {
             type: Sequelize.STRING(50),
             allowNull: false,
             unique: true,
-            field: 'nombre'
+            field: 'Nombre'
         }
     }, {
-        tableName: 'Roles',
+        tableName: 'Categoria',
         timestamps: false
     });
 
-    return Rol;
+    return Categoria;
 };
