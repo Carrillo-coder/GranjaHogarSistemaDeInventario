@@ -4,8 +4,8 @@ class CategoriaController {
 
     static async getByNombre(req, res) {
         try {
-            const { categoría } = req.query;
-            const result = await CategoriaService.getCategoriaByNombre(categoría);
+            const { nombre } = req.params;
+            const result = await CategoriaService.getCategoriaByNombre(nombre);
             return res.status(result.statusCode).json(result);
         } catch (error) {
             return res.status(500).json({

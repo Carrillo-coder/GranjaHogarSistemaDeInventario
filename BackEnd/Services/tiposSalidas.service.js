@@ -1,4 +1,4 @@
-const db = require('../Models');
+const db = require('../Models');        
 const TiposSalidas = db.TiposSalidas;
 const TiposSalidasVO = require('../ValueObjects/tiposSalidas.vo');
 
@@ -6,7 +6,7 @@ class TiposSalidasService {
 
     static async getAllTiposSalidas() {
         try {
-            const tiposSalidas = await TiposSalidas.findAll();
+            const tiposSalidas = await TiposSalidas.findAll({});
 
             if (!tiposSalidas || tiposSalidas.length === 0) {
                 return {

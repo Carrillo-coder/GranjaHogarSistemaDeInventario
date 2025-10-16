@@ -1,11 +1,11 @@
 class UsuarioVO {
     constructor(data) {
-        this.ID_Usuario = data.ID_Usuario || null;
+        this.idUsuario = data.idUsuario || null;
         this.nombreUsuario = data.nombreUsuario || '';
         this.nombreCompleto = data.nombreCompleto || '';
         this.password = data.password || '';
         this.activo = data.activo !== undefined ? data.activo : true;
-        this.ID_Rol = data.ID_Rol || null;
+        this.idRol = data.idRol || null;
     }
 
     validate() {
@@ -27,7 +27,7 @@ class UsuarioVO {
             errors.push('La contraseña debe tener al menos 6 caracteres');
         }
 
-        if (!this.ID_Rol) {
+        if (!this.idRol) {
             errors.push('El rol es obligatorio');
         }
 
@@ -43,17 +43,17 @@ class UsuarioVO {
             nombreCompleto: this.nombreCompleto,
             password: this.password,
             activo: this.activo,
-            ID_Rol: this.ID_Rol
+            idRol: this.idRol
         };
     }
 
     toResponse() {
         return {
-            ID_Usuario: this.ID_Usuario,
+            idUsuario: this.idUsuario,
             nombreUsuario: this.nombreUsuario,
             nombreCompleto: this.nombreCompleto,
             activo: this.activo,
-            ID_Rol: this.ID_Rol
+            idRol: this.idRol
         };
     }
 }
