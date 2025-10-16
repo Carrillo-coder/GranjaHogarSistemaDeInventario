@@ -1,22 +1,13 @@
-const db = require('../Models');
+const UsuarioModel = require('../Models/usuarios.model');
+const RolModel = require('../Models/roles.model');
 const UsuarioVO = require('../ValueObjects/usuarios.vo');
 const bcrypt = require('bcrypt');
 
-const Usuario = db.Usuario;
-const Rol = db.Rol;
 class UsuarioService {
 
     static async getAllUsuarios() {
         try {
-            const usuarios = await Usuario.findAll({
-                where: { activo: true },
-                include: [{
-                    model: Rol,
-                    as: 'rol',
-                    attributes: ['idRol', 'nombre']
-                }],
-                order: [['nombreCompleto', 'ASC']]
-            });
+            const usuarios = await UsuarioModel.findAll();
             
             if (!usuarios || usuarios.length === 0) {
                 return {
@@ -45,13 +36,7 @@ class UsuarioService {
 
     static async getUsuarioById(id) {
         try {
-            const usuario = await Usuario.findByPk(id, {
-                include: [{
-                    model: Rol,
-                    as: 'rol',
-                    attributes: ['idRol', 'nombre']
-                }]
-            });
+            const usuario = await UsuarioModel.findById(id);
 
             if (!usuario) {
                 return {
@@ -92,7 +77,7 @@ class UsuarioService {
                 };
             }
 
-            const rolExists = await Rol.findByPk(data.idRol);
+            const rolExists = await RolModel.exists(data.ID_Rol);
             if (!rolExists) {
                 return {
                     success: false,
@@ -101,11 +86,8 @@ class UsuarioService {
                 };
             }
 
-            const existingUser = await Usuario.findOne({
-                where: { nombreUsuario: data.nombreUsuario }
-            });
-            
-            if (existingUser) {
+            const usernameExists = await UsuarioModel.existsByUsername(data.nombreUsuario);
+            if (usernameExists) {
                 return {
                     success: false,
                     message: 'El nombre de usuario ya está en uso',
@@ -116,20 +98,14 @@ class UsuarioService {
             const hashedPassword = await bcrypt.hash(data.password, 10);
             usuarioVO.password = hashedPassword;
 
-            const nuevoUsuario = await Usuario.create(usuarioVO.toDatabase());
+            const usuarioId = await UsuarioModel.create(usuarioVO.toDatabase());
 
-            const usuarioCompleto = await Usuario.findByPk(nuevoUsuario.idUsuario, {
-                include: [{
-                    model: Rol,
-                    as: 'rol',
-                    attributes: ['idRol', 'nombre']
-                }]
-            });
+            const nuevoUsuario = await UsuarioModel.findById(usuarioId);
 
             return {
                 success: true,
                 message: 'Usuario creado correctamente',
-                data: usuarioCompleto,
+                data: nuevoUsuario,
                 statusCode: 201
             };
         } catch (error) {
@@ -144,7 +120,7 @@ class UsuarioService {
 
     static async updateUsuario(id, data) {
         try {
-            const usuarioExiste = await Usuario.findByPk(id);
+            const usuarioExiste = await UsuarioModel.findById(id);
             if (!usuarioExiste) {
                 return {
                     success: false,
@@ -165,7 +141,7 @@ class UsuarioService {
                 };
             }
 
-            const rolExists = await Rol.findByPk(data.idRol);
+            const rolExists = await RolModel.exists(data.ID_Rol);
             if (!rolExists) {
                 return {
                     success: false,
@@ -174,14 +150,8 @@ class UsuarioService {
                 };
             }
 
-            const existingUser = await Usuario.findOne({
-                where: { 
-                    nombreUsuario: data.nombreUsuario,
-                    idUsuario: { [db.Sequelize.Op.ne]: id }
-                }
-            });
-            
-            if (existingUser) {
+            const usernameExists = await UsuarioModel.existsByUsername(data.nombreUsuario, id);
+            if (usernameExists) {
                 return {
                     success: false,
                     message: 'El nombre de usuario ya está en uso',
@@ -196,17 +166,9 @@ class UsuarioService {
                 usuarioVO.password = usuarioExiste.password;
             }
 
-            await Usuario.update(usuarioVO.toDatabase(), {
-                where: { idUsuario: id }
-            });
+            await UsuarioModel.update(id, usuarioVO.toDatabase());
 
-            const usuarioActualizado = await Usuario.findByPk(id, {
-                include: [{
-                    model: Rol,
-                    as: 'rol',
-                    attributes: ['idRol', 'nombre']
-                }]
-            });
+            const usuarioActualizado = await UsuarioModel.findById(id);
 
             return {
                 success: true,
@@ -226,7 +188,7 @@ class UsuarioService {
 
     static async deleteUsuario(id) {
         try {
-            const usuario = await Usuario.findByPk(id);
+            const usuario = await UsuarioModel.findById(id);
             if (!usuario) {
                 return {
                     success: false,
@@ -235,10 +197,7 @@ class UsuarioService {
                 };
             }
 
-            await Usuario.update(
-                { activo: false },
-                { where: { idUsuario: id } }
-            );
+            await UsuarioModel.deactivate(id);
 
             return {
                 success: true,
@@ -256,4 +215,4 @@ class UsuarioService {
     }
 }
 
-module.exports = UsuarioService;
+module.exports = UsuarioService; 

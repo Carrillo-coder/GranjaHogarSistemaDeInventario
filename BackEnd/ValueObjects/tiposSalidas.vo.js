@@ -1,8 +1,8 @@
 class TiposSalidasVO {
 
-    constructor({ idTipoS, nombre }) {
-        this.idTipoS = idTipoS;
-        this.nombre = nombre;
+    constructor({ idTipoSalida, Nombre }) {
+        this.idTipoSalida = idTipoSalida;
+        this.Nombre = Nombre;
     }
 }
 
