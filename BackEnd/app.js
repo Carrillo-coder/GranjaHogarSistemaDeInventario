@@ -5,8 +5,9 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 // Importar rutas
-const usuariosRoutes = require('./Routes/usuarios.routes');
-const rolesRoutes = require('./Routes/roles.routes');
+const categoriasRoutes = require('./Routes/categoria.routes'); // NUEVO
+const productosRoutes = require('./Routes/producto.routes');   // NUEVO
+const lotesRoutes = require('./Routes/lote.routes'); 
 
 // Crear aplicación Express
 const app = express();
@@ -23,8 +24,9 @@ app.get('/', (req, res) => {
         message: 'API del Sistema de Inventario - Granja Hogar',
         version: '1.0.0',
         endpoints: {
-            usuarios: '/api/inventario/usuarios',
-            roles: '/api/inventario/roles'
+            categorias: '/api/inventario/categorias',
+            productos: '/api/inventario/productos',
+            lotes: '/api/inventario/lotes'
         }
     });
 });
@@ -38,8 +40,9 @@ app.get('/health', (req, res) => {
 });
 
 // Rutas de la API
-app.use('/api/inventario/usuarios', usuariosRoutes);
-app.use('/api/inventario/roles', rolesRoutes);
+app.use('/api/inventario/categorias', categoriasRoutes); // NUEVO
+app.use('/api/inventario/productos', productosRoutes);   // NUEVO
+app.use('/api/inventario/lotes', lotesRoutes);  
 
 // Manejo de rutas no encontradas (404)
 app.use((req, res) => {
