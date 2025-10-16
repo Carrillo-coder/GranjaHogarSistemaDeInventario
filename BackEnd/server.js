@@ -40,9 +40,4 @@ const startServer = async () => {
     }
 };
 
-// Manejo de errores no capturados
-process.on('unhandledRejection', (error) => {
-    console.error('❌ Error no manejado:', error);
-    process.exit(1);
-  }
-})();
+startServer();

@@ -23,7 +23,9 @@ app.get('/', (_req, res) => {
     usuarios: '/api/inventario/usuarios',
     roles: '/api/inventario/roles',
     salidas: '/api/inventario/salidas',
-    productos: '/api/inventario/productos'
+    productos: '/api/inventario/productos',
+    tiposSalidas: '/api/inventario/tiposSalidas',
+    categoria: '/api/inventario/categoria'
         }
     });
 });
