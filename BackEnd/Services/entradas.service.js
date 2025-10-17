@@ -23,27 +23,38 @@ class EntradaService {
         }
     }
 
-    static async getEntradasByTipo(idTipo) {
+
+    static async getTipos() {
         try {
-            const entradas = await Entrada.findAll({ where: { idTipo: idTipo } });
-            if (!entradas || entradas.length === 0) {
+            // Obtener los idTipo distintos disponibles
+            const tipos = await Entrada.findAll({
+                attributes: ['idTipo'],
+                group: ['idTipo'],
+                order: [['idTipo', 'ASC']]
+            });
+
+            // mapear al array de valores
+            const tiposList = tipos.map(t => t.idTipo);
+
+            if (!tiposList || tiposList.length === 0) {
                 return {
                     success: false,
-                    message: 'No se encontraron entradas para este tipo',
+                    message: 'No hay tipos de entrada disponibles',
                     data: [],
                     statusCode: 204
                 };
             }
+
             return {
                 success: true,
-                message: 'Entradas obtenidas correctamente',
-                data: entradas,
+                message: 'Tipos obtenidos correctamente',
+                data: tiposList,
                 statusCode: 200
             };
         } catch (error) {
             return {
                 success: false,
-                message: 'Error al obtener entradas por tipo',
+                message: 'Error al obtener tipos de entrada',
                 error: error.message,
                 statusCode: 400
             };

@@ -16,10 +16,11 @@ class EntradaController {
         }
     }
 
-    static async getByTipo(req, res) {
+    
+
+    static async getTipos(req, res) {
         try {
-            const { idTipo } = req.params;
-            const result = await EntradaService.getEntradasByTipo(idTipo);
+            const result = await EntradaService.getTipos();
             return res.status(result.statusCode).json(result);
         } catch (error) {
             return res.status(500).json({

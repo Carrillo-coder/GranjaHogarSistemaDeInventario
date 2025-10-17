@@ -12,6 +12,16 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
             field: 'cantidad'
         },
+        unidadesExistentes: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            field: 'unidadesExistentes'
+        },
+        caducidad: {
+            type: Sequelize.DATE,
+            allowNull: true,
+            field: 'caducidad'
+        },
         activo: {
             type: Sequelize.BOOLEAN,
             defaultValue: true,
@@ -32,7 +42,7 @@ module.exports = (sequelize, Sequelize) => {
             field: 'idEntrada',
             references: {
                 model: 'Entradas',
-                key: 'idEntradas'
+                key: 'idEntrada'
             }
         }
     }, {

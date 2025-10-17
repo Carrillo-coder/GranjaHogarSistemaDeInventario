@@ -6,7 +6,7 @@ const EntradaController = require('../Controllers/entradas.controller');
 // POST Crear entrada
 router.post('/', EntradaController.create);
 
-// GET Obtener entradas por tipo
-router.get('/tipo/:idTipo', EntradaController.getByTipo);
+// GET Obtener todos los tipos disponibles
+router.get('/tipo', EntradaController.getTipos);
 
 module.exports = router;
