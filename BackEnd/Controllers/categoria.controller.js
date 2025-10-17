@@ -2,11 +2,13 @@ const CategoriaService = require('../Services/categoria.service');
 
 class CategoriaController {
 
-    // GET /api/inventario/categorias
-    static async getAll(req, res) {
+
+    // GET /api/inventario/categorias/:id
+    static async getById(req, res) {
         try {
-            const result = await CategoriaService.getAllCategorias();
-            return res.status(result.statusCode).json(result);
+            const { id } = req.params;
+            const result = await CategoriaService.getCategoriaById(id);
+                 return res.status(result.statusCode).json(result);
         } catch (error) {
             return res.status(500).json({
                 success: false,
@@ -15,12 +17,10 @@ class CategoriaController {
             });
         }
     }
-
-    // GET /api/inventario/categorias/:id
-    static async getById(req, res) {
+    static async getByNombre(req, res) {
         try {
-            const { id } = req.params;
-            const result = await CategoriaService.getCategoriaById(id);
+            const { nombre } = req.params;
+            const result = await CategoriaService.getCategoriaByNombre(nombre);
             return res.status(result.statusCode).json(result);
         } catch (error) {
             return res.status(500).json({
@@ -32,4 +32,6 @@ class CategoriaController {
     }
 }
 
+
 module.exports = CategoriaController;
+
