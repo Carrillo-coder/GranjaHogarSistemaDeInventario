@@ -1,14 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const db = require('./Models');
+
+
+// Importar rutas
+const categoriasRoutes = require('./Routes/categoria.routes'); // NUEVO
+const productosRoutes = require('./Routes/producto.routes');   // NUEVO
+const lotesRoutes = require('./Routes/lote.routes'); 
 const productosRoutes = require('./Routes/productos.routes');
 const usuariosRoutes = require('./Routes/usuarios.routes');
 const rolesRoutes = require('./Routes/roles.routes');
 const tiposSalidasRoutes = require('./Routes/tiposSalidas.routes');
 const categoriaRoutes = require('./Routes/categoria.routes');
 const salidasRoutes = require('./Routes/salidas.routes');
-
+const db = require('./Models');
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -25,7 +30,8 @@ app.get('/', (_req, res) => {
     salidas: '/api/inventario/salidas',
     productos: '/api/inventario/productos',
     tiposSalidas: '/api/inventario/tiposSalidas',
-    categoria: '/api/inventario/categoria'
+    categoria: '/api/inventario/categoria',
+    lotes: '/api/inventario/lotes'
         }
     });
 });
@@ -36,6 +42,7 @@ db.sequelize.sync({ alter: true })
 
 
 // Rutas de la API
+app.use('/api/inventario/lotes', lotesRoutes);  
 app.use('/api/inventario/usuarios', usuariosRoutes);
 app.use('/api/inventario/roles', rolesRoutes);
 app.use('/api/inventario/tiposSalidas', tiposSalidasRoutes);
