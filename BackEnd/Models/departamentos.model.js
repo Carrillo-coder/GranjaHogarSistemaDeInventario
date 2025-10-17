@@ -6,7 +6,7 @@
  */
 module.exports = (sequelize, Sequelize) => {
     const Departamento = sequelize.define("Departamento", {
-        id: {
+        idDepartamento: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,

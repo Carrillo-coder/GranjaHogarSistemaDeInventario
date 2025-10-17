@@ -1,61 +1,55 @@
 const db = require('../Models');
 const { flattenLotesData } = require('../utils/flattenLotesData.util.js');
 const { generateCSV, generatePDF } = require('../utils/fileGenerator.util.js');
-const path = require('path');
 
 class LotesService {
     static async generarReporteLotes(formato) {
         const tableHeaders = [
-            'Producto', 'Categoría', 'Presentación', 'ID Lote',
-            'Unidades Existentes', 'Caducidad', 'Activo', 'Total por Producto'
+            'No.', 'Producto', 'Categoría', 'Presentación', 'ID Lote',
+            'Unidades Existentes', 'Caducidad', 'Total por Producto'
         ];
 
-        const whereClause = { activo: true };
-        const productos = await db.Productos.findAll({
+        const productos = await db.Producto.findAll({
             include: [
                 {
-                    model: db.Lotes,
-                    where: whereClause,
-                    required: false,
-                    attributes: ['idLote', 'UnidadesExistentes', 'Caducidad', 'Activo'],
+                    model: db.Categoria, attributes: ['nombre'], as: 'Categoria'
                 },
                 {
-                    model: db.Categorias,
-                    attributes: ['Nombre'],
-                },
+                    model: db.Lote,
+                    attributes: [ 'idLotes', 'unidadesExistentes', 'caducidad', 'activo' ]
+                }
             ],
-            order: [
-                ['Nombre', 'ASC'],
-                [db.Lotes, 'Caducidad', 'ASC'],
-            ],
+            attributes: ['idProducto', 'nombre', 'presentacion'],
+            order: [['nombre', 'ASC']],
         });
 
         const flattenedData = flattenLotesData(productos);
 
         const metadata = {
             titulo: 'Reporte General de Inventario',
-            generadoPor: req.user.nombreCompleto, // si tienes auth => req.user.nombreCompleto
-            fechaGeneracion: new Date().toISOString(),
-            periodo: { inicio: fechaInicio || 'N/A', fin: fechaFin || 'N/A' },
+            generadoPor: 'usuario', // si tienes auth => req.user.nombreCompleto
+            fechaGeneracion: new Date().toLocaleDateString(),
             totales: {
-                productosDistintos: new Set(flattenedData.map(d => d.Producto)).size,
+                productosDistintos: productos.length,
                 unidadesTotales: flattenedData
                     .filter(d => d['Unidades Existentes'])
-                    .reduce((sum, d) => sum + (Number(d['Unidades Existentes']) || 0), 0)
+                    .reduce((sum, d) => sum + (Number(d['Unidades Existentes']) || 0), 0),
+                registros: flattenedData.length / 2
             }
         };
 
-        const filename = `reporte_inventario_${Date.now()}.${formato === 'CSV' ? 'csv' : 'pdf'}`;
-        const filePath = path.join('./reports', filename);
+        const filename = `reporte_inventario_${Date.now()}.${formato.toLowerCase()}`;
+        let buffer;
 
         if (formato === 'CSV') {
-            await generateCSV(flattenedData, metadata, filePath);
+            buffer = await generateCSV(flattenedData, metadata);
         } else if (formato === 'PDF') {
-            await generatePDF(flattenedData, metadata, tableHeaders, filePath);
+            buffer = await generatePDF(flattenedData, metadata, tableHeaders);
         }
 
-        return filePath;
+        return { buffer, filename };
     }
 };
 
 module.exports = LotesService;
+

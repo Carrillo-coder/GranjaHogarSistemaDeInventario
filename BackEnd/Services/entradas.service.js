@@ -2,14 +2,13 @@ const db = require('../Models');
 const { Op } = require('sequelize');
 const { flattenEntradasData } = require('../utils/flattenEntradasData.util.js');
 const { generateCSV, generatePDF } = require('../utils/fileGenerator.util.js');
-const path = require('path');
 
 class EntradasService {
     static async generarReporteEntradas(reporteFiltros) {
         const { fechaInicio, fechaFin, formato } = reporteFiltros;
 
         const tableHeaders = [
-            'Fecha', 'Producto', 'Categoría', 'Presentación', 'Cantidad Ingresada',
+            'No.', 'Fecha', 'Producto', 'Categoria', 'Presentacion', 'Cantidad Total',
             'Lote', 'Unidades Restantes', 'Caducidad', 'Activo', 'Proveedor',
             'Tipo Entrada', 'Usuario Responsable', 'Rol Usuario', 'Notas'
         ];
@@ -18,27 +17,25 @@ class EntradasService {
             fecha: { [Op.between]: [fechaInicio, fechaFin] }
         };
 
-        const entradas = await db.Entradas.findAll({
+        const entradas = await db.Entrada.findAll({
             where: whereClause,
             include: [
                 {
-                    model: db.TiposEntradas, attributes: ['Nombre'],
+                    model: db.TipoEntrada, attributes: ['nombre'],
                 },
                 {
-                    model: db.Usuarios,
-                    attributes: ['NombreCompleto'],
-                    include: [{ model: db.Roles, attributes: ['Nombre'] }],
-
+                    model: db.Usuario,
+                    attributes: ['nombreCompleto'],
+                    include: [{ model: db.Rol, attributes: ['nombre'] }],
                 },
                 {
-                    model: db.Lotes,
-                    attributes: ['idLote', 'unidadesExistentes', 'Caducidad', 'Activo'],
+                    model: db.Lote,
+                    attributes: ['idLotes', 'cantidad', 'unidadesExistentes', 'caducidad', 'activo'], 
                     include: [
                         {
-                            model: db.Productos,
-                            attributes: ['Nombre', 'Presentacion'],
-                            include: [{ model: db.Categorias, attributes: ['Nombre'] }],
-
+                            model: db.Producto,
+                            attributes: ['nombre', 'presentacion'],
+                            include: [{ model: db.Categoria, attributes: ['nombre'], as: 'Categoria' }],
                         },
                     ],
                 },
@@ -50,27 +47,26 @@ class EntradasService {
 
         const metadata = {
             titulo: 'Reporte de Entradas al Inventario',
-            generadoPor: req.user.nombreCompleto, // puedes tomarlo del req.user si tienes auth
-            fechaGeneracion: new Date().toISOString(),
+            generadoPor: 'usuario', // puedes tomarlo del req.user si tienes auth
+            fechaGeneracion: new Date().toLocaleString(),
             periodo: { inicio: fechaInicio, fin: fechaFin },
             totales: {
                 productosDistintos: [...new Set(flattenedData.map(d => d.Producto))].length,
-                unidadesIngresadas: flattenedData.reduce((sum, d) => sum + d['Cantidad Total'], 0)
+                unidadesTotales: flattenedData.reduce((sum, d) => sum + (d['Cantidad Total'] ?? 0), 0),
+                registros: flattenedData.length
             }
         };
 
-        const filename = `reporte_entradas_${Date.now()}.${formato === 'CSV' ? 'csv' : 'pdf'}`;
-        const filePath = path.join('./reports', filename);
-
+        const filename = `reporte_entradas_${Date.now()}.${formato.toLowerCase()}`;
+        let buffer;
         if (formato === 'CSV') {
-            await generateCSV(flattenedData, metadata, filePath);
+            buffer = await generateCSV(flattenedData, metadata);
         } else if (formato === 'PDF') {
-            await generatePDF(flattenedData, metadata, tableHeaders, filePath);
+            buffer = await generatePDF(flattenedData, metadata, tableHeaders);
         }
 
-        return filePath;
+        return { buffer, filename };
     }
 };
 
-
-module.exports = EntradasService
+module.exports = EntradasService;

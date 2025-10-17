@@ -1,7 +1,7 @@
 export function flattenSalidasData(salidas) {
     const flattened = [];
 
-    salidas.forEach((salida) => {
+    salidas.forEach((salida, index) => {
         const tipoSalida = salida.TipoSalida?.nombre || '';
         const departamento = salida.Departamento?.nombre || '';
         const usuario = salida.Usuario?.nombreCompleto || '';
@@ -11,12 +11,13 @@ export function flattenSalidasData(salidas) {
         const presentacion = salida.Producto?.presentacion || '';
 
         flattened.push({
+            'No.': index + 1,
             Fecha: salida.fecha,
             Departamento: departamento,
             Producto: producto,
             Categoría: categoria,
             Presentación: presentacion,
-            Cantidad: salida.cantidad,
+            'Cantidad Retirada': salida.cantidad,
             'Tipo Salida': tipoSalida,
             'Usuario Responsable': usuario,
             'Rol Usuario': rol,

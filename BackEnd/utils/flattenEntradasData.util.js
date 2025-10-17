@@ -1,7 +1,7 @@
 export function flattenEntradasData(entradas) {
     const flattened = [];
 
-    entradas.forEach((entrada) => {
+    entradas.forEach((entrada, index) => {
         const tipoEntrada = entrada.TipoEntrada?.nombre || '';
         const usuario = entrada.Usuario?.nombreCompleto || '';
         const rol = entrada.Usuario?.Rol?.nombre || '';
@@ -12,13 +12,14 @@ export function flattenEntradasData(entradas) {
             const presentacion = lote.Producto?.presentacion || '';
 
             flattened.push({
+                'No.': index + 1,
                 Fecha: entrada.fecha,
                 Producto: producto,
-                Categoría: categoria,
-                Presentación: presentacion,
-                'Cantidad Total': entrada.cantidad,
-                Lote: lote.idLote,
-                'Unidades Lote': lote.unidadesExistentes,
+                Categoria: categoria,
+                Presentacion: presentacion,
+                'Cantidad Total': lote.cantidad,
+                Lote: lote.idLotes,
+                'Unidades Restantes': lote.unidadesExistentes,
                 Caducidad: lote.caducidad,
                 Activo: lote.activo ? 'Sí' : 'No',
                 Proveedor: entrada.proveedor,

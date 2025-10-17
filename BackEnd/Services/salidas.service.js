@@ -2,70 +2,69 @@ const db = require('../Models');
 const { Op } = require('sequelize');
 const { flattenSalidasData } = require('../utils/flattenSalidasData.util.js');
 const { generateCSV, generatePDF } = require('../utils/fileGenerator.util.js');
-const path = require('path');
 
 class SalidasService {
     static async generarReporteSalidas(reporteFiltros, departamento) {
         const { fechaInicio, fechaFin, formato } = reporteFiltros;
 
         const tableHeaders = [
-            'Fecha', 'Departamento', 'Producto', 'Categoría', 'Presentación', 'Cantidad',
+            'No.', 'Fecha', 'Departamento', 'Producto', 'Categoría', 'Presentación', 'Cantidad Retirada',
             'Tipo Salida', 'Usuario Responsable', 'Rol Usuario', 'Notas'
         ];
 
-        const whereClause = {
-            fecha: { [Op.between]: [fechaInicio, fechaFin] },
-            departamento: departamento ? { [Op.eq]: departamento } : undefined
-        };
-
-        const salidas = await db.Salidas.findAll({
-            where: whereClause,
+        const salidas = await db.Salida.findAll({
+            where: {
+                fecha: { [Op.between]: [fechaInicio, fechaFin] }
+            },
             include: [
                 {
-                    model: db.TiposSalidas, attributes: ['Nombre'],
+                    model: db.TipoSalida, attributes: ['nombre'],
                 },
                 {
-                    model: db.Departamentos, attributes: ['Nombre'],
+                    model: db.Departamento,
+                    attributes: ['nombre'],
+                    where: departamento && departamento !== 'Todos' ? { nombre: departamento } : undefined
                 },
-                {
-                    model: db.Usuarios,
-                    attributes: ['NombreCompleto'],
-                    include: [{ model: db.Roles, attributes: ['Nombre'] }],
 
+                {
+                    model: db.Usuario,
+                    attributes: ['nombreCompleto'],
+                    include: [{ model: db.Rol, attributes: ['nombre'] }],
                 },
                 {
-                    model: db.Productos,
-                    attributes: ['Nombre', 'Presentacion'],
-                    include: [{ model: db.Categorias, attributes: ['Nombre'] }],
-
+                    model: db.Producto,
+                    attributes: ['nombre', 'presentacion'],
+                    include: [{ model: db.Categoria, attributes: ['nombre'], as: 'Categoria' }],
                 }
             ],
             order: [['fecha', 'ASC']],
         });
 
+
         const flattenedData = flattenSalidasData(salidas);
 
         const metadata = {
             titulo: 'Reporte de Salidas del Inventario',
-            generadoPor: req.user.nombreCompleto, // puedes tomarlo del req.user si tienes auth
-            fechaGeneracion: new Date().toISOString(),
+            generadoPor: 'usuario', // puedes tomarlo del req.user si tienes auth
+            fechaGeneracion: new Date().toLocaleDateString(),
             periodo: { inicio: fechaInicio, fin: fechaFin },
             totales: {
                 productosDistintos: [...new Set(flattenedData.map(d => d.Producto))].length,
-                unidadesRetiradas: flattenedData.reduce((sum, d) => sum + d['Cantidad Total'], 0)
+                unidadesTotales: flattenedData.reduce((sum, d) => sum + (d['Cantidad Retirada'] ?? 0), 0),
+                registros: flattenedData.length
             }
         };
 
-        const filename = `reporte_salidas_${Date.now()}.${formato === 'CSV' ? 'csv' : 'pdf'}`;
-        const filePath = path.join('./reports', filename);
+        const filename = `reporte_salidas_${Date.now()}.${formato.toLowerCase()}`;
+        let buffer;
 
         if (formato === 'CSV') {
-            await generateCSV(flattenedData, metadata, filePath);
+            buffer = await generateCSV(flattenedData, metadata);
         } else if (formato === 'PDF') {
-            await generatePDF(flattenedData, metadata, tableHeaders, filePath);
+            buffer = await generatePDF(flattenedData, metadata, tableHeaders);
         }
 
-        return filePath;
+        return { buffer, filename };
     }
 };
 

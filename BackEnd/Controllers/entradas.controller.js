@@ -12,18 +12,17 @@ class EntradasController {
                 return res.status(400).json({ errors: validation.errors });
             }
 
-            const result = await EntradasService.generarReporteEntradas(reporteVO);
-            res.download(result, (error) => {
-                if (error) {
-                    console.error('Error al enviar el archivo:', error);
-                    res.status(500).json({
-                        success: false,
-                        message: 'Error al generar el reporte',
-                        error: error.message
-                    });
-                }
-            });
+            const { buffer, filename } = await EntradasService.generarReporteEntradas(reporteVO);
+            if (reporteVO.formato === 'PDF') {
+                res.setHeader('Content-Type', 'application/pdf');
+            } else if (reporteVO.formato === 'CSV') {
+                res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+            }
+            res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+            return res.send(buffer);
+
         } catch (error) {
+            console.error('Error al generar el reporte de entradas:', error);
             return res.status(500).json({
                 success: false,
                 message: 'Error interno del servidor',

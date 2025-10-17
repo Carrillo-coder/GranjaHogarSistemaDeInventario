@@ -1,35 +1,35 @@
 module.exports = (sequelize, Sequelize) => {
     const Salida = sequelize.define("Salida", {
-        ID_Salida: {
+        idSalida: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
-            field: 'ID_Salida'
+            field: 'idSalida'
         },
-        ID_Tipo: {
+        idTipo: {
             type: Sequelize.INTEGER,
             allowNull: false,
-            field: 'ID_Tipo'
+            field: 'idTipo'
         },
-        ID_Producto: {
+        idProducto: {
             type: Sequelize.INTEGER,
             allowNull: false,
-            field: 'ID_Producto'
+            field: 'idProducto'
         },
-        ID_Departamentos: {
+        idDepartamento: {
             type: Sequelize.INTEGER,
             allowNull: false,
-            field: 'ID_Departamentos'
+            field: 'idDepartamento'
         },
         cantidad: {
             type: Sequelize.INTEGER,
             allowNull: false,
             field: 'cantidad'
         },
-        ID_Usuario: {
+        idUsuario: {
             type: Sequelize.INTEGER,
             allowNull: false,
-            field: 'ID_Usuario'
+            field: 'idUsuario'
         },
         fecha: {
             type: Sequelize.DATE,
