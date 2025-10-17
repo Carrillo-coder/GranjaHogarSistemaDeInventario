@@ -17,10 +17,10 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: true,
             field: 'idProducto'
         },
-        idDepartamentos: {
+        idDepartamento: {
             type: Sequelize.INTEGER,
             allowNull: true,
-            field: 'idDepartamentos'
+            field: 'idDepartamento'
         },
         Cantidad: {
             type: Sequelize.INTEGER,

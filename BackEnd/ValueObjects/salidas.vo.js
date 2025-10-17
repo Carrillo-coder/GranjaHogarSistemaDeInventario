@@ -4,7 +4,7 @@ class SalidaVO {
     this.idSalida = data.idSalida;
     this.idTipo = data.idTipo;
     this.idProducto = data.idProducto;
-    this.idDepartamentos = data.idDepartamentos;
+    this.idDepartamento = data.idDepartamento;
     this.Cantidad = data.Cantidad;
     this.idUsuario = data.idUsuario;
     this.Fecha = data.Fecha;
