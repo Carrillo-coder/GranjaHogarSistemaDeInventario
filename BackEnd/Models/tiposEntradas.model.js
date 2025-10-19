@@ -1,26 +1,24 @@
 /**
- * Modelo de Rol usando Sequelize
+ * Modelo de TiposEntradas usando Sequelize
  * @param {object} sequelize - Instancia de Sequelize
  * @param {object} Sequelize - Constructor de Sequelize
  */
 module.exports = (sequelize, Sequelize) => {
-    const Rol = sequelize.define("Rol", {
-        idRol: {
+    const TipoEntrada = sequelize.define("TipoEntrada", {
+        idTipoE: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
-            field: 'idRol'
+            field: 'idTipoE'
         },
         nombre: {
             type: Sequelize.STRING(50),
-            allowNull: false,
-            unique: true,
             field: 'nombre'
         }
     }, {
-        tableName: 'Roles',
+        tableName: 'TiposEntradas',
         timestamps: false
     });
 
-    return Rol;
+    return TipoEntrada;
 };

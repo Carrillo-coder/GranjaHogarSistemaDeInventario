@@ -1,8 +1,3 @@
-/**
- * Modelo de Rol usando Sequelize
- * @param {object} sequelize - Instancia de Sequelize
- * @param {object} Sequelize - Constructor de Sequelize
- */
 module.exports = (sequelize, Sequelize) => {
     const Lote = sequelize.define("Lote", {
         idLotes: {
@@ -11,20 +6,25 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             field: 'idLotes'
         },
-        unidadesExistentes: {
+        cantidad: {
             type: Sequelize.INTEGER,
             allowNull: false,
+            field: 'cantidad'
+        },
+        unidadesExistentes: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
             field: 'unidadesExistentes'
         },
-        Caducidad: {
+        caducidad: {
             type: Sequelize.DATE,
-            allowNull: false,
-            field: 'Caducidad'
+            allowNull: true,
+            field: 'caducidad'
         },
-        Activo: {
+        activo: {
             type: Sequelize.BOOLEAN,
             defaultValue: true,
-            field: 'Activo'
+            field: 'activo'
         },
         idProducto: {
             type: Sequelize.INTEGER,
@@ -37,7 +37,7 @@ module.exports = (sequelize, Sequelize) => {
         },
         idEntrada: {
             type: Sequelize.INTEGER,
-            allowNull: true,
+            allowNull: false,
             field: 'idEntrada',
             references: {
                 model: 'Entradas',

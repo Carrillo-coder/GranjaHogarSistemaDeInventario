@@ -1,15 +1,15 @@
 /**
- * Modelo de Rol usando Sequelize
+ * Modelo de TiposSalidas usando Sequelize
  * @param {object} sequelize - Instancia de Sequelize
  * @param {object} Sequelize - Constructor de Sequelize
  */
 module.exports = (sequelize, Sequelize) => {
-    const Rol = sequelize.define("Rol", {
-        idRol: {
+    const TiposSalidas = sequelize.define("TiposSalidas", {
+        idTipoS: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
-            field: 'idRol'
+            field: 'idTipoS'
         },
         nombre: {
             type: Sequelize.STRING(50),
@@ -18,9 +18,9 @@ module.exports = (sequelize, Sequelize) => {
             field: 'nombre'
         }
     }, {
-        tableName: 'Roles',
+        tableName: 'tipossalidas',
         timestamps: false
     });
 
-    return Rol;
+    return TiposSalidas;
 };
