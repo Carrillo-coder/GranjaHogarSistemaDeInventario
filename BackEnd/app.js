@@ -3,15 +3,15 @@ const cors = require('cors');
 const morgan = require('morgan');
 const db = require('./Models');
 
-const usuariosRoutes = require('./routes/usuarios.routes');
-const rolesRoutes = require('./routes/roles.routes');
-const productosRoutes = require('./routes/productos.routes');
-const departamentosRoutes = require('./routes/departamentos.routes');
-const entradasRoutes = require('./routes/entradas.routes');
-const salidasRoutes = require('./routes/salidas.routes');
-const lotesRoutes = require('./routes/lotes.routes');
-const categoriaRoutes = require('./routes/categoria.routes');
-const tiposSalidasRoutes = require('./routes/tiposSalidas.routes');
+const usuariosRoutes = require('./Routes/usuarios.routes');
+const rolesRoutes = require('./Routes/roles.routes');
+const productosRoutes = require('./Routes/productos.routes');
+const departamentosRoutes = require('./Routes/departamentos.routes');
+const entradasRoutes = require('./Routes/entradas.routes');
+const salidasRoutes = require('./Routes/salidas.routes');
+const lotesRoutes = require('./Routes/lotes.routes');
+const categoriaRoutes = require('./Routes/categoria.routes');
+const tiposSalidasRoutes = require('./Routes/tiposSalidas.routes');
 
 
 const app = express();
@@ -40,11 +40,13 @@ app.get('/', (req, res) => {
     });
 });
 
+// Sincronización con la Base de Datos
 db.sequelize.sync({ alter: true })
   .then(() => console.log('✅ Sequelize sincronizado'))
   .catch(err => console.error('❌ Error al sincronizar Sequelize:', err.message));
 
 
+// --- Rutas de la API (Registradas una sola vez) ---
 app.use('/api/inventario/usuarios', usuariosRoutes);
 app.use('/api/inventario/roles', rolesRoutes);
 app.use('/api/inventario/productos', productosRoutes);
@@ -54,7 +56,6 @@ app.use('/api/inventario/salidas', salidasRoutes);
 app.use('/api/inventario/lotes', lotesRoutes);
 app.use('/api/inventario/categorias', categoriaRoutes);
 app.use('/api/inventario/tiposSalidas', tiposSalidasRoutes);
-
 
 
 app.use((req, res) => {
@@ -76,3 +77,5 @@ app.use((error, req, res, next) => {
 
 
 module.exports = app;
+
+
