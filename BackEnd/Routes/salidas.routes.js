@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const SalidaController = require('../Controllers/salidas.controller');
+const SalidasController = require('../Controllers/salidas.controller');
 
-router.get('/', SalidaController.getAllSalidas);
-router.get('/:id', SalidaController.getSalidaById);
-router.post('/', SalidaController.createSalida);
+// POST - Generar reporte de salidas
+router.post('/reportes', SalidasController.getReporteSalidas);
+router.get('/', SalidasController.getAllSalidas);
+router.get('/:id', SalidasController.getSalidaById);
+router.post('/', SalidasController.createSalida);
 
 module.exports = router;

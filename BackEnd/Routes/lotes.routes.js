@@ -1,7 +1,9 @@
-
 const express = require('express');
 const router = express.Router();
-const LoteController = require('../Controllers/lotes.controller');
+const LotesController = require('../Controllers/lotes.controller');
+
+// GET - Generar reporte de lotes
+router.get('/reportes', LotesController.getReporteLotes);
 
 // POST crea nuevo lote
 router.post('/', LoteController.create);

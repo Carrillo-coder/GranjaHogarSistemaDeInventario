@@ -1,4 +1,3 @@
-
 module.exports = (sequelize, Sequelize) => {
     const Lote = sequelize.define("Lote", {
         idLotes: {

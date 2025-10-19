@@ -1,26 +1,24 @@
 /**
- * Modelo de TiposSalidas usando Sequelize
+ * Modelo de TiposEntradas usando Sequelize
  * @param {object} sequelize - Instancia de Sequelize
  * @param {object} Sequelize - Constructor de Sequelize
  */
 module.exports = (sequelize, Sequelize) => {
-    const TiposSalidas = sequelize.define("TiposSalidas", {
-        idTipoS: {
+    const TipoEntrada = sequelize.define("TipoEntrada", {
+        idTipoE: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
-            field: 'idTipoS'
+            field: 'idTipoE'
         },
         nombre: {
             type: Sequelize.STRING(50),
-            allowNull: false,
-            unique: true,
             field: 'nombre'
         }
     }, {
-        tableName: 'tipossalidas',
+        tableName: 'TiposEntradas',
         timestamps: false
     });
 
-    return TiposSalidas;
+    return TipoEntrada;
 };

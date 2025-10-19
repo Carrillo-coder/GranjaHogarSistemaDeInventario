@@ -12,38 +12,60 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// SOLO estos dos modelos:
-db.Producto  = require("./productos.model.js")(sequelize, Sequelize);
+// --- Definición de Modelos (Unificados) ---
 db.Usuario = require("./usuarios.model.js")(sequelize, Sequelize);
 db.Rol = require("./roles.model.js")(sequelize, Sequelize);
+db.Producto  = require("./productos.model.js")(sequelize, Sequelize);
 db.Entrada = require("./entradas.model.js")(sequelize, Sequelize);
-db.TiposSalidas = require("./tiposSalidas.model.js")(sequelize, Sequelize);
-db.Categoria = require("./categoria.model.js")(sequelize, Sequelize);
-db.Lote = require("./lote.model.js")(sequelize, Sequelize);
+db.Salida = require("./salidas.model.js")(sequelize, Sequelize);
+db.Departamento = require("./departamentos.model.js")(sequelize, Sequelize);
+db.TipoEntrada = require("./tiposEntradas.model.js")(sequelize, Sequelize);
+db.Categoria = require("./categoria.model.js")(sequelize, Sequelize); 
+db.Lote = require("./lotes.model.js")(sequelize, Sequelize); 
+db.TipoSalida = require("./tiposSalidas.model.js")(sequelize, Sequelize);
 
+
+// --- Definición de Asociaciones (Unificadas y Estandarizadas) ---
+
+// Rol <-> Usuario (1:M)
 db.Rol.hasMany(db.Usuario, { foreignKey: 'idRol', as: 'usuarios' });
 db.Usuario.belongsTo(db.Rol, { foreignKey: 'idRol', as: 'rol' });
-db.Salida = require('./salidas.model')(sequelize, Sequelize);
 
-// Asociación
+// Categoria <-> Producto (1:M)
 db.Categoria.hasMany(db.Producto, { foreignKey: "idCategoria", as: "productos" });
 db.Producto.belongsTo(db.Categoria, { foreignKey: "idCategoria", as: "categoria" });
-db.Producto.belongsTo(db.Categoria, {foreignKey: "idCategoria",as: "categoria"});
 
-// Una categoría tiene muchos productos
-db.Categoria.hasMany(db.Producto, {foreignKey: "idCategoria",as: "productos"});
+// Producto <-> Lote (1:M)
+db.Producto.hasMany(db.Lote, { foreignKey: "idProducto", as: "lotes" });
+db.Lote.belongsTo(db.Producto, { foreignKey: "idProducto", as: "producto" });
 
-// Un producto tiene muchos lotes
-db.Producto.hasMany(db.Lote, {foreignKey: "idProducto",as: "lotes"});
+// Producto <-> Salida (1:M)
+db.Producto.hasMany(db.Salida, { foreignKey: 'idProducto', as: 'salidas' });
+db.Salida.belongsTo(db.Producto, { foreignKey: 'idProducto', as: 'producto' });
 
-
-// Un lote pertenece a un producto
-db.Lote.belongsTo(db.Producto, {foreignKey: "idProducto",as: "producto"});
+// Entrada <-> Lote (1:M)
+db.Entrada.hasMany(db.Lote, { foreignKey: 'idEntrada', as: 'lotes' });
 db.Lote.belongsTo(db.Entrada, { foreignKey: 'idEntrada', as: 'entrada' });
 
+// Usuario <-> Entrada (1:M)
+db.Usuario.hasMany(db.Entrada, { foreignKey: 'idUsuario', as: 'entradas' });
+db.Entrada.belongsTo(db.Usuario, { foreignKey: 'idUsuario', as: 'usuario' });
 
-db.Entrada.hasMany(db.Lote, { foreignKey: 'idEntrada', as: 'lotes' });
+// Usuario <-> Salida (1:M)
+db.Usuario.hasMany(db.Salida, { foreignKey: 'idUsuario', as: 'salidas' });
+db.Salida.belongsTo(db.Usuario, { foreignKey: 'idUsuario', as: 'usuario' });
+
+// TipoEntrada <-> Entrada (1:M)
+db.TipoEntrada.hasMany(db.Entrada, { foreignKey: 'idTipo', as: 'entradas' });
+db.Entrada.belongsTo(db.TipoEntrada, { foreignKey: 'idTipo', as: 'tipoEntrada' });
+
+// TipoSalida <-> Salida (1:M)
+db.TipoSalida.hasMany(db.Salida, { foreignKey: 'idTipo', as: 'salidas' });
+db.Salida.belongsTo(db.TipoSalida, { foreignKey: 'idTipo', as: 'tipoSalida' });
+
+// Departamento <-> Salida (1:M)
+db.Departamento.hasMany(db.Salida, { foreignKey: 'idDepartamento', as: 'salidas' });
+db.Salida.belongsTo(db.Departamento, { foreignKey: 'idDepartamento', as: 'departamento' });
 
 
 module.exports = db;
-

@@ -1,12 +1,13 @@
-
 const db = require('../Models');
-const Entrada = db.Entrada;
+const { Op } = require('sequelize');
+const { flattenEntradasData } = require('../utils/flattenEntradasData.util.js');
+const { generateCSV, generatePDF } = require('../utils/fileGenerator.util.js');
 
-class EntradaService {
+class EntradasService {
 
     static async createEntrada(data) {
         try {
-            const nuevaEntrada = await Entrada.create(data);
+            const nuevaEntrada = await db.Entrada.create(data);
             return {
                 success: true,
                 message: 'Entrada creada correctamente',
@@ -22,18 +23,14 @@ class EntradaService {
             };
         }
     }
-
-
     static async getTipos() {
         try {
-            // Obtener los idTipo distintos disponibles
-            const tipos = await Entrada.findAll({
+            const tipos = await db.Entrada.findAll({
                 attributes: ['idTipo'],
                 group: ['idTipo'],
                 order: [['idTipo', 'ASC']]
             });
 
-            // mapear al array de valores
             const tiposList = tipos.map(t => t.idTipo);
 
             if (!tiposList || tiposList.length === 0) {
@@ -60,6 +57,75 @@ class EntradaService {
             };
         }
     }
-}
 
-module.exports = EntradaService;
+    static async generarReporteEntradas(reporteFiltros) {
+        const { fechaInicio, fechaFin, formato } = reporteFiltros;
+
+        const tableHeaders = [
+            'No.', 'Fecha', 'Producto', 'Categoria', 'Presentacion', 'Cantidad Total',
+            'Lote', 'Unidades Restantes', 'Caducidad', 'Activo', 'Proveedor',
+            'Tipo Entrada', 'Usuario Responsable', 'Rol Usuario', 'Notas'
+        ];
+
+        const whereClause = {
+            fecha: { [Op.between]: [fechaInicio, fechaFin] }
+        };
+
+        const entradas = await db.Entrada.findAll({
+            where: whereClause,
+            include: [
+                {
+                    model: db.TipoEntrada, 
+                    attributes: ['nombre'],
+                    as: 'tipoEntrada' // Alias actualizado
+                },
+                {
+                    model: db.Usuario,
+                    attributes: ['nombreCompleto'],
+                    as: 'usuario', // Alias actualizado
+                    include: [{ model: db.Rol, attributes: ['nombre'], as: 'rol' }], // Alias actualizado
+                },
+                {
+                    model: db.Lote,
+                    as: 'lotes', // Alias actualizado
+                    attributes: ['idLotes', 'cantidad', 'unidadesExistentes', 'caducidad', 'activo'], 
+                    include: [
+                        {
+                            model: db.Producto,
+                            attributes: ['nombre', 'presentacion'],
+                            as: 'producto', // Alias actualizado
+                            include: [{ model: db.Categoria, attributes: ['nombre'], as: 'categoria' }], // Alias actualizado
+                        },
+                    ],
+                },
+            ],
+            order: [['fecha', 'ASC']],
+        });
+
+        const flattenedData = flattenEntradasData(entradas);
+
+        const metadata = {
+            titulo: 'Reporte de Entradas al Inventario',
+            generadoPor: 'usuario', 
+            fechaGeneracion: new Date().toLocaleString(),
+            periodo: { inicio: fechaInicio, fin: fechaFin },
+            totales: {
+                productosDistintos: [...new Set(flattenedData.map(d => d.Producto))].length,
+                unidadesTotales: flattenedData.reduce((sum, d) => sum + (d['Cantidad Total'] ?? 0), 0),
+                registros: flattenedData.length
+            }
+        };
+
+        const filename = `reporte_entradas_${Date.now()}.${formato.toLowerCase()}`;
+        let buffer;
+        if (formato === 'CSV') {
+            buffer = await generateCSV(flattenedData, metadata);
+        } else if (formato === 'PDF') {
+            buffer = await generatePDF(flattenedData, metadata, tableHeaders);
+        }
+
+        return { buffer, filename };
+    }
+};
+
+module.exports = EntradasService;

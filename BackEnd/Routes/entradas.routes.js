@@ -1,12 +1,14 @@
-
 const express = require('express');
 const router = express.Router();
-const EntradaController = require('../Controllers/entradas.controller');
+const EntradasController = require('../Controllers/entradas.controller');
+
+// POST - Generar reporte de entradas
+router.post('/reportes', EntradasController.getReporteEntradas);
 
 // POST Crear entrada
-router.post('/', EntradaController.create);
+router.post('/', EntradasController.create);
 
 // GET Obtener todos los tipos disponibles
-router.get('/tipo', EntradaController.getTipos);
+router.get('/tipo', EntradasController.getTipos);
 
 module.exports = router;
