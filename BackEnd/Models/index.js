@@ -16,6 +16,7 @@ db.sequelize = sequelize;
 db.Producto  = require("./productos.model.js")(sequelize, Sequelize);
 db.Usuario = require("./usuarios.model.js")(sequelize, Sequelize);
 db.Rol = require("./roles.model.js")(sequelize, Sequelize);
+db.Entrada = require("./entradas.model.js")(sequelize, Sequelize);
 db.TiposSalidas = require("./tiposSalidas.model.js")(sequelize, Sequelize);
 db.Categoria = require("./categoria.model.js")(sequelize, Sequelize);
 db.Lote = require("./lote.model.js")(sequelize, Sequelize);
@@ -35,8 +36,14 @@ db.Categoria.hasMany(db.Producto, {foreignKey: "idCategoria",as: "productos"});
 // Un producto tiene muchos lotes
 db.Producto.hasMany(db.Lote, {foreignKey: "idProducto",as: "lotes"});
 
+
 // Un lote pertenece a un producto
 db.Lote.belongsTo(db.Producto, {foreignKey: "idProducto",as: "producto"});
+db.Lote.belongsTo(db.Entrada, { foreignKey: 'idEntrada', as: 'entrada' });
+
+
+db.Entrada.hasMany(db.Lote, { foreignKey: 'idEntrada', as: 'lotes' });
+
 
 module.exports = db;
 
