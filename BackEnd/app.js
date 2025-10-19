@@ -1,51 +1,57 @@
-//Esto es para probarlo de momento, si quieren usarlo añadan sus rutas en la línea 10  y agreguen sus endopints en la línea 33 y en la línea 50 tmb rutas, si no les sirve, pídanle ayuda a chat :)
-
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 
+
 // Importar rutas
+const categoriasRoutes = require('./Routes/categoria.routes'); // NUEVO
+const lotesRoutes = require('./Routes/lote.routes'); 
+const productosRoutes = require('./Routes/productos.routes');
 const usuariosRoutes = require('./Routes/usuarios.routes');
 const rolesRoutes = require('./Routes/roles.routes');
 const entradasRoutes = require('./Routes/entradas.routes');
-const lotesRoutes = require('./Routes/lotes.routes.js');
+const tiposSalidasRoutes = require('./Routes/tiposSalidas.routes');
+const categoriaRoutes = require('./Routes/categoria.routes');
+const salidasRoutes = require('./Routes/salidas.routes');
+const db = require('./Models');
 
-// Crear aplicación Express
 const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('tiny'));
 
-// Middlewares
-app.use(cors()); // Habilitar CORS para React Native
-app.use(express.json()); // Parsear JSON en el body
-app.use(express.urlencoded({ extended: true })); // Parsear URL-encoded
-app.use(morgan('tiny')); // Logger de requests
-
-// Ruta de bienvenida
-app.get('/', (req, res) => {
-    res.json({
-        message: 'API del Sistema de Inventario - Granja Hogar',
-        version: '1.0.0',
-        endpoints: {
-            usuarios: '/api/inventario/usuarios',
-            roles: '/api/inventario/roles',
-            entradas: '/api/inventario/entradas',
-            lotes: '/api/inventario/lotes'
+app.get('/', (_req, res) => {
+  res.json({
+    message: 'API del Sistema de Inventario - Granja Hogar',
+    version: '1.0.0',
+    endpoints: {
+    usuarios: '/api/inventario/usuarios',
+    roles: '/api/inventario/roles',
+    salidas: '/api/inventario/salidas',
+    productos: '/api/inventario/productos',
+    tiposSalidas: '/api/inventario/tiposSalidas',
+    categoria: '/api/inventario/categoria',
+    entradas: '/api/inventario/entradas',
+    lotes: '/api/inventario/lotes'
         }
     });
 });
 
-// Ruta de salud
-app.get('/health', (req, res) => {
-    res.json({
-        status: 'OK',
-        timestamp: new Date().toISOString()
-    });
-});
+db.sequelize.sync({ alter: true })
+  .then(() => console.log('✅ Sequelize sincronizado'))
+  .catch(err => console.error('❌ Error al sincronizar Sequelize:', err.message));
+
 
 // Rutas de la API
+app.use('/api/inventario/lotes', lotesRoutes);  
 app.use('/api/inventario/usuarios', usuariosRoutes);
 app.use('/api/inventario/roles', rolesRoutes);
 app.use('/api/inventario/entradas', entradasRoutes);
-app.use('/api/inventario/lotes', lotesRoutes);
+app.use('/api/inventario/tiposSalidas', tiposSalidasRoutes);
+app.use('/api/inventario/categoria', categoriaRoutes);
+app.use('/api/inventario/salidas', salidasRoutes);
+app.use('/api/inventario/productos', productosRoutes);
 
 // Manejo de rutas no encontradas (404)
 app.use((req, res) => {
@@ -66,4 +72,5 @@ app.use((error, req, res, next) => {
     });
 });
 
+app.use((req, res) => res.status(404).json({ success: false, message: 'Ruta no encontrada', path: req.url }));
 module.exports = app;

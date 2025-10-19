@@ -1,12 +1,12 @@
 class RolVO {
     constructor(data) {
-        this.ID_Rol = data.ID_Rol || null;
+        this.idRol = data.idRol || null;
         this.nombre = data.nombre || '';
     }
 
     toResponse() {
         return {
-            ID_Rol: this.ID_Rol,
+            idRol: this.idRol,
             nombre: this.nombre
         };
     }

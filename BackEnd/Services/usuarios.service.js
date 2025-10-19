@@ -13,7 +13,7 @@ class UsuarioService {
                 include: [{
                     model: Rol,
                     as: 'rol',
-                    attributes: ['ID_Rol', 'nombre']
+                    attributes: ['idRol', 'nombre']
                 }],
                 order: [['nombreCompleto', 'ASC']]
             });
@@ -49,7 +49,7 @@ class UsuarioService {
                 include: [{
                     model: Rol,
                     as: 'rol',
-                    attributes: ['ID_Rol', 'nombre']
+                    attributes: ['idRol', 'nombre']
                 }]
             });
 
@@ -92,7 +92,7 @@ class UsuarioService {
                 };
             }
 
-            const rolExists = await Rol.findByPk(data.ID_Rol);
+            const rolExists = await Rol.findByPk(data.idRol);
             if (!rolExists) {
                 return {
                     success: false,
@@ -118,11 +118,11 @@ class UsuarioService {
 
             const nuevoUsuario = await Usuario.create(usuarioVO.toDatabase());
 
-            const usuarioCompleto = await Usuario.findByPk(nuevoUsuario.ID_Usuario, {
+            const usuarioCompleto = await Usuario.findByPk(nuevoUsuario.idUsuario, {
                 include: [{
                     model: Rol,
                     as: 'rol',
-                    attributes: ['ID_Rol', 'nombre']
+                    attributes: ['idRol', 'nombre']
                 }]
             });
 
@@ -165,7 +165,7 @@ class UsuarioService {
                 };
             }
 
-            const rolExists = await Rol.findByPk(data.ID_Rol);
+            const rolExists = await Rol.findByPk(data.idRol);
             if (!rolExists) {
                 return {
                     success: false,
@@ -177,7 +177,7 @@ class UsuarioService {
             const existingUser = await Usuario.findOne({
                 where: { 
                     nombreUsuario: data.nombreUsuario,
-                    ID_Usuario: { [db.Sequelize.Op.ne]: id }
+                    idUsuario: { [db.Sequelize.Op.ne]: id }
                 }
             });
             
@@ -197,14 +197,14 @@ class UsuarioService {
             }
 
             await Usuario.update(usuarioVO.toDatabase(), {
-                where: { ID_Usuario: id }
+                where: { idUsuario: id }
             });
 
             const usuarioActualizado = await Usuario.findByPk(id, {
                 include: [{
                     model: Rol,
                     as: 'rol',
-                    attributes: ['ID_Rol', 'nombre']
+                    attributes: ['idRol', 'nombre']
                 }]
             });
 
@@ -237,7 +237,7 @@ class UsuarioService {
 
             await Usuario.update(
                 { activo: false },
-                { where: { ID_Usuario: id } }
+                { where: { idUsuario: id } }
             );
 
             return {
