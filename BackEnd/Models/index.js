@@ -15,6 +15,9 @@ db.sequelize = sequelize;
 db.Categoria = require("./categoria.model.js")(sequelize, Sequelize);
 
 db.Producto  = require("./productos.model.js")(sequelize, Sequelize);
+db.Usuario = require("./usuarios.model.js")(sequelize, Sequelize);
+db.Rol = require("./roles.model.js")(sequelize, Sequelize);
+db.Salida = require('./salidas.model')(sequelize, Sequelize);
 
 db.Lote = require("./lote.model.js")(sequelize, Sequelize);
 
