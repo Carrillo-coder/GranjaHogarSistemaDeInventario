@@ -44,6 +44,5 @@ const startServer = async () => {
 process.on('unhandledRejection', (error) => {
     console.error('❌ Error no manejado:', error);
     process.exit(1);
-  }
-})();
+  })();
 startServer();
