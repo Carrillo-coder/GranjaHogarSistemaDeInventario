@@ -4,7 +4,7 @@
  * @param {object} Sequelize - Constructor de Sequelize
  */
 module.exports = (sequelize, Sequelize) => {
-    const TipoSalida = sequelize.define("TipoSalida", {
+    const TiposSalidas = sequelize.define("TiposSalidas", {
         idTipoS: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
@@ -13,12 +13,14 @@ module.exports = (sequelize, Sequelize) => {
         },
         nombre: {
             type: Sequelize.STRING(50),
+            allowNull: false,
+            unique: true,
             field: 'nombre'
         }
     }, {
-        tableName: 'TiposSalidas',
+        tableName: 'tipossalidas',
         timestamps: false
     });
 
-    return TipoSalida;
+    return TiposSalidas;
 };

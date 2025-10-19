@@ -4,6 +4,72 @@ const { flattenSalidasData } = require('../utils/flattenSalidasData.util.js');
 const { generateCSV, generatePDF } = require('../utils/fileGenerator.util.js');
 
 class SalidasService {
+
+    static async getAllSalidas() {
+        try {
+            const salidas = await db.Salida.findAll();
+            return {
+                success: true,
+                message: 'Salidas obtenidas correctamente',
+                data: salidas,
+                statusCode: 200
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: 'Error al obtener salidas',
+                error: error.message,
+                statusCode: 500
+            };
+        }
+    }
+
+    static async getSalidaById(id) {
+        try {
+            const salida = await db.Salida.findByPk(id);
+            if (!salida) {
+                return {
+                    success: false,
+                    message: 'Salida no encontrada',
+                    data: null,
+                    statusCode: 404
+                };
+            }
+            return {
+                success: true,
+                message: 'Salida encontrada',
+                data: salida,
+                statusCode: 200
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: 'Error al obtener salida por ID',
+                error: error.message,
+                statusCode: 500
+            };
+        }
+    }
+
+    static async createSalida(data) {
+        try {
+            const nuevaSalida = await db.Salida.create(data);
+            return {
+                success: true,
+                message: 'Salida creada correctamente',
+                data: nuevaSalida,
+                statusCode: 201
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: 'Error al crear salida',
+                error: error.message,
+                statusCode: 400
+            };
+        }
+    }
+
     static async generarReporteSalidas(reporteFiltros, departamento) {
         const { fechaInicio, fechaFin, formato } = reporteFiltros;
 
@@ -12,29 +78,37 @@ class SalidasService {
             'Tipo Salida', 'Usuario Responsable', 'Rol Usuario', 'Notas'
         ];
 
+        const departamentoWhere = (departamento && departamento !== 'Todos') 
+                                    ? { nombre: departamento } 
+                                    : undefined;
+
         const salidas = await db.Salida.findAll({
             where: {
                 fecha: { [Op.between]: [fechaInicio, fechaFin] }
             },
             include: [
                 {
-                    model: db.TipoSalida, attributes: ['nombre'],
+                    model: db.TipoSalida,
+                    attributes: ['nombre'],
+                    as: 'tipoSalida'
                 },
                 {
                     model: db.Departamento,
                     attributes: ['nombre'],
-                    where: departamento && departamento !== 'Todos' ? { nombre: departamento } : undefined
+                    where: departamentoWhere,
+                    as: 'departamento'
                 },
-
                 {
                     model: db.Usuario,
                     attributes: ['nombreCompleto'],
-                    include: [{ model: db.Rol, attributes: ['nombre'] }],
+                    as: 'usuario',
+                    include: [{ model: db.Rol, attributes: ['nombre'], as: 'rol' }],
                 },
                 {
                     model: db.Producto,
                     attributes: ['nombre', 'presentacion'],
-                    include: [{ model: db.Categoria, attributes: ['nombre'], as: 'Categoria' }],
+                    as: 'producto',
+                    include: [{ model: db.Categoria, attributes: ['nombre'], as: 'categoria' }],
                 }
             ],
             order: [['fecha', 'ASC']],
@@ -45,7 +119,7 @@ class SalidasService {
 
         const metadata = {
             titulo: 'Reporte de Salidas del Inventario',
-            generadoPor: 'usuario', // puedes tomarlo del req.user si tienes auth
+            generadoPor: 'usuario',
             fechaGeneracion: new Date().toLocaleDateString(),
             periodo: { inicio: fechaInicio, fin: fechaFin },
             totales: {

@@ -21,7 +21,6 @@ class LotesController {
             return res.send(buffer);
 
         } catch (error) {
-            console.error('Error al generar el reporte de inventario:', error);
             return res.status(500).json({
                 success: false,
                 message: 'Error interno del servidor',
@@ -29,7 +28,21 @@ class LotesController {
             });
         }
     }
-};
+
+
+    static async create(req, res) {
+        try {
+            const result = await LoteService.createLote(req.body);
+            return res.status(result.statusCode).json(result);
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor',
+                error: error.message
+            });
+        }
+    }
+}
 
 
 module.exports = LotesController;

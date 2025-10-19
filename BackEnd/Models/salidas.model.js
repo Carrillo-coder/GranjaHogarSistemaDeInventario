@@ -4,42 +4,43 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
+            allowNull: false,
             field: 'idSalida'
         },
         idTipo: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             field: 'idTipo'
         },
         idProducto: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             field: 'idProducto'
         },
-        idDepartamento: {
+        idDepartamentos: {
             type: Sequelize.INTEGER,
-            allowNull: false,
-            field: 'idDepartamento'
+            allowNull: true,
+            field: 'idDepartamentos'
         },
-        cantidad: {
+        Cantidad: {
             type: Sequelize.INTEGER,
-            allowNull: false,
-            field: 'cantidad'
+            allowNull: true,
+            field: 'Cantidad'
         },
         idUsuario: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             field: 'idUsuario'
         },
-        fecha: {
+        Fecha: {
             type: Sequelize.DATE,
-            allowNull: false,
-            field: 'fecha'
+            allowNull: true,
+            field: 'Fecha'
         },
-        notas: {
+        Notas: {
             type: Sequelize.STRING(255),
             allowNull: true,
-            field: 'notas'
+            field: 'Notas'
         }
     }, {
         tableName: 'Salidas',

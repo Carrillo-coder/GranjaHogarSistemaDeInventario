@@ -1,9 +1,6 @@
-//Es el server para probar que sus endpoints funcionen, no tienen que cambiar nada
-
 const app = require('./app');
 const db = require('./Models');
 
-// Puerto del servidor
 const PORT = process.env.PORT || 5000;
 
 // Función para iniciar el servidor
@@ -30,6 +27,9 @@ const startServer = async () => {
             console.log(`  PUT    http://localhost:${PORT}/api/inventario/usuarios/:id`);
             console.log(`  DELETE http://localhost:${PORT}/api/inventario/usuarios/:id`);
             console.log(`  GET    http://localhost:${PORT}/api/inventario/roles`);
+            console.log(`  GET    http://localhost:${PORT}/api/inventario/salidas`);
+            console.log(`  GET    http://localhost:${PORT}/api/inventario/salidas/id`);
+            console.log(`  POST    http://localhost:${PORT}/api/inventario/salidas`);
             console.log('========================================\n');
         });
 
@@ -40,11 +40,4 @@ const startServer = async () => {
     }
 };
 
-// Manejo de errores no capturados
-process.on('unhandledRejection', (error) => {
-    console.error('❌ Error no manejado:', error);
-    process.exit(1);
-});
-
-// Iniciar servidor
 startServer();
