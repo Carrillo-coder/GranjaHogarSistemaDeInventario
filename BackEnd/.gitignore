@@ -3,6 +3,9 @@ db.config.js
 index.js
 server.js
 
+index.js
+db.config.js
+
 # Variables de entorno
 .env
 .env.local
