@@ -2,6 +2,25 @@ const EntradasService = require('../Services/entradas.service');
 const ReportesVO = require('../ValueObjects/reportes.vo');
 
 class EntradasController {
+
+    static async createEntrada(req, res) {
+        try {
+            const result = await EntradasService.createEntrada(req.body);
+            res.status(result.statusCode).json(result);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    static async getTiposEntradas(req, res) {
+        try {
+            const result = await EntradasService.getTipos();
+            res.status(result.statusCode).json(result);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
     static async getReporteEntradas(req, res) {
         try {
             const data = req.body;
