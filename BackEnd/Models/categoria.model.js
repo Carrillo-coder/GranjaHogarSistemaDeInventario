@@ -6,7 +6,7 @@ module.exports = (sequelize, Sequelize) => {
       primaryKey: true,
       field: 'idCategoria'
     },
-    Nombre: {
+    nombre: {
       type: Sequelize.STRING(100),
       allowNull: false,
       unique: true,

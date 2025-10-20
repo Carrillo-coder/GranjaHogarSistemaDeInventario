@@ -68,4 +68,4 @@ class SalidaController {
     }
 }
 
-module.exports = SalidaController;
+module.exports = SalidasController;

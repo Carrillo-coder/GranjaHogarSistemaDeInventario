@@ -39,7 +39,7 @@ module.exports = (sequelize, Sequelize) => {
     tableName: 'Productos',
     timestamps: false,
     indexes: [
-      { unique: true, fields: ['Nombre', 'Presentacion'], name: 'ux_nombre_presentacion' }
+      { unique: true, fields: ['nombre', 'presentacion'], name: 'ux_nombre_presentacion' }
     ]
   });
 
