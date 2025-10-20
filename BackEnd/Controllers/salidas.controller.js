@@ -1,7 +1,7 @@
 const SalidasService = require('../Services/salidas.service');
 const ReportesVO = require('../ValueObjects/reportes.vo');
 
-class SalidaController {
+class SalidasController {
     static async getReporteSalidas(req, res) {
         try {
             const { departamento } = req.query;

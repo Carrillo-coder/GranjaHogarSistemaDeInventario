@@ -45,7 +45,7 @@ class CategoriasService {
             return {
                 success: true,
                 message: 'Categorías obtenidas correctamente',
-                data: categorias.map(c => new CategoriaVO(c)),
+                data: categorias.map(c => new CategoriasVO(c)),
                 statusCode: 200
             };
         } catch (error) {
