@@ -209,16 +209,15 @@ class LotesService {
                 {
                     model: Lote,
                     attributes: ['idLotes', 'unidadesExistentes', 'caducidad', 'activo'],
-                    as : 'lotes',
+                    as: 'lotes',
                 }
             ],
             attributes: ['idProducto', 'nombre', 'presentacion'],
             order: [['nombre', 'ASC']],
             logging: console.log
-        });
 
+        });
         const flattenedData = flattenLotesData(productos);
-        console.log(flattenedData);
 
         const metadata = {
             titulo: 'Reporte General de Inventario',

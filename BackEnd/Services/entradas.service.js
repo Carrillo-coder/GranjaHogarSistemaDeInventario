@@ -101,6 +101,9 @@ class EntradasService {
             ],
             order: [['fecha', 'ASC']],
         });
+        if (entradas.length === 0) {
+            throw new Error(`No se encontraron entradas para el rango de fechas dado.`);
+        }
 
         const flattenedData = flattenEntradasData(entradas);
 

@@ -1,12 +1,11 @@
 exports.flattenLotesData = (productos) => {
     const flattened = [];
-    //const contador = 1;
 
     productos.forEach((producto, index) => {
-        const categoria = producto.Categoria?.nombre || '';
+        const categoria = producto.categoria?.nombre || '';
         const presentacion = producto.presentacion || '';
 
-        const lotesActivos = (producto.Lotes || []).filter(l => l.activo);
+        const lotesActivos = (producto.lotes || []).filter(l => l.activo);
 
         lotesActivos.forEach((lote) => {
             flattened.push({

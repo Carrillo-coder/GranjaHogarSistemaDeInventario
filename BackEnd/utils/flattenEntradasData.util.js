@@ -2,14 +2,14 @@ export function flattenEntradasData(entradas) {
     const flattened = [];
 
     entradas.forEach((entrada, index) => {
-        const tipoEntrada = entrada.TipoEntrada?.nombre || '';
-        const usuario = entrada.Usuario?.nombreCompleto || '';
-        const rol = entrada.Usuario?.Rol?.nombre || '';
+        const tipoEntrada = entrada.tipoEntrada?.nombre || '';
+        const usuario = entrada.usuario?.nombreCompleto || '';
+        const rol = entrada.usuario?.rol?.nombre || '';
 
-        entrada.Lotes.forEach((lote) => {
-            const producto = lote.Producto?.nombre || '';
-            const categoria = lote.Producto?.Categoria?.nombre || '';
-            const presentacion = lote.Producto?.presentacion || '';
+        entrada.lotes.forEach((lote) => {
+            const producto = lote.producto?.nombre || '';
+            const categoria = lote.producto?.categoria?.nombre || '';
+            const presentacion = lote.producto?.presentacion || '';
 
             flattened.push({
                 'No.': index + 1,

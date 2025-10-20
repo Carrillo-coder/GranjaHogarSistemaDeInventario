@@ -1,5 +1,5 @@
 const db = require('../Models');
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const { flattenSalidasData } = require('../utils/flattenSalidasData.util.js');
 const { generateCSV, generatePDF } = require('../utils/fileGenerator.util.js');
 
@@ -72,19 +72,20 @@ class SalidasService {
 
     static async generarReporteSalidas(reporteFiltros, departamento) {
         const { fechaInicio, fechaFin, formato } = reporteFiltros;
+        console.log({ fechaInicio, fechaFin, formato, departamento });
 
         const tableHeaders = [
             'No.', 'Fecha', 'Departamento', 'Producto', 'Categoría', 'Presentación', 'Cantidad Retirada',
             'Tipo Salida', 'Usuario Responsable', 'Rol Usuario', 'Notas'
         ];
 
-        const departamentoWhere = (departamento && departamento !== 'Todos') 
-                                    ? { nombre: departamento } 
-                                    : undefined;
+        const departamentoWhere = (departamento && departamento !== 'Todos')
+            ? { nombre: departamento }
+            : undefined;
 
         const salidas = await db.Salida.findAll({
             where: {
-                fecha: { [Op.between]: [fechaInicio, fechaFin] }
+                fecha: { [db.Sequelize.Op.between]: [fechaInicio, fechaFin] }
             },
             include: [
                 {
@@ -102,17 +103,22 @@ class SalidasService {
                     model: db.Usuario,
                     attributes: ['nombreCompleto'],
                     as: 'usuario',
-                    include: [{ model: db.Rol, attributes: ['nombre'], as: 'rol' }],
+                    include: [{ model: db.Rol, attributes: ['nombre'], as: 'rol' }]
                 },
                 {
                     model: db.Producto,
                     attributes: ['nombre', 'presentacion'],
                     as: 'producto',
-                    include: [{ model: db.Categoria, attributes: ['nombre'], as: 'categoria' }],
+                    include: [{ model: db.Categoria, attributes: ['nombre'], as: 'categoria' }]
                 }
             ],
             order: [['fecha', 'ASC']],
+
         });
+
+        if (salidas.length === 0) {
+            throw new Error(`No se encontraron salidas para el departamento "${departamento}" en el rango de fechas dado.`);
+        }
 
 
         const flattenedData = flattenSalidasData(salidas);
