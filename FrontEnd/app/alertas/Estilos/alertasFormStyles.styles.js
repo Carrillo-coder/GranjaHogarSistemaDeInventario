@@ -1,3 +1,4 @@
+// Estilos/alertasFormStyles.styles.js
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
@@ -63,5 +64,20 @@ export default StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', backgroundColor: 'white',
     paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12,
     elevation: 2, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.2, shadowRadius: 2,
+  },
+
+  // errores (añadido)
+  errorBox: {
+    backgroundColor: '#ffefef',
+    borderColor: '#ffcccc',
+    borderWidth: 1,
+    marginHorizontal: 12,
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 6,
+  },
+  errorText: {
+    color: '#b10000',
+    textAlign: 'center',
   },
 });

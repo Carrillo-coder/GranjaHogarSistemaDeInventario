@@ -1,41 +1,42 @@
+// AlertasForm.jsx
 import 'expo-router/entry';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
   View, SafeAreaView, StatusBar, ScrollView,
-  Text, TouchableOpacity, Image
+  Text, RefreshControl
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './Estilos/alertasFormStyles.styles.js';
 import Footer from '../../components/Footer.js';
+import useAlertas from '../../hooks/useAlertas';
 
-const AlertasForm = ({
-  expiring = [
-    { nombre: 'Producto 1', fecha: '2025-10-15' },
-    { nombre: 'Producto 2', fecha: '2025-10-20' },
-    { nombre: 'Producto 3', fecha: '2025-11-02' },
-  ],
-  lowStock = [
-    { nombre: 'Producto 1', cantidad: 2 },
-    { nombre: 'Producto 2', cantidad: 1 },
-    { nombre: 'Producto 3', cantidad: 4 },
-  ],
-  overStock = [
-    { nombre: 'Producto 4', cantidad: 120 },
-    { nombre: 'Producto 5', cantidad: 95 },
-  ],
-}) => {
+const AlertasForm = () => {
   const router = useRouter();
+  const { expiring, lowStock, overStock, loading, error, refresh } = useAlertas({
+    dias: 10, umbralBajo: 10, umbralAlto: 100
+  });
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#04538A" barStyle="light-content" />
 
-      <ScrollView style={styles.content}>
+      {error ? (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      ) : null}
+
+      <ScrollView
+        style={styles.content}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={refresh} colors={['#04538A']} />
+        }
+      >
         <Card title="Productos por caducar" icon="time-outline">
           <Table
             headers={['Producto', 'Fecha']}
-            rows={expiring.map((x) => ({ producto: x.nombre, meta: x.fecha }))}
+            rows={expiring.map((x) => ({ producto: x.nombre, meta: x.fecha || '' }))}
             metaAlign="right"
           />
         </Card>
@@ -43,7 +44,7 @@ const AlertasForm = ({
         <Card title="Productos bajos en almacén" icon="trending-down-outline">
           <Table
             headers={['Producto', 'Cantidad']}
-            rows={lowStock.map((x) => ({ producto: x.nombre, meta: String(x.cantidad) }))}
+            rows={lowStock.map((x) => ({ producto: x.nombre, meta: String(x.cantidad ?? 0) }))}
             metaAlign="right"
           />
         </Card>
@@ -51,21 +52,21 @@ const AlertasForm = ({
         <Card title="Productos altos en inventario" icon="trending-up-outline">
           <Table
             headers={['Producto', 'Cantidad']}
-            rows={overStock.map((x) => ({ producto: x.nombre, meta: String(x.cantidad) }))}
+            rows={overStock.map((x) => ({ producto: x.nombre, meta: String(x.cantidad ?? 0) }))}
             metaAlign="right"
           />
         </Card>
 
         <View style={{ height: 80 }} />
       </ScrollView>
+
       <Footer
-        onLogOutPress={  () => router.replace('/')}
-        onHomePress={ () => router.replace('/main/adminForm')}
+        onLogOutPress={() => router.replace('/')}
+        onHomePress={() => router.replace('/main/adminForm')}
       />
     </SafeAreaView>
   );
 };
-
 
 const Card = ({ title, icon, children }) => (
   <View style={styles.card}>
