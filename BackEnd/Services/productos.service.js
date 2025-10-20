@@ -1,6 +1,6 @@
 const db = require('../Models');
 const { Op } = db.Sequelize;
-const ProductoVO = require('../ValueObjects/producto.vo');
+const ProductoVO = require('../ValueObjects/productos.vo');
 
 class ProductosService {
 

@@ -5,7 +5,7 @@ const db = require('./Models');
 
 const usuariosRoutes = require('./Routes/usuarios.routes');
 const rolesRoutes = require('./Routes/roles.routes');
-const productosRoutes = require('./Routes/producto.routes');
+const productosRoutes = require('./Routes/productos.routes');
 const departamentosRoutes = require('./Routes/departamentos.routes');
 const entradasRoutes = require('./Routes/entradas.routes');
 const salidasRoutes = require('./Routes/salidas.routes');

@@ -1,6 +1,6 @@
 const express = require('express');
 const { query, param, body } = require('express-validator');
-const ProductosController = require('../Controllers/producto.controller');
+const ProductosController = require('../Controllers/productos.controller');
 const router = express.Router();
 
 const letters = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]+$/;

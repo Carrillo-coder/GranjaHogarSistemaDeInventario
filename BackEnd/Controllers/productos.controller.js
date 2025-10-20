@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const ProductosService = require('../Services/producto.service');
+const ProductosService = require('../Services/productos.service');
 
 class ProductosController {
   static async getAll(req, res) {
