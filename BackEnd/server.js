@@ -1,5 +1,3 @@
-//Es el server para probar que sus endpoints funcionen, no tienen que cambiar nada
-
 const app = require('./app');
 const db = require('./Models');
 

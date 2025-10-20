@@ -1,5 +1,3 @@
-//Esto es para probarlo de momento, si quieren usarlo añadan sus rutas en la línea 10  y agreguen sus endopints en la línea 33 y en la línea 50 tmb rutas, si no les sirve, pídanle ayuda a chat :)
-
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
