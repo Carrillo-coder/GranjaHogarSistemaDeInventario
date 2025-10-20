@@ -31,6 +31,33 @@ class CategoriasService {
         }
     }
 
+    static async getAllCategorias() {
+        try {
+            const categorias = await Categoria.findAll();
+            if (!categorias || categorias.length === 0) {
+                return {
+                    success: true,
+                    message: 'No hay categorías disponibles',
+                    data: [],
+                    statusCode: 204
+                };
+            }
+            return {
+                success: true,
+                message: 'Categorías obtenidas correctamente',
+                data: categorias.map(c => new CategoriaVO(c)),
+                statusCode: 200
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: 'Error al obtener categorías',
+                error: error.message,
+                statusCode: 500
+            };
+        }
+    }
+
     // GET /api/inventario/categorias/:id
     static async getCategoriaById(id) {
         try {

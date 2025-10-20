@@ -39,7 +39,7 @@ class SalidaController {
 
     static async getAllSalidas(req, res) {
         try {
-            const salidas = await SalidaService.getAllSalidas();
+            const salidas = await SalidasService.getAllSalidas();
             res.status(200).json(salidas);
         } catch (error) {
             res.status(500).json({ message: 'Error al obtener las salidas' });
@@ -49,7 +49,7 @@ class SalidaController {
     static async getSalidaById(req, res) {
         try {
             const { id } = req.params;
-            const salida = await SalidaService.getSalidaById(id);
+            const salida = await SalidasService.getSalidaById(id);
             if (!salida) return res.status(404).json({ message: 'Salida no encontrada' });
             res.status(200).json(salida);
         } catch (error) {
@@ -60,7 +60,7 @@ class SalidaController {
     static async createSalida(req, res) {
         try {
             const data = req.body;
-            const nuevaSalida = await SalidaService.createSalida(data);
+            const nuevaSalida = await SalidasService.createSalida(data);
             res.status(201).json(nuevaSalida);
         } catch (error) {
             res.status(500).json({ message: 'Error al crear la salida', error: error.message });
@@ -68,4 +68,4 @@ class SalidaController {
     }
 }
 
-module.exports = SalidaController;
+module.exports = SalidasController;

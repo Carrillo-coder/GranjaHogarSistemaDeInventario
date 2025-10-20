@@ -11,15 +11,15 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             field: 'idProducto'
         },
-        Nombre: {
+        nombre: {
             type: Sequelize.STRING(50),
             allowNull: false,
-            field: 'Nombre'
+            field: 'nombre'
         },
-        Presentacion: {
+        presentacion: {
             type: Sequelize.STRING(50),
             allowNull: false,
-            field: 'Presentacion'
+            field: 'presentacion'
         },
         idCategoria: {
             type: Sequelize.INTEGER,
