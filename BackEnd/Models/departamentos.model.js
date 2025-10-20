@@ -20,7 +20,7 @@ module.exports = (sequelize, Sequelize) => {
         },
     },
         {
-            tableName: 'departamentos',
+            tableName: 'Departamentos',
             timestamps: false
         }
     );

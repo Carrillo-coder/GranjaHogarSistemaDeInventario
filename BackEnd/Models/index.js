@@ -20,7 +20,7 @@ db.Entrada = require("./entradas.model.js")(sequelize, Sequelize);
 db.Salida = require("./salidas.model.js")(sequelize, Sequelize);
 db.Departamento = require("./departamentos.model.js")(sequelize, Sequelize);
 db.TipoEntrada = require("./tiposEntradas.model.js")(sequelize, Sequelize);
-db.Categorias = require("./categorias.model.js")(sequelize, Sequelize); 
+db.Categoria = require("./categorias.model.js")(sequelize, Sequelize); 
 db.Lote = require("./lotes.model.js")(sequelize, Sequelize); 
 db.TipoSalida = require("./tiposSalidas.model.js")(sequelize, Sequelize);
 

@@ -17,10 +17,10 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: true,
             field: 'idProducto'
         },
-        idDepartamentos: {
+        idDepartamento: {
             type: Sequelize.INTEGER,
             allowNull: true,
-            field: 'idDepartamentos'
+            field: 'idDepartamento'
         },
         cantidad: {
             type: Sequelize.INTEGER,
@@ -33,12 +33,12 @@ module.exports = (sequelize, Sequelize) => {
             field: 'idUsuario'
         },
         fecha: {
-            type: Sequelize.DATE,
+            type: Sequelize.DATEONLY,
             allowNull: true,
             field: 'fecha'
         },
         notas: {
-            type: Sequelize.STRING(255),
+            type: Sequelize.STRING(225),
             allowNull: true,
             field: 'notas'
         }
