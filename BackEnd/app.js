@@ -12,6 +12,7 @@ const salidasRoutes = require('./Routes/salidas.routes');
 const lotesRoutes = require('./Routes/lotes.routes');
 const categoriasRoutes = require('./Routes/categorias.routes');
 const tiposSalidasRoutes = require('./Routes/tiposSalidas.routes');
+const alertasRoutes = require('./Routes/alertas.routes');
 
 
 const app = express();
@@ -56,6 +57,7 @@ app.use('/api/inventario/salidas', salidasRoutes);
 app.use('/api/inventario/lotes', lotesRoutes);
 app.use('/api/inventario/categorias', categoriasRoutes);
 app.use('/api/inventario/tiposSalidas', tiposSalidasRoutes);
+app.use('/api/inventario/alertas', alertasRoutes);
 
 
 app.use((req, res) => {
