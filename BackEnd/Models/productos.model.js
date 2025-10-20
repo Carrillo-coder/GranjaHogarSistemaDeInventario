@@ -6,10 +6,10 @@ module.exports = (sequelize, Sequelize) => {
       primaryKey: true,
       field: 'idProducto'
     },
-    Nombre: {
+    nombre: {
       type: Sequelize.STRING(120),
       allowNull: false,
-      field: 'Nombre',
+      field: 'nombre',
       validate: {
         notEmpty: { msg: 'El nombre es obligatorio' },
         is: {
@@ -18,10 +18,10 @@ module.exports = (sequelize, Sequelize) => {
         }
       }
     },
-    Presentacion: {
+    presentacion: {
       type: Sequelize.STRING(120),
       allowNull: false,
-      field: 'Presentacion',
+      field: 'presentacion',
       validate: {
         notEmpty: { msg: 'La presentación es obligatoria' },
         is: {
