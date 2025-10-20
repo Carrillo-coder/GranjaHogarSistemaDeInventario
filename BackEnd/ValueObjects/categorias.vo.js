@@ -1,9 +1,8 @@
 class CategoriasVO {
-
-    constructor({ idCategoria, Nombre }) {
-        this.idCategoria = idCategoria;
-        this.Nombre = Nombre;
-    }
+  constructor({ idCategoria, nombre }) {
+    this.idCategoria = idCategoria;
+    this.nombre = nombre;
+  }
 }
 
 module.exports = CategoriasVO;

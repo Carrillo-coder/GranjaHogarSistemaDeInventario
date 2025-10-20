@@ -24,7 +24,7 @@ module.exports = (sequelize, Sequelize) => {
             field: 'idUsuario'
         },
         fecha: {
-            type: Sequelize.DATE,
+            type: Sequelize.DATEONLY,
             field: 'fecha'
         },
         notas: {

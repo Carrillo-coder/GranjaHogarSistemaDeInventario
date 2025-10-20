@@ -1,3 +1,4 @@
+// productos.model.js
 module.exports = (sequelize, Sequelize) => {
   const Producto = sequelize.define("Producto", {
     idProducto: {
@@ -7,8 +8,8 @@ module.exports = (sequelize, Sequelize) => {
       field: 'idProducto'
     },
     nombre: {
-      type: Sequelize.STRING(120),
-      allowNull: false,
+      type: Sequelize.STRING(50),     // ← coincide con VARCHAR(50)
+      allowNull: false,               // ← NO NULL en BD
       field: 'nombre',
       validate: {
         notEmpty: { msg: 'El nombre es obligatorio' },
@@ -19,20 +20,20 @@ module.exports = (sequelize, Sequelize) => {
       }
     },
     presentacion: {
-      type: Sequelize.STRING(120),
-      allowNull: false,
+      type: Sequelize.STRING(50),     // ← coincide con VARCHAR(50)
+      allowNull: false,               // ← NO NULL en BD
       field: 'presentacion',
       validate: {
         notEmpty: { msg: 'La presentación es obligatoria' },
         is: {
-          args: [/^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ0-9\s\-.,/()xX]+$/],
+          args: [/^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ0-9\s\-.,\/()xX]+$/], // escapada la /
           msg: 'Presentación inválida (letras/números y - . , / ( ) x)'
         }
       }
     },
     idCategoria: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: false,               // ← NO NULL en BD
       field: 'idCategoria'
     }
   }, {

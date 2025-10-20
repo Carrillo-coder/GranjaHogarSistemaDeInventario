@@ -208,7 +208,7 @@ class LotesService {
                 },
                 {
                     model: Lote,
-                    attributes: ['idLote', 'unidadesExistentes', 'caducidad', 'activo'],
+                    attributes: ['idLotes', 'unidadesExistentes', 'caducidad', 'activo'],
                     as : 'lotes',
                 }
             ],
