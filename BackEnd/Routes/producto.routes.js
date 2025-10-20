@@ -1,27 +1,69 @@
 const express = require('express');
+const { query, param, body } = require('express-validator');
+const ProductosController = require('../Controllers/producto.controller');
 const router = express.Router();
-const ProductoController = require('../Controllers/producto.controller');
 
-// GET productos filtrados o todos
-// /api/inventario/productos?nombre=Manzana&presentacion=bolsa
-router.get('/', ProductoController.getAll);
+const letters = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]+$/;
+const presentAllowed = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ0-9\s\-.,/()xX]+$/;
 
-// GET producto por ID
-router.get('/:id', ProductoController.getById);
+router.get('/',
+  [ query('nombre').optional().isString().trim(),
+    query('presentacion').optional().isString().trim() ],
+  ProductosController.getAll
+);
 
-// GET cantidad total de un producto
-router.get('/:id/cantidad', ProductoController.getCantidad);
+router.get('/:id',
+  [ param('id').isInt().withMessage('id debe ser entero') ],
+  ProductosController.getById
+);
 
-// GET caducidad más próxima de un producto
-router.get('/:id/caducidad', ProductoController.getCaducidad);
+router.get('/:id/cantidad',
+  [ param('id').isInt().withMessage('id debe ser entero') ],
+  ProductosController.getCantidad
+);
 
-// POST crear producto
-router.post('/', ProductoController.create);
+router.get('/:id/caducidad',
+  [ param('id').isInt().withMessage('id debe ser entero') ],
+  ProductosController.getCaducidad
+);
 
-// PUT actualizar producto
-router.put('/:id', ProductoController.update);
+router.post('/',
+  [
+    body('nombre').optional().isString().trim(),
+    body('Nombre').optional().isString().trim(),
+    body('presentacion').optional().isString().trim(),
+    body('Presentacion').optional().isString().trim(),
+    body('categoria').optional().isString().trim(),
+    body('categoría').optional().isString().trim(),
+    body('idCategoria').optional().isInt().toInt(),
 
-// DELETE producto
-router.delete('/:id', ProductoController.delete);
+    body('nombre').if(body('Nombre').not().exists())
+      .notEmpty().withMessage('nombre es obligatorio')
+      .matches(letters).withMessage('nombre solo permite letras y espacios'),
+    body('presentacion').if(body('Presentacion').not().exists())
+      .notEmpty().withMessage('presentacion es obligatoria')
+      .matches(presentAllowed).withMessage('presentacion inválida'),
+  ],
+  ProductosController.create
+);
+
+router.put('/:id',
+  [
+    param('id').isInt().withMessage('id debe ser entero'),
+    body('nombre').optional().isString().trim(),
+    body('Nombre').optional().isString().trim(),
+    body('presentacion').optional().isString().trim(),
+    body('Presentacion').optional().isString().trim(),
+    body('categoria').optional().isString().trim(),
+    body('categoría').optional().isString().trim(),
+    body('idCategoria').optional().isInt().toInt()
+  ],
+  ProductosController.update
+);
+
+router.delete('/:id',
+  [ param('id').isInt().withMessage('id debe ser entero') ],
+  ProductosController.delete
+);
 
 module.exports = router;

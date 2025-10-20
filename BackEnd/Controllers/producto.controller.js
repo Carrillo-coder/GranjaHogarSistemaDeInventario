@@ -1,124 +1,51 @@
-const ProductoService = require('../Services/producto.service');
+const { validationResult } = require('express-validator');
+const ProductosService = require('../Services/producto.service');
 
-class ProductoController {
+class ProductosController {
+  static async getAll(req, res) {
+    const result = await ProductosService.getAll({
+      nombre: req.query.nombre,
+      presentacion: req.query.presentacion
+    });
+    return res.status(result.statusCode).json(result);
+  }
 
-    // GET /api/inventario/productos
-    static async getAll(req, res) {
-        try {
-            const result = await ProductoService.getAllProductos();
-            return res.status(result.statusCode).json(result);
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: 'Error interno del servidor',
-                error: error.message
-            });
-        }
-    }
+  static async getById(req, res) {
+    const result = await ProductosService.getById(req.params.id);
+    return res.status(result.statusCode).json(result);
+  }
 
-    // GET /api/inventario/productos/:id
-    static async getById(req, res) {
-        try {
-            const { id } = req.params;
-            const result = await ProductoService.getProductoById(id);
-            return res.status(result.statusCode).json(result);
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: 'Error interno del servidor',
-                error: error.message
-            });
-        }
-    }
+  static async create(req, res) {
+    if (req.body['categoría'] && !req.body['categoria'])
+      req.body['categoria'] = req.body['categoría'];
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
 
-    // GET /api/inventario/productos?categoria=idCategoria
-    static async getByCategoria(req, res) {
-        try {
-            const { categoria } = req.query;
-            const result = await ProductoService.getProductosByCategoria(categoria);
-            return res.status(result.statusCode).json(result);
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: 'Error interno del servidor',
-                error: error.message
-            });
-        }
-    }
+    const result = await ProductosService.create(req.body);
+    return res.status(result.statusCode).json(result);
+  }
 
-    // GET /api/inventario/productos/:id/cantidad
-    static async getCantidad(req, res) {
-    try {
-        const { id } = req.params;
-        const result = await ProductoService.getCantidadTotal(id);
-        return res.status(result.statusCode).json(result);
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: 'Error interno del servidor',
-            error: error.message
-        });
-    }
-    }
+  static async update(req, res) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
 
-    // GET /api/inventario/productos/:id/caducidad
-    static async getCaducidad(req, res) {
-    try {
-        const { id } = req.params;
-        const result = await ProductoService.getCaducidadMasProxima(id);
-        return res.status(result.statusCode).json(result);
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: 'Error interno del servidor',
-            error: error.message
-        });
-    }
-    }
+    const result = await ProductosService.update(req.params.id, req.body);
+    return res.status(result.statusCode).json(result);
+  }
 
-    // POST /api/inventario/productos
-    static async create(req, res) {
-        try {
-            const result = await ProductoService.createProducto(req.body);
-            return res.status(result.statusCode).json(result);
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: 'Error interno del servidor',
-                error: error.message
-            });
-        }
-    }
+  static async delete(req, res) {
+    const result = await ProductosService.remove(req.params.id);
+    return res.status(result.statusCode).json(result);
+  }
 
-    // PUT /api/inventario/productos/:id
-    static async update(req, res) {
-        try {
-            const { id } = req.params;
-            const result = await ProductoService.updateProducto(id, req.body);
-            return res.status(result.statusCode).json(result);
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: 'Error interno del servidor',
-                error: error.message
-            });
-        }
-    }
+  static async getCantidad(req, res) {
+    const result = await ProductosService.getCantidadTotal(req.params.id);
+    return res.status(result.statusCode).json(result);
+  }
 
-    // DELETE /api/inventario/productos/:id
-    static async delete(req, res) {
-        try {
-            const { id } = req.params;
-            const result = await ProductoService.deleteProducto(id);
-            return res.status(result.statusCode).json(result);
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: 'Error interno del servidor',
-                error: error.message
-            });
-        }
-    }
+  static async getCaducidad(req, res) {
+    const result = await ProductosService.getCaducidadMasProxima(req.params.id);
+    return res.status(result.statusCode).json(result);
+  }
 }
-
-module.exports = ProductoController;
+module.exports = ProductosController;

@@ -15,7 +15,7 @@ db.sequelize = sequelize;
 // --- Definición de Modelos (Unificados) ---
 db.Usuario = require("./usuarios.model.js")(sequelize, Sequelize);
 db.Rol = require("./roles.model.js")(sequelize, Sequelize);
-db.Producto = require("./productos.model.js")(sequelize, Sequelize);
+db.Producto = require("./producto.model.js")(sequelize, Sequelize);
 db.Entrada = require("./entradas.model.js")(sequelize, Sequelize);
 db.Salida = require("./salidas.model.js")(sequelize, Sequelize);
 db.Departamento = require("./departamentos.model.js")(sequelize, Sequelize);

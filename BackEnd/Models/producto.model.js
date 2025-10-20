@@ -1,39 +1,47 @@
-/**
- * Modelo de Usuario usando Sequelize
- * @param {object} sequelize - Instancia de Sequelize
- * @param {object} Sequelize - Constructor de Sequelize
- */
 module.exports = (sequelize, Sequelize) => {
-    const Producto = sequelize.define("Producto", {
-        idProducto: {
-            type: Sequelize.INTEGER,
-            autoIncrement: true,
-            primaryKey: true,
-            field: 'idProducto'
-        },
-        Nombre: {
-            type: Sequelize.STRING(50),
-            allowNull: false,
-            field: 'Nombre'
-        },
-        Presentacion: {
-            type: Sequelize.STRING(50),
-            allowNull: false,
-            field: 'Presentacion'
-        },
-        idCategoria: {
-            type: Sequelize.INTEGER,
-            allowNull: true,
-            field: 'idCategoria',
-            references: {
-                model: 'Categoria',
-                key: 'idCategoria'
-            }
+  const Producto = sequelize.define("Producto", {
+    idProducto: {
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      field: 'idProducto'
+    },
+    Nombre: {
+      type: Sequelize.STRING(120),
+      allowNull: false,
+      field: 'Nombre',
+      validate: {
+        notEmpty: { msg: 'El nombre es obligatorio' },
+        is: {
+          args: [/^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]+$/],
+          msg: 'Nombre inválido (solo letras y espacios)'
         }
-    }, {
-        tableName: 'Productos',
-        timestamps: false
-    });
+      }
+    },
+    Presentacion: {
+      type: Sequelize.STRING(120),
+      allowNull: false,
+      field: 'Presentacion',
+      validate: {
+        notEmpty: { msg: 'La presentación es obligatoria' },
+        is: {
+          args: [/^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ0-9\s\-.,/()xX]+$/],
+          msg: 'Presentación inválida (letras/números y - . , / ( ) x)'
+        }
+      }
+    },
+    idCategoria: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      field: 'idCategoria'
+    }
+  }, {
+    tableName: 'Productos',
+    timestamps: false,
+    indexes: [
+      { unique: true, fields: ['Nombre', 'Presentacion'], name: 'ux_nombre_presentacion' }
+    ]
+  });
 
-    return Producto;
+  return Producto;
 };
