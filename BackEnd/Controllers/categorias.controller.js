@@ -1,10 +1,10 @@
-const CategoriaService = require('../Services/categoria.service');
+const CategoriasService = require('../Services/categorias.service');
 
-class CategoriaController {
+class CategoriasController {
 
     static async getAll(req, res) {
         try {
-            const result = await CategoriaService.getAllCategorias();
+            const result = await CategoriasService.getAllCategorias();
             return res.status(result.statusCode).json(result);
         } catch (error) {
             return res.status(500).json({
@@ -19,7 +19,7 @@ class CategoriaController {
     static async getById(req, res) {
         try {
             const { id } = req.params;
-            const result = await CategoriaService.getCategoriaById(id);
+            const result = await CategoriasService.getCategoriaById(id);
                  return res.status(result.statusCode).json(result);
         } catch (error) {
             return res.status(500).json({
@@ -32,7 +32,7 @@ class CategoriaController {
     static async getByNombre(req, res) {
         try {
             const { nombre } = req.params;
-            const result = await CategoriaService.getCategoriaByNombre(nombre);
+            const result = await CategoriasService.getCategoriaByNombre(nombre);
             return res.status(result.statusCode).json(result);
         } catch (error) {
             return res.status(500).json({
@@ -45,5 +45,5 @@ class CategoriaController {
 }
 
 
-module.exports = CategoriaController;
+module.exports = CategoriasController;
 

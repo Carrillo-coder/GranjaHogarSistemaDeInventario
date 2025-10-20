@@ -1,4 +1,4 @@
-class CategoriaVO {
+class CategoriasVO {
 
     constructor({ idCategoria, Nombre }) {
         this.idCategoria = idCategoria;
@@ -6,4 +6,4 @@ class CategoriaVO {
     }
 }
 
-module.exports = CategoriaVO;
+module.exports = CategoriasVO;
