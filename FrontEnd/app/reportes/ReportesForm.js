@@ -1,44 +1,30 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useReportesForm } from '../../hooks/useReportesForm';
-import { CustomDropdown } from '../../components/CustomDropdown';
-import { DatePickerField } from '../../components/DatePickerField';
+import CustomDropdown from '../../components/CustomDropdown';
+import DatePickerField from '../../components/DatePickerField';
 import CustomButton from '../../components/CustomButton';
+import ConfirmationModal from '../../components/ConfirmationModal';
 import Footer from '../../components/Footer';
 import { useRouter } from 'expo-router';
-
-
 
 const ReportesForm = () => {
     const router = useRouter();
     const {
-        reportTypes, departments,
-        reportType, setReportType,
+        reportTypes, setReportType,
+        reportType, departments, handleDepartmentChange,
         department, startDate, endDate,
         exportFormat, setExportFormat,
-
-        reportTypeFocus, setReportTypeFocus,
-        departmentFocus, setDepartmentFocus,
         showStartDatePicker, showEndDatePicker,
-
         areDatesDisabled, isDepartmentDisabled,
-
         formatDate, onStartDateChange, onEndDateChange,
         showStartDatepicker, showEndDatepicker,
-        handleDepartmentChange,
+        modalVisible, handleDownload,
+        handleConfirmDownload, handleCancelDownload,
+        generatingReport,
 
     } = useReportesForm();
 
-    const handleGenerateReport = () => {
-        console.log('Generando reporte...');
-        Alert.alert('Reporte generado con éxito');
-    }
-
-    const handleDownload = () => {
-        console.log('Descargando reporte...');
-        Alert.alert('Reporte generado con éxito');
-    }
-    
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.content}>
@@ -48,10 +34,7 @@ const ReportesForm = () => {
                         data={reportTypes}
                         value={reportType}
                         onValueChange={setReportType}
-                        placeholder="Entrada/Salida/Inventario"
-                        isFocused={reportTypeFocus}
-                        onFocus={() => setReportTypeFocus(true)}
-                        onBlur={() => setReportTypeFocus(false)}
+                        placeholder="Selecciona tipo..."
                     />
 
                     <View style={styles.dateContainer}>
@@ -81,10 +64,7 @@ const ReportesForm = () => {
                         data={departments}
                         value={department}
                         onValueChange={handleDepartmentChange}
-                        placeholder="Departamento"
-                        isFocused={departmentFocus}
-                        onFocus={() => setDepartmentFocus(true)}
-                        onBlur={() => setDepartmentFocus(false)}
+                        placeholder="Selecciona departamento..."
                         disabled={isDepartmentDisabled}
                     />
 
@@ -105,21 +85,22 @@ const ReportesForm = () => {
                     </View>
 
                     <CustomButton
-                        title="Generar reporte"
-                        icon="file-download"
-                        onPress={handleGenerateReport}
-                    />
-
-                    <CustomButton
-                        title="Descargar"
+                        title="Descargar reporte"
                         icon="download"
                         onPress={handleDownload}
+                        disabled={generatingReport}
                     />
                 </View>
             </ScrollView>
             <Footer
                 onBackPress={() => router.replace('/')}
                 onHomePress={() => router.replace('/main/adminForm')}
+            />
+            <ConfirmationModal
+                visible={modalVisible}
+                message="Confirmar descarga del reporte:"
+                onConfirm={handleConfirmDownload}
+                onCancel={handleCancelDownload}
             />
         </View>
     );
@@ -186,35 +167,5 @@ const styles = StyleSheet.create({
     radioLabel: {
         fontSize: 14,
         color: '#333',
-    },
-    generateButton: {
-        backgroundColor: '#04538A',
-        paddingVertical: 12,
-        paddingHorizontal: 40,
-        borderRadius: 4,
-        alignItems: 'center',
-        marginBottom: 15,
-    },
-    downloadButton: {
-        backgroundColor: '#04538A',
-        paddingVertical: 12,
-        paddingHorizontal: 40,
-        borderRadius: 4,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    logoContainer: {
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    logoText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#4CAF50',
-        letterSpacing: 1,
-    },
+    }
 });

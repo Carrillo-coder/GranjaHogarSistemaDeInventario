@@ -6,19 +6,23 @@ class LotesController {
             const { formato } = req.query;
 
             if (!formato || formato.trim() === '') {
-                return res.status(400).json({ success: false, message: 'El parámetro "formato" es obligatorio.', error: error.message });
-            } else if (!['CSV', 'PDF'].includes(formato)) {
-                return res.status(400).json({ success: false, message: 'El formato debe ser CSV o PDF.', error: error.message });
+                return res.status(400).json({ success: false, message: 'El parámetro "formato" es obligatorio.' });
+            } else if (!['XLSX', 'PDF'].includes(formato)) {
+                return res.status(400).json({ success: false, message: 'El formato debe ser XLSX o PDF.' });
             }
 
             const { buffer, filename } = await LotesService.generarReporteLotes(formato);
-            if (formato === 'PDF') {
-                res.setHeader('Content-Type', 'application/pdf');
-            } else if (formato === 'CSV') {
-                res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-            }
-            res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
-            return res.send(buffer);
+            const base64 = buffer.toString('base64');
+            const mimeType = formato === 'PDF'
+            ? 'application/pdf'
+            : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+            return res.json({
+                success: true,
+                filename,
+                mimeType,
+                base64,
+            });
 
         } catch (error) {
             console.error('Error al generar el reporte de inventario:', error);

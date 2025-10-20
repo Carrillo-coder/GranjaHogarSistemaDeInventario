@@ -1,39 +1,59 @@
-import { Parser } from 'json2csv';
 import PDFDocument from 'pdfkit';
-import getStream from 'get-stream';
 import { PassThrough } from 'stream';
-import { get } from 'http';
+import ExcelJS from 'exceljs';
 
 /**
- * Genera un CSV a partir de flattenedData y metadata
+ * Genera un Excel a partir de flattenedData y metadata
  * @param {Array} flattenedData - Datos ya aplanados para exportar
  * @param {Object} metadata - Información adicional del reporte
- * @param {string} filePath - Ruta donde guardar el CSV
- * @returns {string} - Ruta del archivo generado
+ * @param {Buffer} - Buffer del archivo XLSX generado
  */
-export async function generateCSV(flattenedData, metadata) {
+export async function generateXLSX(flattenedData, metadata) {
 
-    const metadataRows = [
-        [metadata.titulo],
-        ['Generado por:', metadata.generadoPor],
-        ['Fecha de generación:', metadata.fechaGeneracion],
-        metadata.periodo
-            ? ['Periodo:', `${metadata.periodo.inicio}`, `${metadata.periodo.fin}`]
-            : [],
-        ['Productos distintos:', metadata.totales.productosDistintos],
-        ['Unidades totales:', metadata.totales.unidadesTotales ?? 0],
-        ['Registros:', metadata.totales.registros ?? 0],
-        [],
-    ]
-        .filter(row => row.length > 0)
-        .map(row => row.join(','))
-        .join('\n');
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Reporte');
 
-    const parser = new Parser({ fields: Object.keys(flattenedData[0]) });
-    const csvTabla = parser.parse(flattenedData);
-    const csv = `${metadataRows}\n${csvTabla}`;
+    worksheet.addRow([metadata.titulo] || 'Reporte').font = { size: 16, bold: true };
+    worksheet.addRow(['Generado por:', metadata.generadoPor] || []).font = { size: 12, bold: false };
+    worksheet.addRow(['Fecha de generación:', metadata.fechaGeneracion] || []).font = { size: 12, bold: false };
+    if (metadata.periodo) {
+        worksheet.addRow(['Período:', metadata.periodo.inicio, metadata.periodo.fin] || []).font = { size: 12, bold: false };
+    }
+    worksheet.addRow(['Productos distintos:', metadata.totales.productosDistintos ?? 0] || []).font = { size: 12, bold: false };
+    worksheet.addRow(['Unidades totales:', metadata.totales.unidadesTotales ?? 0] || []).font = { size: 12, bold: false };
+    worksheet.addRow(['Registros:', metadata.totales.registros ?? 0] || []).font = { size: 12, bold: false };
+    worksheet.addRow([]);
 
-    return Buffer.from('\uFEFF' + csv, 'utf8');
+    const headers = Object.keys(flattenedData[0]);
+    const headerRow = worksheet.addRow(headers);
+    headerRow.eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.alignment = { horizontal: 'center' };
+        cell.border = { top: { style: 'thin' }, bottom: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } };
+    });
+    flattenedData.forEach((dataRow) => {
+        const rowValues = headers.map(h => dataRow[h]);
+        const row = worksheet.addRow(rowValues);
+        const totalRow = rowValues.some(v => typeof v === 'string' && v.trim().toUpperCase() === 'TOTAL');
+        if (!totalRow) {
+            row.eachCell((cell) => {
+                cell.border = { top: { style: 'thin' }, bottom: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } };
+            });
+        } else {
+            row.font = { bold: true };
+        }
+    });
+    worksheet.columns.forEach((column) => {
+        let maxLength = 10;
+        column.eachCell({ includeEmpty: true }, cell => {
+            const len = cell.value ? cell.value.toString().length : 0;
+            if (len > maxLength) maxLength = len;
+        });
+        column.width = maxLength + 2;
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer;
 }
 
 /**
@@ -41,8 +61,7 @@ export async function generateCSV(flattenedData, metadata) {
  * @param {Array} flattenedData - Datos aplanados para exportar
  * @param {Object} metadata - Información del reporte
  * @param {Array} tableHeaders - Encabezados de la tabla
- * @param {string} filePath - Ruta donde guardar el PDF
- * @returns {Promise<string>} - Ruta del archivo generado
+ * @returns {Promise<Buffer>} - Buffer del archivo PDF generado
  */
 export async function generatePDF(flattenedData, metadata, tableHeaders) {
 

@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-export const DatePickerField = ({ label, value, onPress, formatDate, showPicker,
+const DatePickerField = ({ label, value, onPress, formatDate, showPicker,
   onDateChange, disabled = false, placeholder = 'xx/xx/xxxx', style, ...props
 }) => {
   const handlePress = () => {
@@ -15,26 +15,22 @@ export const DatePickerField = ({ label, value, onPress, formatDate, showPicker,
     <>
       <View style={[styles.dateField, style]}>
         <Text style={[styles.fieldLabel, disabled && styles.disabledLabel]}>{label}</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[
-            styles.dateInput, 
+            styles.dateInput,
             disabled && styles.dateInputDisabled
-          ]} 
+          ]}
           onPress={handlePress}
           disabled={disabled}
         >
+          <Ionicons name="calendar" size={16} color={disabled ? "#ccc" : "#666"} />
           <Text style={[
-            styles.dateText, 
+            styles.dateText,
             value && styles.selectedDateText,
-            disabled && styles.disabledText
-          ]}>
+            disabled && styles.disabledText]}
+          >
             {value ? formatDate(value) : placeholder}
           </Text>
-          <AntDesign 
-            name="calendar" 
-            size={16} 
-            color={disabled ? "#ccc" : "#666"} 
-          />
         </TouchableOpacity>
       </View>
 
@@ -52,6 +48,8 @@ export const DatePickerField = ({ label, value, onPress, formatDate, showPicker,
   );
 };
 
+export default DatePickerField;
+
 const styles = StyleSheet.create({
   dateField: {
     flex: 0.48,
@@ -66,11 +64,11 @@ const styles = StyleSheet.create({
     height: 48,
     borderColor: '#D0D0D0',
     borderWidth: 1,
-    borderRadius: 4,
+    borderRadius: 8,
     paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 8,
     backgroundColor: 'white',
   },
   dateInputDisabled: {

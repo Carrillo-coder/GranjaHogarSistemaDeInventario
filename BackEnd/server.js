@@ -16,7 +16,7 @@ const startServer = async () => {
         console.log('✅ Conexión exitosa a la base de datos');
 
         // Iniciar servidor
-        app.listen(PORT, () => {
+        app.listen(PORT, '0.0.0.0', () => {
             console.log('\n========================================');
             console.log('🚀 Servidor iniciado correctamente');
             console.log(`📡 Puerto: ${PORT}`);

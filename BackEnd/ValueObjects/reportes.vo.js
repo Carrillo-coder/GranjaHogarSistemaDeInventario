@@ -22,8 +22,8 @@ class ReportesVO {
         }
         if (!this.formato || this.formato.trim() === '') {
             errors.push('El formato es obligatorio');
-        } else if (!['CSV', 'PDF'].includes(this.formato)) {
-            errors.push('El formato debe ser CSV o PDF');
+        } else if (!['XLSX', 'PDF'].includes(this.formato)) {
+            errors.push('El formato debe ser XLSX o PDF');
         }
         return {
             isValid: errors.length === 0,

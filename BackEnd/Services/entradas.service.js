@@ -1,7 +1,7 @@
 const db = require('../Models');
 const { Op } = require('sequelize');
 const { flattenEntradasData } = require('../utils/flattenEntradasData.util.js');
-const { generateCSV, generatePDF } = require('../utils/fileGenerator.util.js');
+const { generateXLSX, generatePDF } = require('../utils/fileGenerator.util.js');
 
 class EntradasService {
     static async generarReporteEntradas(reporteFiltros) {
@@ -59,8 +59,8 @@ class EntradasService {
 
         const filename = `reporte_entradas_${Date.now()}.${formato.toLowerCase()}`;
         let buffer;
-        if (formato === 'CSV') {
-            buffer = await generateCSV(flattenedData, metadata);
+        if (formato === 'XLSX') {
+            buffer = await generateXLSX(flattenedData, metadata);
         } else if (formato === 'PDF') {
             buffer = await generatePDF(flattenedData, metadata, tableHeaders);
         }

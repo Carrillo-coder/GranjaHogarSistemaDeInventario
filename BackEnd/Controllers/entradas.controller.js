@@ -13,13 +13,17 @@ class EntradasController {
             }
 
             const { buffer, filename } = await EntradasService.generarReporteEntradas(reporteVO);
-            if (reporteVO.formato === 'PDF') {
-                res.setHeader('Content-Type', 'application/pdf');
-            } else if (reporteVO.formato === 'CSV') {
-                res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-            }
-            res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
-            return res.send(buffer);
+            const base64 = buffer.toString('base64');
+            const mimeType = formato === 'PDF'
+            ? 'application/pdf'
+            : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+            return res.json({
+                success: true,
+                filename,
+                mimeType,
+                base64,
+            });
 
         } catch (error) {
             console.error('Error al generar el reporte de entradas:', error);
