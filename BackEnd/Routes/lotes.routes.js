@@ -6,6 +6,6 @@ const LotesController = require('../Controllers/lotes.controller');
 router.get('/reportes', LotesController.getReporteLotes);
 
 // POST crea nuevo lote
-router.post('/', LoteController.create);
+//router.post('/', LoteController.create);
 
 module.exports = router;
