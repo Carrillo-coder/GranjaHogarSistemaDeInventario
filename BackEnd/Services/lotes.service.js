@@ -1,6 +1,6 @@
 const db = require('../Models');
 const { flattenLotesData } = require('../utils/flattenLotesData.util.js');
-const { generateCSV, generatePDF } = require('../utils/fileGenerator.util.js');
+const { generateXLSX, generatePDF } = require('../utils/fileGenerator.util.js');
 const Lote = db.Lote;
 const Producto = db.Producto;
 const Categoria = db.Categoria;
@@ -214,8 +214,6 @@ class LotesService {
             ],
             attributes: ['idProducto', 'nombre', 'presentacion'],
             order: [['nombre', 'ASC']],
-            logging: console.log
-
         });
         const flattenedData = flattenLotesData(productos);
 
@@ -235,8 +233,8 @@ class LotesService {
         const filename = `reporte_inventario_${Date.now()}.${formato.toLowerCase()}`;
         let buffer;
 
-        if (formato === 'CSV') {
-            buffer = await generateCSV(flattenedData, metadata);
+        if (formato === 'XLSX') {
+            buffer = await generateXLSX(flattenedData, metadata);
         } else if (formato === 'PDF') {
             buffer = await generatePDF(flattenedData, metadata, tableHeaders);
         }
