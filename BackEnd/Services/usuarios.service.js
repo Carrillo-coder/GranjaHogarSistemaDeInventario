@@ -150,6 +150,7 @@ class UsuarioService {
                 return { success: false, message: 'Usuario no encontrado', statusCode: 204 };
             }
 
+            // Validar que el rol exista, si se está intentando cambiar
             if (data.idRol) {
                 const rol = await Rol.findByPk(data.idRol);
                 if (!rol) {
@@ -157,6 +158,7 @@ class UsuarioService {
                 }
             }
 
+            // Validar que el nombre de usuario no esté en uso por otro usuario
             if (data.nombreUsuario && data.nombreUsuario !== usuario.nombreUsuario) {
                 const existingUser = await Usuario.findOne({
                     where: {
@@ -169,12 +171,14 @@ class UsuarioService {
                 }
             }
 
+            // Construir el objeto con los datos a actualizar
             const dataToUpdate = {
                 nombreUsuario: data.nombreUsuario || usuario.nombreUsuario,
                 nombreCompleto: data.nombreCompleto || usuario.nombreCompleto,
                 idRol: data.idRol || usuario.idRol
             };
 
+            // Hashear la contraseña solo si se proporciona una nueva
             if (data.password) {
                 dataToUpdate.password = await bcrypt.hash(data.password, 10);
             }

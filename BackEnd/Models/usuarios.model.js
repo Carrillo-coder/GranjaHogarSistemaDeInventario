@@ -42,7 +42,7 @@ module.exports = (sequelize, Sequelize) => {
             }
         }
     }, {
-        tableName: 'Usuarios',
+        tableName: 'usuarios',
         timestamps: false
     });
 
