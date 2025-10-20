@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 
 const Usuario = db.Usuario;
 const Rol = db.Rol;
+
 class UsuarioService {
 
     static async getAllUsuarios() {
@@ -144,61 +145,45 @@ class UsuarioService {
 
     static async updateUsuario(id, data) {
         try {
-            const usuarioExiste = await Usuario.findByPk(id);
-            if (!usuarioExiste) {
-                return {
-                    success: false,
-                    message: 'Usuario no encontrado',
-                    statusCode: 204
-                };
+            const usuario = await Usuario.findByPk(id);
+            if (!usuario) {
+                return { success: false, message: 'Usuario no encontrado', statusCode: 204 };
             }
 
-            const usuarioVO = new UsuarioVO(data);
-            const validation = usuarioVO.validate();
-
-            if (!validation.isValid) {
-                return {
-                    success: false,
-                    message: 'Datos inválidos',
-                    errors: validation.errors,
-                    statusCode: 400
-                };
-            }
-
-            const rolExists = await Rol.findByPk(data.idRol);
-            if (!rolExists) {
-                return {
-                    success: false,
-                    message: 'El rol especificado no existe',
-                    statusCode: 400
-                };
-            }
-
-            const existingUser = await Usuario.findOne({
-                where: { 
-                    nombreUsuario: data.nombreUsuario,
-                    idUsuario: { [db.Sequelize.Op.ne]: id }
+            // Validar que el rol exista, si se está intentando cambiar
+            if (data.idRol) {
+                const rol = await Rol.findByPk(data.idRol);
+                if (!rol) {
+                    return { success: false, message: 'El rol especificado no existe', statusCode: 400 };
                 }
-            });
-            
-            if (existingUser) {
-                return {
-                    success: false,
-                    message: 'El nombre de usuario ya está en uso',
-                    statusCode: 400
-                };
             }
 
+            // Validar que el nombre de usuario no esté en uso por otro usuario
+            if (data.nombreUsuario && data.nombreUsuario !== usuario.nombreUsuario) {
+                const existingUser = await Usuario.findOne({
+                    where: {
+                        nombreUsuario: data.nombreUsuario,
+                        idUsuario: { [db.Sequelize.Op.ne]: id }
+                    }
+                });
+                if (existingUser) {
+                    return { success: false, message: 'El nombre de usuario ya está en uso', statusCode: 400 };
+                }
+            }
+
+            // Construir el objeto con los datos a actualizar
+            const dataToUpdate = {
+                nombreUsuario: data.nombreUsuario || usuario.nombreUsuario,
+                nombreCompleto: data.nombreCompleto || usuario.nombreCompleto,
+                idRol: data.idRol || usuario.idRol
+            };
+
+            // Hashear la contraseña solo si se proporciona una nueva
             if (data.password) {
-                const hashedPassword = await bcrypt.hash(data.password, 10);
-                usuarioVO.password = hashedPassword;
-            } else {
-                usuarioVO.password = usuarioExiste.password;
+                dataToUpdate.password = await bcrypt.hash(data.password, 10);
             }
-
-            await Usuario.update(usuarioVO.toDatabase(), {
-                where: { idUsuario: id }
-            });
+            
+            await Usuario.update(dataToUpdate, { where: { idUsuario: id } });
 
             const usuarioActualizado = await Usuario.findByPk(id, {
                 include: [{
