@@ -1,3 +1,4 @@
+// Controllers/alertas.controller.js
 const AlertasService = require('../Services/alertas.service');
 
 class AlertasController {

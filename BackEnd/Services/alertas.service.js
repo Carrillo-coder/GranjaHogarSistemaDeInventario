@@ -1,15 +1,27 @@
+// Services/alertas.service.js
 const db = require('../Models');
 const { Op, fn, col } = db.Sequelize;
+const AlertaVO = require('../ValueObjects/alertas.vo');
+
+function startOfDay(d) { const x = new Date(d); x.setHours(0,0,0,0); return x; }
+function endOfDay(d)   { const x = new Date(d); x.setHours(23,59,59,999); return x; }
+function diffDays(a, b) {
+  const MS = 24 * 60 * 60 * 1000;
+  return Math.ceil((startOfDay(b) - startOfDay(a)) / MS);
+}
 
 class AlertasService {
-  // Productos con algún lote que caduca en <= dias (default 10)
+
+  /**
+   * Productos con algún lote que caduca en <= dias (default 10)
+   * Devuelve la fecha mínima de caducidad por producto dentro del rango.
+   */
   static async getPorCaducar(dias = 10) {
     try {
-      const hoy = new Date();
-      const limite = new Date();
-      limite.setDate(hoy.getDate() + Number(dias || 10));
+      const hoy = startOfDay(new Date());
+      const limite = endOfDay(new Date(hoy));
+      limite.setDate(limite.getDate() + Number(dias || 10));
 
-      // Por producto: MIN(caducidad) dentro de la ventana
       const rows = await db.Lote.findAll({
         where: {
           activo: true,
@@ -17,7 +29,7 @@ class AlertasService {
         },
         attributes: [
           'idProducto',
-          [fn('MIN', col('caducidad')), 'caducidad']  // fecha más próxima por producto
+          [fn('MIN', col('caducidad')), 'caducidad']
         ],
         include: [{
           model: db.Producto,
@@ -27,12 +39,19 @@ class AlertasService {
         group: ['Lote.idProducto', 'producto.idProducto']
       });
 
-      const data = rows.map(r => ({
-        idProducto: r.idProducto,
-        producto: r.producto?.nombre || '',
-        presentacion: r.producto?.presentacion || '',
-        fecha: r.get('caducidad')
-      }));
+      const data = rows.map(r => {
+        const fecha = r.get('caducidad');
+        const dRest = fecha ? diffDays(hoy, new Date(fecha)) : null;
+        const vo = new AlertaVO({
+          idProducto: r.idProducto,
+          producto: r.producto?.nombre || '',
+          presentacion: r.producto?.presentacion || '',
+          tipo: 'caducar',
+          fecha,
+          diasRestantes: dRest
+        });
+        return vo.toResponse();
+      });
 
       return {
         success: true,
@@ -45,7 +64,9 @@ class AlertasService {
     }
   }
 
-  // Productos con stock total (suma de unidadesExistentes) < umbral (default 10)
+  /**
+   * Productos con stock total (SUM(unidadesExistentes)) < umbral (default 10)
+   */
   static async getBajos(umbral = 10) {
     try {
       const rows = await db.Lote.findAll({
@@ -64,12 +85,16 @@ class AlertasService {
         order: [[fn('SUM', col('unidadesExistentes')), 'ASC']]
       });
 
-      const data = rows.map(r => ({
-        idProducto: r.idProducto,
-        producto: r.producto?.nombre || '',
-        presentacion: r.producto?.presentacion || '',
-        cantidad: Number(r.get('stock')) || 0
-      }));
+      const data = rows.map(r => {
+        const vo = new AlertaVO({
+          idProducto: r.idProducto,
+          producto: r.producto?.nombre || '',
+          presentacion: r.producto?.presentacion || '',
+          tipo: 'bajo',
+          cantidad: Number(r.get('stock')) || 0
+        });
+        return vo.toResponse();
+      });
 
       return {
         success: true,
@@ -82,7 +107,9 @@ class AlertasService {
     }
   }
 
-  // Productos con stock total >= umbral (default 100)
+  /**
+   * Productos con stock total (SUM(unidadesExistentes)) >= umbral (default 100)
+   */
   static async getAltos(umbral = 100) {
     try {
       const rows = await db.Lote.findAll({
@@ -101,12 +128,16 @@ class AlertasService {
         order: [[fn('SUM', col('unidadesExistentes')), 'DESC']]
       });
 
-      const data = rows.map(r => ({
-        idProducto: r.idProducto,
-        producto: r.producto?.nombre || '',
-        presentacion: r.producto?.presentacion || '',
-        cantidad: Number(r.get('stock')) || 0
-      }));
+      const data = rows.map(r => {
+        const vo = new AlertaVO({
+          idProducto: r.idProducto,
+          producto: r.producto?.nombre || '',
+          presentacion: r.producto?.presentacion || '',
+          tipo: 'alto',
+          cantidad: Number(r.get('stock')) || 0
+        });
+        return vo.toResponse();
+      });
 
       return {
         success: true,
