@@ -18,7 +18,7 @@ module.exports = (sequelize, Sequelize) => {
             field: 'nombre'
         }
     }, {
-        tableName: 'tipossalidas',
+        tableName: 'tiposSalidas',
         timestamps: false
     });
 

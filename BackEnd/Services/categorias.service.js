@@ -1,8 +1,35 @@
 const db = require('../Models');
-const Categoria = db.Categoria;
-const CategoriaVO = require('../ValueObjects/categoria.vo');
+const Categoria = db.Categorias;
+const CategoriasVO = require('../ValueObjects/categorias.vo');
 
-class CategoriaService {
+class CategoriasService {
+
+    static async getAllCategorias() {
+        try {
+            const categorias = await Categoria.findAll();
+            if (!categorias || categorias.length === 0) {
+                return {
+                    success: true,
+                    message: 'No hay categorías disponibles',
+                    data: [],
+                    statusCode: 204
+                };
+            }
+            return {
+                success: true,
+                message: 'Categorías obtenidas correctamente',
+                data: categorias.map(c => new CategoriasVO(c)),
+                statusCode: 200
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: 'Error al obtener categorías',
+                error: error.message,
+                statusCode: 500
+            };
+        }
+    }
 
     static async getAllCategorias() {
         try {
@@ -51,7 +78,7 @@ class CategoriaService {
             return {
                 success: true,
                 message: 'Categoría obtenida correctamente',
-                data: new CategoriaVO(categoria),
+                data: new CategoriasVO(categoria),
                 statusCode: 200
             };
         } catch (error) {
@@ -79,7 +106,7 @@ class CategoriaService {
             return {
                 success: true,
                 message: 'Categoría obtenida correctamente',
-                data: new CategoriaVO(categoria),
+                data: new CategoriasVO(categoria),
                 statusCode: 200
             };
         } catch (error) {
@@ -93,4 +120,4 @@ class CategoriaService {
     }
 }
 
-module.exports = CategoriaService;
+module.exports = CategoriasService;

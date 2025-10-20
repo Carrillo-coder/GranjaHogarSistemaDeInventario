@@ -10,7 +10,7 @@ const departamentosRoutes = require('./Routes/departamentos.routes');
 const entradasRoutes = require('./Routes/entradas.routes');
 const salidasRoutes = require('./Routes/salidas.routes');
 const lotesRoutes = require('./Routes/lotes.routes');
-const categoriaRoutes = require('./Routes/categoria.routes');
+const categoriasRoutes = require('./Routes/categorias.routes');
 const tiposSalidasRoutes = require('./Routes/tiposSalidas.routes');
 
 
@@ -54,7 +54,7 @@ app.use('/api/inventario/departamentos', departamentosRoutes);
 app.use('/api/inventario/entradas', entradasRoutes);
 app.use('/api/inventario/salidas', salidasRoutes);
 app.use('/api/inventario/lotes', lotesRoutes);
-app.use('/api/inventario/categorias', categoriaRoutes);
+app.use('/api/inventario/categorias', categoriasRoutes);
 app.use('/api/inventario/tiposSalidas', tiposSalidasRoutes);
 
 
