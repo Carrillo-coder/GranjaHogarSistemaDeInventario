@@ -7,7 +7,6 @@ class CategoriasService {
     static async getAllCategorias() {
         try {
             const categorias = await Categoria.findAll();
-            console.log('Resultado de Categoria.findAll():', JSON.stringify(categorias, null, 2));
             if (!categorias || categorias.length === 0) {
                 return {
                     success: true,

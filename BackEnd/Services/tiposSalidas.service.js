@@ -1,5 +1,5 @@
 const db = require('../Models');        
-const TiposSalidas = db.TiposSalidas;
+const TiposSalidas = db.TipoSalida;
 const TiposSalidasVO = require('../ValueObjects/tiposSalidas.vo');
 
 class TiposSalidasService {
