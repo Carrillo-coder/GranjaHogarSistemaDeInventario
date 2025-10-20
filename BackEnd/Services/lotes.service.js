@@ -1,54 +1,181 @@
-
 const db = require('../Models');
+const { flattenLotesData } = require('../utils/flattenLotesData.util.js');
+const { generateCSV, generatePDF } = require('../utils/fileGenerator.util.js');
 const Lote = db.Lote;
 const Producto = db.Producto;
-const Entrada = db.Entrada;
 
-class LoteService {
+class LotesService {
 
+    // GET /api/inventario/lotes/idproducto
+    static async getLotesByIdProducto(idProducto) {
+        try {
+            const lotes = await Lote.findAll({
+                where: { idProducto: idProducto, activo: true },
+                include: [{
+                    model: Producto,
+                    as: 'producto',
+                    attributes: ['idProducto', 'nombre', 'presentacion']
+                }],
+                order: [['caducidad', 'ASC']]
+            });
+
+            if (!lotes || lotes.length === 0) {
+                return {
+                    success: false,
+                    message: 'No se encontraron lotes para ese producto',
+                    data: [],
+                    statusCode: 204
+                };
+            }
+
+            return {
+                success: true,
+                message: 'Lotes obtenidos correctamente',
+                data: lotes,
+                statusCode: 200
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: 'Error al obtener lotes por producto',
+                error: error.message,
+                statusCode: 400
+            };
+        }
+    }
+
+    // GET /api/inventario/lotes?producto="nombre"
+    static async getLotesByNombreProducto(nombre) {
+        try {
+            const lotes = await Lote.findAll({
+                include: [{
+                    model: Producto,
+                    as: 'producto',
+                    where: { nombre: { [db.Sequelize.Op.like]: `%${nombre}%` } },
+                    attributes: ['idProducto', 'nombre', 'presentacion']
+                }],
+                where: { activo: true },
+                order: [['caducidad', 'ASC']]
+            });
+
+            if (!lotes || lotes.length === 0) {
+                return {
+                    success: false,
+                    message: 'No se encontraron lotes para ese nombre de producto',
+                    data: [],
+                    statusCode: 204
+                };
+            }
+
+            return {
+                success: true,
+                message: 'Lotes obtenidos correctamente',
+                data: lotes,
+                statusCode: 200
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: 'Error al obtener lotes por nombre de producto',
+                error: error.message,
+                statusCode: 400
+            };
+        }
+    }
+
+    // NUEVO: GET /api/inventario/lotes/fechas?desde=YYYY-MM-DD&hasta=YYYY-MM-DD
+
+    static async getLotesByFecha(desde, hasta) {
+        try {
+            const Op = db.Sequelize.Op;
+
+            // Normalizar inputs (si vienen vacíos)
+            let desdeDate = desde ? new Date(desde) : null;
+            let hastaDate = hasta ? new Date(hasta) : null;
+
+            const whereClause = { activo: 1 };
+
+            if (desdeDate && hastaDate) {
+                // usamos objetos Date para evitar problemas de formato
+                whereClause.caducidad = { [Op.between]: [desdeDate, hastaDate] };
+            } else if (desdeDate) {
+                whereClause.caducidad = { [Op.gte]: desdeDate };
+            } else if (hastaDate) {
+                whereClause.caducidad = { [Op.lte]: hastaDate };
+            }
+
+            //para depurar
+            //console.log('[LoteService] getLotesByFecha -> whereClause:', JSON.stringify(whereClause));
+
+            const lotes = await Lote.findAll({
+                where: whereClause,
+                include: [{
+                    model: Producto,
+                    as: 'producto',
+                    // atributos según tu modelo Producto (usa nombres exactos)
+                    attributes: ['idProducto', 'nombre', 'presentacion']
+                }],
+                order: [['caducidad', 'ASC']]
+            });
+
+            if (!lotes || lotes.length === 0) {
+                return {
+                    success: false,
+                    message: 'No se encontraron lotes en el rango de fechas indicado',
+                    data: [],
+                    statusCode: 204
+                };
+            }
+
+            return {
+                success: true,
+                message: 'Lotes obtenidos correctamente por fecha',
+                data: lotes,
+                statusCode: 200
+            };
+        } catch (error) {
+            console.error('[LoteService] getLotesByFecha error:', error);
+            return {
+                success: false,
+                message: 'Error al obtener lotes por fecha',
+                error: error.message,
+                statusCode: 400
+            };
+        }
+    }
+
+    // POST /api/inventario/lotes
     static async createLote(data) {
         try {
-            // Validaciones básicas de integridad referencial
-            if (!data.idProducto) {
+            const { unidadesExistentes, caducidad, idProducto, idEntrada } = data;
+
+            // Validar datos requeridos
+            if (!unidadesExistentes || !caducidad || !idProducto || !idEntrada) {
                 return {
                     success: false,
-                    message: 'El campo idProducto es obligatorio',
+                    message: 'Faltan datos obligatorios del lote',
                     statusCode: 400
                 };
             }
 
-            const producto = await Producto.findByPk(data.idProducto);
-            if (!producto) {
+            // Validar existencia de producto
+            const productoExiste = await Producto.findByPk(idProducto);
+            if (!productoExiste) {
                 return {
                     success: false,
-                    message: `Producto con idProducto=${data.idProducto} no encontrado`,
+                    message: 'El producto asociado no existe',
                     statusCode: 400
                 };
             }
 
-            if (!data.idEntrada) {
-                return {
-                    success: false,
-                    message: 'El campo idEntrada es obligatorio',
-                    statusCode: 400
-                };
-            }
-
-            const entrada = await Entrada.findByPk(data.idEntrada);
-            if (!entrada) {
-                return {
-                    success: false,
-                    message: `Entrada con idEntrada=${data.idEntrada} no encontrada`,
-                    statusCode: 400
-                };
-            }
-
-            // Si no se proporciona unidadesExistentes, por defecto tomar la cantidad
-            if (data.unidadesExistentes === undefined || data.unidadesExistentes === null) {
-                data.unidadesExistentes = data.cantidad;
-            }
-
-            const nuevoLote = await Lote.create(data);
+            // Crear el lote
+            const nuevoLote = await Lote.create({
+                unidadesExistentes,
+                caducidad,
+                activo: 1,
+                idProducto,
+                idEntrada
+            });
 
             return {
                 success: true,
@@ -59,12 +186,60 @@ class LoteService {
         } catch (error) {
             return {
                 success: false,
-                message: 'Error al crear el lote',
+                message: 'Error al crear lote',
                 error: error.message,
                 statusCode: 400
             };
         }
     }
-}
 
-module.exports = LoteService;
+    // GET /api/inventario/lotes/reporte?formato=CSV|PDF
+    static async generarReporteLotes(formato) {
+        const tableHeaders = [
+            'No.', 'Producto', 'Categoría', 'Presentación', 'ID Lote',
+            'Unidades Existentes', 'Caducidad', 'Total por Producto'
+        ];
+
+        const productos = await db.Producto.findAll({
+            include: [
+                {
+                    model: db.Categoria, attributes: ['nombre'], as: 'Categoria'
+                },
+                {
+                    model: db.Lote,
+                    attributes: ['idLote', 'unidadesExistentes', 'caducidad', 'activo']
+                }
+            ],
+            attributes: ['idProducto', 'nombre', 'presentacion'],
+            order: [['nombre', 'ASC']],
+        });
+
+        const flattenedData = flattenLotesData(productos);
+
+        const metadata = {
+            titulo: 'Reporte General de Inventario',
+            generadoPor: 'usuario', // si tienes auth => req.user.nombreCompleto
+            fechaGeneracion: new Date().toLocaleDateString(),
+            totales: {
+                productosDistintos: productos.length,
+                unidadesTotales: flattenedData
+                    .filter(d => d['Unidades Existentes'])
+                    .reduce((sum, d) => sum + (Number(d['Unidades Existentes']) || 0), 0),
+                registros: flattenedData.length / 2
+            }
+        };
+
+        const filename = `reporte_inventario_${Date.now()}.${formato.toLowerCase()}`;
+        let buffer;
+
+        if (formato === 'CSV') {
+            buffer = await generateCSV(flattenedData, metadata);
+        } else if (formato === 'PDF') {
+            buffer = await generatePDF(flattenedData, metadata, tableHeaders);
+        }
+
+        return { buffer, filename };
+    }
+};
+
+module.exports = LotesService;
