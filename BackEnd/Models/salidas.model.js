@@ -22,25 +22,25 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: true,
             field: 'idDepartamentos'
         },
-        Cantidad: {
+        cantidad: {
             type: Sequelize.INTEGER,
             allowNull: true,
-            field: 'Cantidad'
+            field: 'cantidad'
         },
         idUsuario: {
             type: Sequelize.INTEGER,
             allowNull: true,
             field: 'idUsuario'
         },
-        Fecha: {
+        fecha: {
             type: Sequelize.DATE,
             allowNull: true,
-            field: 'Fecha'
+            field: 'fecha'
         },
-        Notas: {
+        notas: {
             type: Sequelize.STRING(255),
             allowNull: true,
-            field: 'Notas'
+            field: 'notas'
         }
     }, {
         tableName: 'Salidas',

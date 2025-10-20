@@ -3,6 +3,7 @@ const { flattenLotesData } = require('../utils/flattenLotesData.util.js');
 const { generateCSV, generatePDF } = require('../utils/fileGenerator.util.js');
 const Lote = db.Lote;
 const Producto = db.Producto;
+const Categoria = db.Categoria;
 
 class LotesService {
 
@@ -200,21 +201,24 @@ class LotesService {
             'Unidades Existentes', 'Caducidad', 'Total por Producto'
         ];
 
-        const productos = await db.Producto.findAll({
+        const productos = await Producto.findAll({
             include: [
                 {
-                    model: db.Categoria, attributes: ['nombre'], as: 'Categoria'
+                    model: Categoria, attributes: ['nombre'], as: 'categoria'
                 },
                 {
-                    model: db.Lote,
-                    attributes: ['idLote', 'unidadesExistentes', 'caducidad', 'activo']
+                    model: Lote,
+                    attributes: ['idLote', 'unidadesExistentes', 'caducidad', 'activo'],
+                    as : 'lotes',
                 }
             ],
             attributes: ['idProducto', 'nombre', 'presentacion'],
             order: [['nombre', 'ASC']],
+            logging: console.log
         });
 
         const flattenedData = flattenLotesData(productos);
+        console.log(flattenedData);
 
         const metadata = {
             titulo: 'Reporte General de Inventario',

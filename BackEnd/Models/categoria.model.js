@@ -6,11 +6,11 @@ module.exports = (sequelize, Sequelize) => {
       primaryKey: true,
       field: 'idCategoria'
     },
-    Nombre: {
+    nombre: {
       type: Sequelize.STRING(100),
       allowNull: false,
       unique: true,
-      field: 'Nombre',
+      field: 'nombre',
       validate: {
         notEmpty: { msg: 'El nombre de categoría es obligatorio' },
         is: {
