@@ -21,7 +21,7 @@ db.sequelize = sequelize;
 db.Usuario = require("./usuarios.model.js")(sequelize, Sequelize);
 db.Rol = require("./roles.model.js")(sequelize, Sequelize);
 
-db.Rol.hasMany(db.Usuario, { foreignKey: 'ID_Rol', as: 'usuarios' });
-db.Usuario.belongsTo(db.Rol, { foreignKey: 'ID_Rol', as: 'rol' });
+db.Rol.hasMany(db.Usuario, { foreignKey: 'idRol', as: 'usuarios' });
+db.Usuario.belongsTo(db.Rol, { foreignKey: 'idRol', as: 'rol' });
 
 module.exports = db;

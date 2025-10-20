@@ -5,11 +5,11 @@
  */
 module.exports = (sequelize, Sequelize) => {
     const Rol = sequelize.define("Rol", {
-        ID_Rol: {
+        idRol: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
-            field: 'ID_Rol'
+            field: 'idRol'
         },
         nombre: {
             type: Sequelize.STRING(50),

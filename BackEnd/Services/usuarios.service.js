@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 
 const Usuario = db.Usuario;
 const Rol = db.Rol;
+
 class UsuarioService {
 
     static async getAllUsuarios() {
@@ -13,7 +14,7 @@ class UsuarioService {
                 include: [{
                     model: Rol,
                     as: 'rol',
-                    attributes: ['ID_Rol', 'nombre']
+                    attributes: ['idRol', 'nombre']
                 }],
                 order: [['nombreCompleto', 'ASC']]
             });
@@ -49,7 +50,7 @@ class UsuarioService {
                 include: [{
                     model: Rol,
                     as: 'rol',
-                    attributes: ['ID_Rol', 'nombre']
+                    attributes: ['idRol', 'nombre']
                 }]
             });
 
@@ -92,7 +93,7 @@ class UsuarioService {
                 };
             }
 
-            const rolExists = await Rol.findByPk(data.ID_Rol);
+            const rolExists = await Rol.findByPk(data.idRol);
             if (!rolExists) {
                 return {
                     success: false,
@@ -118,11 +119,11 @@ class UsuarioService {
 
             const nuevoUsuario = await Usuario.create(usuarioVO.toDatabase());
 
-            const usuarioCompleto = await Usuario.findByPk(nuevoUsuario.ID_Usuario, {
+            const usuarioCompleto = await Usuario.findByPk(nuevoUsuario.idUsuario, {
                 include: [{
                     model: Rol,
                     as: 'rol',
-                    attributes: ['ID_Rol', 'nombre']
+                    attributes: ['idRol', 'nombre']
                 }]
             });
 
@@ -144,67 +145,47 @@ class UsuarioService {
 
     static async updateUsuario(id, data) {
         try {
-            const usuarioExiste = await Usuario.findByPk(id);
-            if (!usuarioExiste) {
-                return {
-                    success: false,
-                    message: 'Usuario no encontrado',
-                    statusCode: 204
-                };
+            const usuario = await Usuario.findByPk(id);
+            if (!usuario) {
+                return { success: false, message: 'Usuario no encontrado', statusCode: 204 };
             }
 
-            const usuarioVO = new UsuarioVO(data);
-            const validation = usuarioVO.validate();
-
-            if (!validation.isValid) {
-                return {
-                    success: false,
-                    message: 'Datos inválidos',
-                    errors: validation.errors,
-                    statusCode: 400
-                };
-            }
-
-            const rolExists = await Rol.findByPk(data.ID_Rol);
-            if (!rolExists) {
-                return {
-                    success: false,
-                    message: 'El rol especificado no existe',
-                    statusCode: 400
-                };
-            }
-
-            const existingUser = await Usuario.findOne({
-                where: { 
-                    nombreUsuario: data.nombreUsuario,
-                    ID_Usuario: { [db.Sequelize.Op.ne]: id }
+            if (data.idRol) {
+                const rol = await Rol.findByPk(data.idRol);
+                if (!rol) {
+                    return { success: false, message: 'El rol especificado no existe', statusCode: 400 };
                 }
-            });
-            
-            if (existingUser) {
-                return {
-                    success: false,
-                    message: 'El nombre de usuario ya está en uso',
-                    statusCode: 400
-                };
             }
+
+            if (data.nombreUsuario && data.nombreUsuario !== usuario.nombreUsuario) {
+                const existingUser = await Usuario.findOne({
+                    where: {
+                        nombreUsuario: data.nombreUsuario,
+                        idUsuario: { [db.Sequelize.Op.ne]: id }
+                    }
+                });
+                if (existingUser) {
+                    return { success: false, message: 'El nombre de usuario ya está en uso', statusCode: 400 };
+                }
+            }
+
+            const dataToUpdate = {
+                nombreUsuario: data.nombreUsuario || usuario.nombreUsuario,
+                nombreCompleto: data.nombreCompleto || usuario.nombreCompleto,
+                idRol: data.idRol || usuario.idRol
+            };
 
             if (data.password) {
-                const hashedPassword = await bcrypt.hash(data.password, 10);
-                usuarioVO.password = hashedPassword;
-            } else {
-                usuarioVO.password = usuarioExiste.password;
+                dataToUpdate.password = await bcrypt.hash(data.password, 10);
             }
-
-            await Usuario.update(usuarioVO.toDatabase(), {
-                where: { ID_Usuario: id }
-            });
+            
+            await Usuario.update(dataToUpdate, { where: { idUsuario: id } });
 
             const usuarioActualizado = await Usuario.findByPk(id, {
                 include: [{
                     model: Rol,
                     as: 'rol',
-                    attributes: ['ID_Rol', 'nombre']
+                    attributes: ['idRol', 'nombre']
                 }]
             });
 
@@ -237,7 +218,7 @@ class UsuarioService {
 
             await Usuario.update(
                 { activo: false },
-                { where: { ID_Usuario: id } }
+                { where: { idUsuario: id } }
             );
 
             return {
