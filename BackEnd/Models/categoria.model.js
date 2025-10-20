@@ -10,7 +10,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING(100),
       allowNull: false,
       unique: true,
-      field: 'Nombre',
+      field: 'nombre',
       validate: {
         notEmpty: { msg: 'El nombre de categoría es obligatorio' },
         is: {
