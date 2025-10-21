@@ -78,6 +78,42 @@ class UsuarioService {
         }
     }
 
+    static async getUsuarioByUserName(UserName) {
+        try {
+            const usuario = await Usuario.findOne({
+                where: { nombreUsuario: UserName, activo: true },
+                include: [{
+                    model: Rol,
+                    as: 'rol',
+                    attributes: ['idRol', 'nombre']
+                }]
+            });
+
+            if (!usuario) {
+                return {
+                    success: false,
+                    message: 'Usuario no encontrado',
+                    data: null,
+                    statusCode: 204
+                };
+            }
+
+            return {
+                success: true,
+                message: 'Usuario obtenido correctamente',
+                data: usuario,
+                statusCode: 200
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: 'Error al obtener usuario',
+                error: error.message,
+                statusCode: 400
+            };
+        }
+    }
+
     static async createUsuario(data) {
         try {
             const usuarioVO = new UsuarioVO(data);
