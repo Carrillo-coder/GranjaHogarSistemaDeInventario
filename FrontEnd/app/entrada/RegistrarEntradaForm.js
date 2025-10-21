@@ -1,7 +1,7 @@
 import 'expo-router/entry'
 import {useRouter} from 'expo-router';
 import React, { useState } from 'react';
-import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Image, Modal} from 'react-native';
+import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Image, Modal, TextInput} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../../components/Footer';
 
@@ -55,6 +55,8 @@ const RegistrarEntradaForm = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showProductList, setShowProductList] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [provider, setProvider] = useState('');
+  const [notes, setNotes] = useState('');
   const [products] = useState([
     { id: 1, producto: 'Arroz', presentacion: 'Bolsa 1kg', categoria: 'Granos', cantidadExistente: 50, fechaCaducidad: '2025-12-31' },
     { id: 2, producto: 'Zucaritas', presentacion: 'Caja 500g', categoria: 'Cereales', cantidadExistente: 30, fechaCaducidad: '2025-11-30' },
@@ -76,6 +78,8 @@ const RegistrarEntradaForm = () => {
 
   const handleConfirm = () => {
     console.log('Registro de producto:', selectedProduct);
+    console.log('Proveedor:', provider);
+    console.log('Notas:', notes);
     setModalVisible(false);
     router.navigate('/entrada/RegistrarEntradaForm');
   };
@@ -176,6 +180,29 @@ const RegistrarEntradaForm = () => {
             </View>
           </View>
         )}
+
+        {/* Campos adicionales: Proveedor y Notas */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Proveedor:</Text>
+          <TextInput
+            value={provider}
+            onChangeText={setProvider}
+            placeholder="Nombre del proveedor"
+            style={styles.textInput}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Notas:</Text>
+          <TextInput
+            value={notes}
+            onChangeText={setNotes}
+            placeholder="Notas adicionales"
+            style={[styles.textInput, styles.notesInput]}
+            multiline={true}
+            numberOfLines={3}
+          />
+        </View>
 
         {/* Botones de acción */}
         <View style={styles.actionButtons}>
@@ -391,6 +418,28 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
     color: '#4caf50',
+  },
+  inputGroup: {
+    marginBottom: 12,
+  },
+  inputLabel: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 6,
+    fontWeight: '500',
+  },
+  textInput: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    fontSize: 14,
+  },
+  notesInput: {
+    minHeight: 80,
+    textAlignVertical: 'top',
   },
   modalContainer: {
     flex: 1,
