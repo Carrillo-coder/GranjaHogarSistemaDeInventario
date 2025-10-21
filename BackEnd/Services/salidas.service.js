@@ -79,8 +79,8 @@ class SalidasService {
             'Tipo Salida', 'Usuario Responsable', 'Rol Usuario', 'Notas'
         ];
 
-        const departamentoWhere = (departamento && departamento !== 'Todos')
-            ? { nombre: departamento }
+        const departamentoWhere = (departamento && departamento !== '0')
+            ? { idDepartamento: departamento }
             : undefined;
 
         const salidas = await db.Salida.findAll({

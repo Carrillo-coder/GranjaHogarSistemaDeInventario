@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import ReporteVO from '../valueobjects/ReporteVO';
 import ReportesServiceProxy from '../proxies/ReportesServiceProxy';
 import DepartamentosServiceProxy from '../proxies/DepartamentosServiceProxy';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -79,8 +78,9 @@ export const useReportesForm = () => {
 
   const showStartDatepicker = () => { if (!areDatesDisabled) setShowStartDatePicker(true); };
   const showEndDatepicker = () => { if (!areDatesDisabled) setShowEndDatePicker(true); };
-  const handleDepartmentChange = (label) => { if (!isDepartmentDisabled) setDepartment(label); };
-  console.log(departments.map(department => department.label));
+  const handleDepartmentChange = (value) => { if (!isDepartmentDisabled) setDepartment(value); };
+  console.log(department)
+
 
   const validateForm = () => {
     if (!reportType) { Alert.alert('Error', 'Por favor selecciona un tipo de reporte antes de descargar.'); return; }
@@ -91,6 +91,7 @@ export const useReportesForm = () => {
   };
 
   const handleDownload = () => { if (validateForm()) setModalVisible(true); };
+
 
   const handleConfirmDownload = async () => {
     if (!validateForm()) return;
@@ -105,13 +106,6 @@ export const useReportesForm = () => {
         console.log('tipo:', reportType);
         const fechaInicio = formatDate(startDate);
         const fechaFin = formatDate(endDate);
-        /*
-        console.log({ fechaInicio, fechaFin, formato });
-        const reporteVO = new ReporteVO(fechaInicio, fechaFin, formato);
-        console.log(reporteVO);
-        const validation = reporteVO.validate();
-        if (!validation.isValid) { Alert.alert('Error', `Errores de validación: \n${validation.errors.join('\n')}`); setGeneratingReport(false); return; }
-*/
         if (reportType === '1') { response = await generarReporteEntradas(fechaInicio, fechaFin, formato);
         } else if (reportType === '2') { response = await generarReporteSalidas(fechaInicio, fechaFin, formato, department); }
       }
