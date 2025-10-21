@@ -20,7 +20,23 @@ const UsuariosServiceProxy = () => {
     return await response.json()
   }
 
-  async function getUsuarioById(id) {
+  async function getUsuarioByNombreUsuario(NombreUsuario) {
+    const response = await fetch(`${baseUrl}/${NombreUsuario}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    
+    if (!response.ok) {
+      if (response.status === 204) throw new Error('Usuario no encontrado')
+      throw new Error('Error al obtener usuario')
+    }
+    
+    return await response.json()
+  }
+
+    async function getUsuarioById(id) {
     const response = await fetch(`${baseUrl}/${id}`, {
       method: 'GET',
       headers: {
@@ -88,6 +104,7 @@ const UsuariosServiceProxy = () => {
 
   return {
     getAllUsuarios,
+    getUsuarioByNombreUsuario,
     getUsuarioById,
     createUsuario,
     updateUsuario,

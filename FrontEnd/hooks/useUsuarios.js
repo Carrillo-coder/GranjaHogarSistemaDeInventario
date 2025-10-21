@@ -30,6 +30,23 @@ export function useUsuarios() {
     }
   }
 
+    const fetchUsuarioByNombreUsuario = async (nombreUsuario) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await getUsuarioById(id)
+      if (data.success) {
+        return data.data
+      }
+    } catch (err) {
+      setError(err.message)
+      console.error('Error al obtener usuario:', err)
+      return null
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const fetchUsuarioById = async (id) => {
     setLoading(true)
     setError(null)
@@ -106,6 +123,7 @@ export function useUsuarios() {
     loading,
     error,
     fetchUsuarios,
+    fetchUsuarioByNombreUsuario,
     fetchUsuarioById,
     handleCreateUsuario,
     handleUpdateUsuario,

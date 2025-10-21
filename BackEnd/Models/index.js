@@ -32,8 +32,8 @@ db.Rol.hasMany(db.Usuario, { foreignKey: 'idRol', as: 'usuarios' });
 db.Usuario.belongsTo(db.Rol, { foreignKey: 'idRol', as: 'rol' });
 
 // Categoria <-> Producto (1:M)
-db.Categorias.hasMany(db.Producto, { foreignKey: "idCategoria", as: "productos" });
-db.Producto.belongsTo(db.Categorias, { foreignKey: "idCategoria", as: "categorias" });
+db.Categoria.hasMany(db.Producto, { foreignKey: "idCategoria", as: "productos" });
+db.Producto.belongsTo(db.Categoria, { foreignKey: "idCategoria", as: "categorias" });
 
 // Producto <-> Lote (1:M)
 db.Producto.hasMany(db.Lote, { foreignKey: "idProducto", as: "lotes" });

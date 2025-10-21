@@ -1,3 +1,4 @@
+const nodemon = require('nodemon');
 const UsuarioService = require('../Services/usuarios.service');
 
 class UsuarioController {
@@ -19,6 +20,20 @@ class UsuarioController {
         try {
             const { id } = req.params;
             const result = await UsuarioService.getUsuarioById(id);
+            return res.status(result.statusCode).json(result);
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor',
+                error: error.message
+            });
+        }
+    }
+
+    static async getByNombreUsuario(req, res) {
+        try {
+            const { NombreUsuario } = req.params;
+            const result = await UsuarioService.getUsuarioByNombreUsuario(NombreUsuario);
             return res.status(result.statusCode).json(result);
         } catch (error) {
             return res.status(500).json({
