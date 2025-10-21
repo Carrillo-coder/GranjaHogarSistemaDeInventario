@@ -1,7 +1,7 @@
 import { API_BASE_URL } from '@env'
 
 const UsuariosServiceProxy = () => {
-  const API_URL = API_BASE_URL || 'http://10.0.2.2:3000';
+  const API_URL = API_BASE_URL 
   const baseUrl = `${API_URL}/usuarios`
 
   async function getAllUsuarios() {

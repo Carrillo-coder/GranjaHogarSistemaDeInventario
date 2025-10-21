@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import RolesServiceProxy from '../proxies/rolesService'
+import RolesServiceProxy from '../api/proxies/rolesService'
 
 export function useRoles() {
   const [roles, setRoles] = useState([])
