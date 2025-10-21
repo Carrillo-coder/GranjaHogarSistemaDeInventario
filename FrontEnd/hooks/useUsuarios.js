@@ -1,11 +1,11 @@
 import { useState, useCallback } from 'react'
-import UsuariosServiceProxy from '../proxies/usuariosService'
+import UsuariosServiceProxy from '../api/proxies/usuariosService'
 
 export function useUsuarios() {
   const [usuarios, setUsuarios] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-   
+  
   const {
     getAllUsuarios,
     getUsuarioById,
