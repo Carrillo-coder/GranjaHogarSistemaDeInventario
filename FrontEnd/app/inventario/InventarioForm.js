@@ -1,44 +1,34 @@
-// CatalogoScreen.js
-import React, { useState, useMemo } from 'react';
-import { View, Text, TextInput, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Image, StatusBar } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import React, { useMemo, useState } from 'react';
+import { 
+  View, Text, TextInput, StyleSheet, SafeAreaView, 
+  ScrollView, TouchableOpacity, StatusBar, ActivityIndicator 
+} from 'react-native';
 import { router } from 'expo-router';
 import Footer from '../../components/Footer';
-
-const initialProducts = [
-  'Arroz', 'Frijoles', 'Leche', 'Huevos', 'Queso',
-  'Pollo', 'Carne de res', 'Aceite de cocina', 'Azúcar', 'Sal', 'Café'
-];
-
-const handleConfirmarActualizacion = () => {
-  Alert.alert('Producto actualizado con exito');  
-  console.log('Producto actualizado en la BD...')
-  router.back();
-}
+import useProductosLista from '../../hooks/useProductosLista';
 
 const normalize = (s = '') => s.replace(/\s+/g, '').toLowerCase();
 
 const CatalogoScreen = () => {
+  const { productos, loading, error, reload } = useProductosLista();
   const [query, setQuery] = useState('');
-  const [products] = useState(initialProducts);
-
 
   const filtered = useMemo(() => {
     const q = normalize(query);
-    if (!q) return products;
-    return products.filter(p => normalize(p).includes(q));
-  }, [query, products]);
+    if (!q) return productos;
+    return productos.filter(p => normalize(p.nombre).includes(q));
+  }, [query, productos]);
 
   const handlePressProduct = (producto) => {
-    router.navigate('inventario/DetalleProductoForm', { producto });
+    router.navigate({
+      pathname: 'inventario/DetalleProductoForm',
+      params: { idProducto: producto.idProducto }, // 👈 aquí pasamos el ID
+    });
   };
 
   const handleCreateProduct = () => {
-    console.log('Crear producto');
     router.navigate('/inventario/CrearProductoForm');
   };
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -51,55 +41,68 @@ const CatalogoScreen = () => {
             style={styles.searchInput}
             value={query}
             onChangeText={setQuery}
-            returnKeyType="search"
           />
         </View>
 
-        <ScrollView style={styles.productList}>
-          {filtered.map((producto, index) => (
-            <TouchableOpacity key={index} onPress={() => handlePressProduct(producto)}>
-              <View style={styles.productItem}>
-                <Text style={styles.productText}>{producto}</Text>
-              </View>
+        {loading && (
+          <View style={styles.center}>
+            <ActivityIndicator size="large" color="#04538A" />
+            <Text>Cargando productos...</Text>
+          </View>
+        )}
+
+        {error && !loading && (
+          <View style={styles.center}>
+            <Text style={{ color: 'red', marginBottom: 8 }}>{error}</Text>
+            <TouchableOpacity onPress={reload} style={styles.retryButton}>
+              <Text style={{ color: '#fff' }}>Reintentar</Text>
             </TouchableOpacity>
-          ))}
+          </View>
+        )}
 
-          {filtered.length === 0 && (
-            <View style={[styles.productItem, { justifyContent: 'center' }]}>
-              <Text style={[styles.productText, { color: '#777' }]}>No se encontraron productos</Text>
-            </View>
-          )}
-        </ScrollView>
+        {!loading && !error && (
+          <ScrollView style={styles.productList}>
+            {filtered.map((producto) => (
+              <TouchableOpacity key={producto.idProducto} onPress={() => handlePressProduct(producto)}>
+                <View style={styles.productItem}>
+                  <Text style={styles.productText}>{producto.nombre}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
 
-        <TouchableOpacity style={styles.createButton} 
-        onPress={handleCreateProduct}>
+            {filtered.length === 0 && (
+              <View style={[styles.productItem, { justifyContent: 'center' }]}>
+                <Text style={[styles.productText, { color: '#777' }]}>No se encontraron productos</Text>
+              </View>
+            )}
+          </ScrollView>
+        )}
+
+        <TouchableOpacity style={styles.createButton} onPress={handleCreateProduct}>
           <Text style={styles.createButtonText}>Crear producto</Text>
         </TouchableOpacity>
       </View>
-      <Footer
-        onLogOutPress={  () => router.replace('/')}
-        onHomePress={ () => router.replace('/main/adminForm')} 
-      />
 
+      <Footer
+        onLogOutPress={() => router.replace('/')}
+        onHomePress={() => router.replace('/main/adminForm')}
+      />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
-  headerTitle: { color: '#fff', fontSize: 22, fontWeight: 'bold', textTransform: 'uppercase' },
   content: { flex: 1, paddingHorizontal: 16, paddingTop: 20, paddingBottom: 100 },
   searchContainer: { backgroundColor: '#fff', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, borderWidth: 1, borderColor: '#aaa', marginBottom: 16 },
   searchInput: { fontSize: 16, textAlign: 'center', color: '#000' },
+  center: { alignItems: 'center', justifyContent: 'center', flex: 1 },
   productList: { flex: 1, backgroundColor: '#eee', borderRadius: 8, borderWidth: 1, borderColor: '#999', paddingVertical: 8 },
   productItem: { backgroundColor: '#fff', paddingVertical: 12, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: '#ccc' },
   productText: { fontSize: 16, textAlign: 'center', color: '#333' },
   createButton: { marginTop: 20, backgroundColor: '#04538A', paddingVertical: 14, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   createButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  bottomNav: { position: 'absolute', bottom: 0, width: '100%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', backgroundColor: '#fff', paddingVertical: 12, borderTopWidth: 1, borderTopColor: '#ccc' },
-  navButton: { padding: 8 },
-  logoWrapper: { backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4, elevation: 2 },
-  logoImage: { width: 40, height: 40, resizeMode: 'contain' },
+  retryButton: { backgroundColor: '#04538A', padding: 10, borderRadius: 8 },
 });
 
 export default CatalogoScreen;
