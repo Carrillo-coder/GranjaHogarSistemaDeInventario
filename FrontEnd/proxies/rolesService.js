@@ -1,7 +1,7 @@
 import { API_BASE_URL } from '@env'
 
 const RolesServiceProxy = () => { 
-  const API_URL = API_BASE_URL 
+  const API_URL = API_BASE_URL || 'http://10.0.2.2:3000';
   const baseUrl = `${API_URL}/roles`
 
   async function getAllRoles() {
