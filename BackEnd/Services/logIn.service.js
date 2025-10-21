@@ -7,14 +7,22 @@ class LoginService {
         try {
             const usuario = await usuariosService.getUsuarioByUserName(nombreUsuario);
             if (!usuario.success || !usuario.data) {
-                throw new Error('Usuario no encontrado o inactivo');
+                return {
+                    success: false,
+                    message: 'Usuario no encontrado',
+                    statusCode: 404
+                };
             }
 
             const passwordMatch = await bcrypt.compare(password, usuario.data.password);
             if (!passwordMatch) {
-                throw new Error('Contraseña incorrecta');
+                return {
+                    success: false,
+                    message: 'Contraseña incorrecta',
+                    statusCode: 404
+                };
             }
-            const token = jwt.sign({ id: usuario.data.idUsuario, rol: usuario.data.rol.nombre }, 'your_jwt_secret', { expiresIn: '72h' });
+            const token = jwt.sign({ id: usuario.data.idUsuario, rol: usuario.data.rol.nombre }, process.env.JWT_SECRET, { expiresIn: '72h' });
             return {
                 success: true,
                 message: 'Inicio de sesión exitoso',

@@ -7,7 +7,7 @@ const LoginService = require('../Services/logIn.service');
  */
 
 class LogInController {
-    async handleLogIn(req, res) {
+    static async handleLogIn(req, res) {
         try {
             const { username } = req.params;
             const { password } = req.body;
@@ -19,7 +19,16 @@ class LogInController {
                 });
             }
 
-            const {usuario, token} = await LoginService.logIn(username, password);
+            const result = await LoginService.logIn(username, password);
+
+            if (!result.success) {
+                return res.status(result.statusCode).json({
+                    success: false,
+                    message: result.message
+                });
+            }
+            const { usuario, token } = result.data;
+
 
             return res.status(200).json({
                 message: 'Inicio de sesión exitoso',
@@ -27,19 +36,12 @@ class LogInController {
                 data: {
                     id: usuario.idUsuario,
                     nombreUsuario: usuario.nombreUsuario,
-                    rol: usuario.rol.nombre
+                    rol: usuario.rol
                 }
             });
 
         } catch (error) {
             console.error('Error en el controlador de inicio de sesión:', error);
-            if (error.message.includes('Usuario no encontrado') || error.message.includes('Contraseña incorrecta')) {
-                return res.status(401).json({
-                    success: false,
-                    message: error.message
-                });
-            }
-
             return res.status(500).json({
                 success: false,
                 message: 'Error interno del servidor',
