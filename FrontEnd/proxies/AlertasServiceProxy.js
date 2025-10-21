@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 
 // 1) Resolver BASE URL (env -> expo.extra -> fallback)
 const EXTRA_BASE = Constants?.expoConfig?.extra?.API_BASE_URL;
-const DEFAULT_BASE = 'http://10.0.2.2:3000'; // Android emulador; usa tu IP en dispositivo real
+const DEFAULT_BASE = 'http://10.34.18.74:5000'; // Android emulador; usa tu IP en dispositivo real
 const API_BASE_URL = ENV_BASE || EXTRA_BASE || DEFAULT_BASE;
 
 const AlertasServiceProxy = () => {
