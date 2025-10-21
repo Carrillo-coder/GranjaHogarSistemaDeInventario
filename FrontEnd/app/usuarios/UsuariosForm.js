@@ -1,82 +1,97 @@
 import 'expo-router/entry'
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import Footer from '../../components/Footer';
-import CustomButton from '../components/CustomButton';
-import CustomAvatar from '../../components/CustomAvatar';
+import { useRouter } from 'expo-router'
+import React, { useState, useEffect } from 'react'
+import { View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Alert, ActivityIndicator } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import Footer from '../../components/Footer'
+import CustomButton from '../components/CustomButton'
+import CustomAvatar from '../../components/CustomAvatar'
+import { useUsuarios } from '../../hooks/useUsuarios'
 
 const UsuariosForm = () => {
-  const router = useRouter();
+  const router = useRouter()
+  const [selectedUser, setSelectedUser] = useState(null)
+  const [showUserList, setShowUserList] = useState(false)
+  
+  const { usuarios, loading, error, fetchUsuarios, handleDeleteUsuario } = useUsuarios()
 
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [showUserList, setShowUserList] = useState(false);
-  const [users] = useState([
-    { id: 1, name: 'Juan Pérez', role: 'Admin' },
-    { id: 2, name: 'María González', role: 'Cocina' },
-    { id: 3, name: 'Carlos López', role: 'Cocina' },
-    { id: 4, name: 'Ana Martínez', role: 'Comedor' },
-  ]);
+  useEffect(() => {
+    fetchUsuarios()
+  }, []) 
 
   const handleCreateUser = () => {
-    console.log('Crear usuario');
-    router.navigate('/usuarios/CrearUsuarioForm');
-  };
+    console.log('Crear usuario')
+    router.push('/usuarios/CrearUsuarioForm')
+  }
 
   const handleModifyUser = () => {
     if (selectedUser) {
-      console.log('Modificar usuario:', selectedUser);
-      
-      // Pasar los datos del usuario como parámetros
-      router.navigate({
+      console.log('Modificar usuario:', selectedUser)
+
+      router.push({
         pathname: '/usuarios/CrearUsuarioForm',
         params: {
           editMode: 'true',
-          userId: selectedUser.id.toString(),
-          userName: selectedUser.name,
-          userRole: selectedUser.role
+          userId: selectedUser.idUsuario.toString(),
+          nombreUsuario: selectedUser.nombreUsuario,
+          nombreCompleto: selectedUser.nombreCompleto,
+          idRol: selectedUser.idRol.toString(),
+          rolNombre: selectedUser.rol?.nombre || '',
         }
-      });
+      })
     } else {
-      Alert.alert('Error', 'Selecciona un usuario para modificar');
+      Alert.alert('Error', 'Selecciona un usuario para modificar')
     }
-  };
+  }
 
-  const handleDeleteUser = () => {
+  const handleDeleteUser = async () => {
     if (selectedUser) {
       Alert.alert(
         'Confirmar eliminación',
-        `¿Estás seguro de borrar a ${selectedUser.name}?`,
+        `¿Estás seguro de desactivar a ${selectedUser.nombreCompleto}?`,
         [
           {
             text: 'Cancelar',
-            onPress: () => console.log('Cancelado'),
             style: 'cancel',
           },
           {
-            text: 'Sí, borrar',
-            onPress: () => {
-              console.log('Usuario borrado:', selectedUser);
-              Alert.alert('Usuario eliminado', `${selectedUser.name} ha sido eliminado`);
-              setSelectedUser(null);
+            text: 'Sí, desactivar',
+            onPress: async () => {
+              const result = await handleDeleteUsuario(selectedUser.idUsuario)
+              if (result.success) {
+                Alert.alert('Éxito', 'Usuario desactivado correctamente')
+                setSelectedUser(null)
+              } else {
+                Alert.alert('Error', result.message || 'No se pudo desactivar el usuario')
+              }
             },
             style: 'destructive',
           },
         ]
-      );
+      )
     } else {
-      Alert.alert('Error', 'Selecciona un usuario para borrar');
+      Alert.alert('Error', 'Selecciona un usuario para desactivar')
     }
-  };
+  }
 
   const handleUserSelect = (user) => {
-    setSelectedUser(user);
-  };
+    setSelectedUser(user)
+  }
 
   const toggleUserList = () => {
-    setShowUserList(!showUserList);
-  };
+    setShowUserList(!showUserList)
+  }
+
+  if (loading && usuarios.length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color="#04538A" />
+          <Text style={styles.loadingText}>Cargando usuarios...</Text>
+        </View>
+      </SafeAreaView>
+    )
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -89,6 +104,12 @@ const UsuariosForm = () => {
           icon="person-add"
         />
 
+        {error && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        )}
+
         <View style={styles.userListCard}>
           <TouchableOpacity 
             style={styles.userListHeader} 
@@ -96,7 +117,7 @@ const UsuariosForm = () => {
           >
             <Ionicons name="people" size={20} color="#666" style={styles.listIcon} />
             <Text style={styles.userListTitle}>
-              {selectedUser ? selectedUser.name : "Lista de usuarios"}
+              {selectedUser ? selectedUser.nombreCompleto : "Lista de usuarios"}
             </Text>
             <Ionicons 
               name={showUserList ? "chevron-up" : "chevron-down"} 
@@ -106,25 +127,35 @@ const UsuariosForm = () => {
           </TouchableOpacity>
 
           {showUserList && (
-            <View style={styles.userList}>
-              {users.map((user) => (
-                <Pressable
-                  key={user.id}
-                  onPress={() => handleUserSelect(user)}
-                  style={[
-                    styles.userItem,
-                    selectedUser?.id === user.id && styles.selectedUserItem
-                  ]}
-                >
-                  <CustomAvatar name={user.name} size={35} />
-                  <View style={styles.userInfo}>
-                    <Text style={styles.userName}>{user.name}</Text>
-                    <Text style={styles.userRole}>{user.role}</Text>
-                  </View>
-                  <Ionicons name="chevron-forward" size={16} color="#999" />
-                </Pressable>
-              ))}
-            </View>
+            <ScrollView style={styles.userList} nestedScrollEnabled={true}>
+              {usuarios.length === 0 ? (
+                <View style={styles.emptyState}>
+                  <Ionicons name="people-outline" size={48} color="#ccc" />
+                  <Text style={styles.emptyText}>No hay usuarios disponibles</Text>
+                </View>
+              ) : (
+                usuarios.map((user) => (
+                  <Pressable
+                    key={user.idUsuario}
+                    onPress={() => {
+                      handleUserSelect(user)
+                      setShowUserList(false) 
+                    }}
+                    style={[
+                      styles.userItem,
+                      selectedUser?.idUsuario === user.idUsuario && styles.selectedUserItem
+                    ]}
+                  >
+                    <CustomAvatar name={user.nombreCompleto} size={35} />
+                    <View style={styles.userInfo}>
+                      <Text style={styles.userName}>{user.nombreCompleto}</Text>
+                      <Text style={styles.userRole}>{user.rol?.nombre || 'Sin rol'}</Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={16} color="#999" />
+                  </Pressable>
+                ))
+              )}
+            </ScrollView>
           )}
         </View>
 
@@ -133,10 +164,11 @@ const UsuariosForm = () => {
             <Text style={styles.selectedUserTitle}>Usuario Seleccionado</Text>
             <View style={styles.divider} />
             <View style={styles.selectedUserInfo}>
-              <CustomAvatar name={selectedUser.name} size={50} />
+              <CustomAvatar name={selectedUser.nombreCompleto} size={50} />
               <View style={styles.selectedUserDetails}>
-                <Text style={styles.selectedUserName}>{selectedUser.name}</Text>
-                <Text style={styles.selectedUserRole}>Rol: {selectedUser.role}</Text>
+                <Text style={styles.selectedUserName}>{selectedUser.nombreCompleto}</Text>
+                <Text style={styles.selectedUserRole}>Rol: {selectedUser.rol?.nombre || 'Sin rol'}</Text>
+                <Text style={styles.selectedUserUsername}>Usuario: {selectedUser.nombreUsuario}</Text>
               </View>
             </View>
           </View>
@@ -151,7 +183,7 @@ const UsuariosForm = () => {
           />
           
           <CustomButton
-            title="Borrar"
+            title="Desactivar"
             onPress={handleDeleteUser}
             style={styles.deleteButton}
             icon="trash-outline"
@@ -163,13 +195,23 @@ const UsuariosForm = () => {
         onHomePress={() => router.replace('/main/adminForm')}
       />
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666',
   },
   content: {
     flex: 1,
@@ -178,6 +220,16 @@ const styles = StyleSheet.create({
   createButton: {
     backgroundColor: '#04538A',
     marginBottom: 20,
+  },
+  errorContainer: {
+    backgroundColor: '#ffebee',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#c62828',
+    textAlign: 'center',
   },
   userListCard: {
     backgroundColor: 'white',
@@ -205,7 +257,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   userList: {
-    maxHeight: 300,
+    maxHeight: 250,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+  },
+  emptyText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: '#999',
   },
   userItem: {
     flexDirection: 'row',
@@ -272,6 +334,11 @@ const styles = StyleSheet.create({
     color: '#2e7d32',
     fontWeight: '500',
   },
+  selectedUserUsername: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
+  },
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -286,6 +353,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#d32f2f',
     flex: 1,
   },
-});
+})
 
-export default UsuariosForm;
+export default UsuariosForm
