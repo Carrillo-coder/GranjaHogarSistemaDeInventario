@@ -1,9 +1,10 @@
 import 'expo-router/entry'
-import {useRouter} from 'expo-router';
-import React, { useState } from 'react';
+import {useRouter, useLocalSearchParams} from 'expo-router';
+import React, { useState, useEffect } from 'react';
 import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Image, Modal, TextInput} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../../components/Footer';
+import { LoteVO } from '../../valueobjects/LoteVO';
 
 const CustomAvatar = ({ name, size = 40 }) => {
   const getInitials = (name) => {
@@ -52,16 +53,34 @@ const ConfirmationModal = ({ visible, onConfirm, onCancel, message }) => {
 const RegistrarEntradaForm = () => {
   const router = useRouter();
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showProductList, setShowProductList] = useState(false);
+  const [selectedLote, setSelectedLote] = useState(null);
+  const [showLoteList, setShowLoteList] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [provider, setProvider] = useState('');
   const [notes, setNotes] = useState('');
-  const [products] = useState([
-    { id: 1, producto: 'Arroz', presentacion: 'Bolsa 1kg', categoria: 'Granos', cantidadExistente: 50, fechaCaducidad: '2025-12-31' },
-    { id: 2, producto: 'Zucaritas', presentacion: 'Caja 500g', categoria: 'Cereales', cantidadExistente: 30, fechaCaducidad: '2025-11-30' },
-    { id: 3, producto: 'Leche', presentacion: 'Caja 1L', categoria: 'Lácteos', cantidadExistente: 20, fechaCaducidad: '2025-10-31' },
+  const [lotes, setLotes] = useState([
+    new LoteVO({ idLote: 1, cantidad: 10, caducidad: '21-10-2025', idProducto: 101, nombre: 'Arroz' }),
+    new LoteVO({ idLote: 2, cantidad: 5, caducidad: '01-11-2025', idProducto: 102, nombre: 'Zucaritas' }),
+    // new LoteVO({ idLote: 3, cantidad: 20, caducidad: '15-12-2025', idProducto: 103, nombre: 'Leche' })
   ]);
+  const params = useLocalSearchParams();
+  const loteParam = params.lote;
+
+  useEffect(() => {
+    if (!loteParam) return;
+    try {
+      // loteParam expected to be encoded JSON
+      const parsed = JSON.parse(decodeURIComponent(loteParam));
+      const newLote = LoteVO.fromApi(parsed);
+      setLotes(prev => {
+        if (newLote.idLote == null) return [...prev, newLote];
+        if (prev.some(l => l.idLote === newLote.idLote)) return prev;
+        return [...prev, newLote];
+      });
+    } catch (e) {
+      console.warn('Failed parsing lote param', e);
+    }
+  }, [loteParam]);
 
   const handleCreateProduct = () => {
     console.log('Crear producto');
@@ -69,15 +88,15 @@ const RegistrarEntradaForm = () => {
   };
 
   const handleConfirmPress = () => {
-    if (selectedProduct) {
+    if (selectedLote) {
       setModalVisible(true);
     } else {
-      alert('Agrega un producto para continuar');
+      alert('Agrega un lote para continuar');
     }
   };
 
   const handleConfirm = () => {
-    console.log('Registro de producto:', selectedProduct);
+    console.log('Registro de lote:', selectedLote);
     console.log('Proveedor:', provider);
     console.log('Notas:', notes);
     setModalVisible(false);
@@ -88,12 +107,12 @@ const RegistrarEntradaForm = () => {
     setModalVisible(false);
   };
 
-  const handleProductSelect = (product) => {
-    setSelectedProduct(product);
+  const handleLoteSelect = (lote) => {
+    setSelectedLote(lote);
   };
 
-  const toggleProductList = () => {
-    setShowProductList(!showProductList);
+  const toggleLoteList = () => {
+    setShowLoteList(!showLoteList);
   };
 
   const handleHomePress = () => {
@@ -128,34 +147,35 @@ const RegistrarEntradaForm = () => {
         <View style={styles.userListCard}>
           <TouchableOpacity 
             style={styles.userListHeader} 
-            onPress={toggleProductList}
+            onPress={toggleLoteList}
           >
             <Ionicons name="cube" size={20} color="#666" style={styles.listIcon} />
             <Text style={styles.userListTitle}>
-              {selectedProduct ? selectedProduct.producto : "Resumen de entrada"}
+              {selectedLote
+                ? (selectedLote.nombre || `Lote #${selectedLote.idLote ?? selectedLote.idProducto}`)
+                : "Resumen de entrada"}
             </Text>
             <Ionicons 
-              name={showProductList ? "chevron-up" : "chevron-down"} 
+              name={showLoteList ? "chevron-up" : "chevron-down"} 
               size={20} 
               color="#666" 
             />
           </TouchableOpacity>
-
-          {showProductList && (
+          {showLoteList && (
             <View style={styles.userList}>
-              {products.map((product) => (
+              {lotes.map((lote, idx) => (
                 <Pressable
-                  key={product.id}
-                  onPress={() => handleProductSelect(product)}
+                  key={lote.idLote ?? idx}
+                  onPress={() => handleLoteSelect(lote)}
                   style={[
                     styles.userItem,
-                    selectedProduct?.id === product.id && styles.selectedUserItem
+                    selectedLote?.idLote === lote.idLote && styles.selectedUserItem
                   ]}
                 >
-                  <CustomAvatar name={product.producto} size={35} />
+                  <CustomAvatar name={lote.nombre || String(lote.idProducto ?? lote.idLote ?? '')} size={35} />
                   <View style={styles.userInfo}>
-                    <Text style={styles.userName}>{product.producto}</Text>
-                    <Text style={styles.userRole}>{product.categoria}</Text>
+                    <Text style={styles.userName}>{lote.nombre || `Lote ${lote.idLote ?? idx}`}</Text>
+                    <Text style={styles.userRole}>Cantidad: {lote.cantidad ?? '-'}</Text>
                   </View>
                   <Ionicons name="chevron-forward" size={16} color="#999" />
                 </Pressable>
@@ -164,18 +184,17 @@ const RegistrarEntradaForm = () => {
           )}
         </View>
 
-        {selectedProduct && (
+        {selectedLote && (
           <View style={styles.selectedUserCard}>
-            <Text style={styles.selectedUserTitle}>Producto Seleccionado</Text>
+            <Text style={styles.selectedUserTitle}>Lote Seleccionado</Text>
             <View style={styles.divider} />
             <View style={styles.selectedUserInfo}>
-              <CustomAvatar name={selectedProduct.producto} size={50} />
+              <CustomAvatar name={selectedLote.nombre || String(selectedLote.idProducto ?? selectedLote.idLote)} size={50} />
               <View style={styles.selectedUserDetails}>
-                <Text style={styles.selectedUserName}>{selectedProduct.producto}</Text>
-                <Text style={styles.selectedUserRole}>Presentación: {selectedProduct.presentacion}</Text>
-                <Text style={styles.selectedUserRole}>Categoría: {selectedProduct.categoria}</Text>
-                <Text style={styles.selectedUserRole}>Cantidad: {selectedProduct.cantidadExistente}</Text>
-                <Text style={styles.selectedUserRole}>Caducidad: {selectedProduct.fechaCaducidad}</Text>
+                <Text style={styles.selectedUserName}>{selectedLote.nombre || `Lote ${selectedLote.idLote ?? ''}`}</Text>
+                <Text style={styles.selectedUserRole}>ID Producto: {selectedLote.idProducto ?? '-'}</Text>
+                <Text style={styles.selectedUserRole}>Cantidad: {selectedLote.cantidad ?? '-'}</Text>
+                <Text style={styles.selectedUserRole}>Caducidad: {selectedLote.caducidad ?? '-'}</Text>
               </View>
             </View>
           </View>
@@ -477,3 +496,9 @@ const styles = StyleSheet.create({
 });
 
 export default RegistrarEntradaForm;
+
+// ¿Qué es mejor hacer primero? Construir los proxys necesarios en base a los endpoints del backend de POST entradas y POST lote, o integrar el loteVO y realizar ajustes en la lógica del formulario para que utilice los loteVO que va recibiendo desde el backend y finalmente enviarlos a la base de datos cuando se le de confirmar?
+// // Mi recomendación es integrar primero el LoteVO en la lógica del formulario. Esto te permitirá asegurarte de que los datos que estás manejando en el frontend están correctamente estructurados y validados antes de enviarlos al backend. Una vez que tengas el LoteVO funcionando correctamente en el formulario, puedes proceder a construir los proxys para los endpoints de POST entradas y POST lote, sabiendo que los datos que enviarás estarán en el formato correcto. Esto también facilitará la depuración y el mantenimiento del código a largo plazo.
+// Vale, muchas gracias. 
+
+// 
