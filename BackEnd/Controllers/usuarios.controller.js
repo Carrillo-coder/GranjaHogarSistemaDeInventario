@@ -29,6 +29,20 @@ class UsuarioController {
         }
     }
 
+        static async getByNombreUsuario(req, res) {
+        try {
+            const { id } = req.params;
+            const result = await UsuarioService.getUsuarioByNombreUsuario(nombreUsuario);
+            return res.status(result.statusCode).json(result);
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor',
+                error: error.message
+            });
+        }
+    }
+
     static async create(req, res) {
         try {
             const result = await UsuarioService.createUsuario(req.body);

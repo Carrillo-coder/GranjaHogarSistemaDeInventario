@@ -8,6 +8,9 @@ router.get('/', UsuarioController.getAll);
 // GET - Obtener usuario por ID
 router.get('/:id', UsuarioController.getById);
 
+// GET - Obtener usuario por Username
+router.get('/nombreUsuario/:nombreUsuario', UsuarioController.getByNombreUsuario);
+
 // POST - Crear nuevo usuario
 router.post('/', UsuarioController.create);
 
