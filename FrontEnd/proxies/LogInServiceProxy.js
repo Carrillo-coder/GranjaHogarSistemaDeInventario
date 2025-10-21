@@ -4,7 +4,7 @@ import { API_BASE_URL } from '@env';
 const DEFAULT_BASE =
   Platform.OS === 'android' ? 'http://10.0.2.2:5000' : 'http://localhost:5000';
 
-const BASE = (API_BASE_URL?.trim() || DEFAULT_BASE).replace(/\/+$/, '');
+const BASE = API_BASE_URL.trim() || DEFAULT_BASE;
 
 async function _parseBody(response) {
   const text = await response.text().catch(() => '');
@@ -18,7 +18,7 @@ async function _parseBody(response) {
 
 const LogInServiceProxy = () => {
   async function logInUser(UserName, password) {
-    const url = `${BASE}/api/inventario/login/${UserName}`; 
+    const url = `${BASE}/api/inventario/logIn/${UserName}`; 
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -36,7 +36,7 @@ const useLogIn = () => {
     }
   }, []); // The dependency array is empty as logInService is stable.
 
-  return { logIn, loading, error, data };
+  return { logIn, loading, error, data, token: data?.token, rol: data?.rol|| null };
 };
 
 export default useLogIn;
