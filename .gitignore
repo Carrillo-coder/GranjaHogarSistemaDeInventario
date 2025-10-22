@@ -1,6 +1,4 @@
 node_modules/
-db.config.js
-
 
 # Variables de entorno
 .env

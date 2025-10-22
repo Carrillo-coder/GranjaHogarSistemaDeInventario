@@ -1,10 +1,4 @@
-import { Platform } from 'react-native';
-import { API_BASE_URL as ENV_BASE } from '@env';
-import Constants from 'expo-constants';
-
-const EXTRA_BASE = Constants?.expoConfig?.extra?.API_BASE_URL;
-const DEFAULT_BASE = 'http://10.34.18.74:5000';
-const API_BASE_URL = ENV_BASE || EXTRA_BASE || DEFAULT_BASE;
+import { API_BASE_URL} from '@env';
 
 
 const DepartamentosServiceProxy = () => {

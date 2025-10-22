@@ -1,12 +1,6 @@
 // proxies/AlertasServiceProxy.js
 import { AlertaVO } from '../valueobjects/AlertaVO';
-import { API_BASE_URL as ENV_BASE } from '@env'; // puede venir undefined
-import Constants from 'expo-constants';
-
-// 1) Resolver BASE URL (env -> expo.extra -> fallback)
-const EXTRA_BASE = Constants?.expoConfig?.extra?.API_BASE_URL;
-const DEFAULT_BASE = 'http://10.34.18.74:5000'; // Android emulador; usa tu IP en dispositivo real
-const API_BASE_URL = ENV_BASE || EXTRA_BASE || DEFAULT_BASE;
+import { API_BASE_URL as API_BASE_URL } from '@env'; // puede venir undefined
 
 const AlertasServiceProxy = () => {
   const base = `${API_BASE_URL.replace(/\/+$/, '')}/api/inventario/alertas`;
