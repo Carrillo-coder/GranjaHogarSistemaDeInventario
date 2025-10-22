@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -13,6 +14,7 @@ const lotesRoutes = require('./Routes/lotes.routes');
 const categoriasRoutes = require('./Routes/categorias.routes');
 const tiposSalidasRoutes = require('./Routes/tiposSalidas.routes');
 const alertasRoutes = require('./Routes/alertas.routes');
+const logInRoutes = require('./Routes/logIn.routes');
 
 
 const app = express();
@@ -58,7 +60,7 @@ app.use('/api/inventario/lotes', lotesRoutes);
 app.use('/api/inventario/categorias', categoriasRoutes);
 app.use('/api/inventario/tiposSalidas', tiposSalidasRoutes);
 app.use('/api/inventario/alertas', alertasRoutes);
-
+app.use('/api/inventario/logIn', logInRoutes);
 
 app.use((req, res) => {
     res.status(404).json({
