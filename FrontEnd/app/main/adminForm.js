@@ -1,6 +1,6 @@
 import 'expo-router/entry';
-import { useRouter } from 'expo-router';
-import React, { useEffect } from 'react';
+import { useRouter, useFocusEffect } from 'expo-router';
+import React, { useCallback } from 'react';
 import {
   View, StatusBar, SafeAreaView, ScrollView,
   Text, TouchableOpacity, Pressable, Image
@@ -20,17 +20,19 @@ const CustomButton = ({ title, onPress, style, textStyle, icon }) => (
 const MainForm = () => {
   const router = useRouter();
 
-  useEffect(() => {
-    const handleRolCheck = async () => {
-      const rol = await AsyncStorage.getItem("rol");
-      if (rol !== "Administrador") {
-        console.log("Rol no autorizado, redirigiendo...");
-        router.replace('/');
-      }
-    };
+  useFocusEffect(
+    useCallback(() => {
+      const handleRolCheck = async () => {
+        const rol = await AsyncStorage.getItem("rol");
+        if (rol !== "Administrador") {
+          console.log("Rol no autorizado, redirigiendo...");
+          router.replace('/');
+        }
+      };
 
-    handleRolCheck();
-  }, []);
+      handleRolCheck();
+    }, [router])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
