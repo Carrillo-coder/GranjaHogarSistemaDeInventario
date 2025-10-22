@@ -11,56 +11,76 @@ export default function LoginScreen() {
   // Correctly destructure what the hook returns
   const { logIn, loading, error, data } = useLogIn();
 
-  // Effect to handle successful login
-  useEffect(() => {
-    // Check if data exists and login was successful
-    console.log('Intentando entrar al useEffect de data');
-    const rol = AsyncStorage.getItem('rol');
-    console.log('Rol obtenido de AsyncStorage:', rol, !rol);
-    if (rol && rol.not==null) {
-      console.log('Entrando al useEffect de data');
-      const Navigate = async () => {
-        try {
-          Alert.alert('Inicio de Sesión Exitoso', `Bienvenido, ${rol}.`);
 
-          // Navigate based on the role from the API response
-          if (rol === 'Admin') {
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        console.log('Comprobando sesión almacenada en AsyncStorage');
+        const userToken = await AsyncStorage.getItem('userToken');
+        const rol = await AsyncStorage.getItem('rol');
+
+        if (userToken && rol) {
+          Alert.alert('Inicio de Sesión Automático', `Bienvenido de nuevo, ${rol}.`);
+          console.log('Token encontrado:', userToken);
+          console.log('Rol encontrado:', rol);
+          if (rol === 'Administrador') {
             router.replace('/main/adminForm');
           } else if (rol === 'Cocina') {
             router.replace('/main/CocinaForm');
           } else if (rol === 'Comedor') {
             router.replace('/main/ComedorForm');
-          } else {
-             Alert.alert('Error de Rol', 'No tienes un rol asignado para acceder.');
           }
+        }
+      } catch (e) {
+        Alert.alert('Error', 'No se pudo recuperar la sesión.');
+      }
+    };
 
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    const handleLoginSuccess = async () => {
+      console.log('Datos de respuesta del inicio de sesión:', data);
+      if (data && data.message === 'Inicio de sesión exitoso' && data.token && data.data.rol) {
+        try {
+          console.log('Guardando token y rol en AsyncStorage');
+          console.log('Token:', data.token);
+          console.log('Rol:', data.data.rol);
+
+          await AsyncStorage.setItem('userToken', data.token);
+          await AsyncStorage.setItem('rol', data.data.rol);
+          
+          Alert.alert('Inicio de Sesión Exitoso', `Bienvenido, ${data.data.rol}.`);
+
+          if (data.data.rol === 'Administrador') {
+            router.replace('/main/adminForm');
+          } else if (data.data.rol === 'Cocina') {
+            router.replace('/main/CocinaForm');
+          } else if (data.data.rol === 'Comedor') {
+            router.replace('/main/ComedorForm');
+          } else {
+            Alert.alert('Error de Rol', 'No tienes un rol asignado para acceder.');
+          }
         } catch (e) {
           Alert.alert('Error', 'No se pudo guardar la sesión.');
         }
-      };
+      }
+    };
 
-      Navigate();
-    }
-  }, [data]); // This effect runs when the 'data' object changes
+    handleLoginSuccess();
+  }, [data]);
 
-  // Effect to handle login errors
   useEffect(() => {
     if (error) {
       Alert.alert('Error de Inicio de Sesión', error);
     }
-  }, [error]); // This effect runs when the 'error' object changes
+  }, [error]);
 
-  // Simplified handler, just triggers the login
   const handleLogin = () => {
     if (usuario && contrasena) {
       logIn(usuario, contrasena);
-      Alert.alert('Login', 'Iniciando sesión...');
-      console.log('datos obtenidos', data, data.data.rol)
-      if (data.message === 'Inicio de sesión exitoso' && data.token && data.data.rol) {
-        console.log('store credentials', 'guardando datos...');
-        AsyncStorage.setItem('userToken', data.token);
-        AsyncStorage.setItem('rol', data.data.rol);
-      }
+      console.log('Intentando iniciar sesión con:', { usuario, contrasena });
     } else {
       Alert.alert('Campos incompletos', 'Por favor, introduce tu usuario y contraseña.');
     }
