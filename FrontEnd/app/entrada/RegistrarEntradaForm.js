@@ -57,33 +57,6 @@ const RegistrarEntradaForm = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [provider, setProvider] = useState('');
   const [notes, setNotes] = useState('');
-  const [lotes, setLotes] = useState([
-    new LoteVO({ idLote: 1, cantidad: 10, caducidad: '21-10-2025', idProducto: 101, nombre: 'Arroz' }),
-    // new LoteVO({ idLote: 2, cantidad: 5, caducidad: '01-11-2025', idProducto: 102, nombre: 'Zucaritas' }),
-    // new LoteVO({ idLote: 3, cantidad: 20, caducidad: '15-12-2025', idProducto: 103, nombre: 'Leche' })
-  ]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const { createLote } = useLotes();
-  const { createEntrada } = useEntradas();
-  const params = useLocalSearchParams();
-  const loteParam = params.lote;
-
-  useEffect(() => {
-    if (!loteParam) return;
-    try {
-      // loteParam expected to be encoded JSON
-      const parsed = JSON.parse(decodeURIComponent(loteParam));
-      const newLote = LoteVO.fromApi(parsed);
-      setLotes(prev => {
-        if (newLote.idLote == null) return [...prev, newLote];
-        if (prev.some(l => l.idLote === newLote.idLote)) return prev;
-        return [...prev, newLote];
-      });
-    } catch (e) {
-      console.warn('Failed parsing lote param', e);
-    }
-  }, [loteParam]);
   const [products] = useState([
     { id: 1, producto: 'Arroz', presentacion: 'Bolsa 1kg', categoria: 'Granos', cantidadExistente: 50, fechaCaducidad: '2025-12-31' },
     { id: 2, producto: 'Zucaritas', presentacion: 'Caja 500g', categoria: 'Cereales', cantidadExistente: 30, fechaCaducidad: '2025-11-30' },
