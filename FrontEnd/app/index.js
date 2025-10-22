@@ -14,14 +14,13 @@ export default function LoginScreen() {
   // Effect to handle successful login
   useEffect(() => {
     // Check if data exists and login was successful
-    if (data && data.success) {
-      const { token, usuario: userData } = data.data;
-      const { rol } = userData;
-
-      const storeTokenAndNavigate = async () => {
+    console.log('Intentando entrar al useEffect de data');
+    const rol = AsyncStorage.getItem('rol');
+    console.log('Rol obtenido de AsyncStorage:', rol, !rol);
+    if (rol && rol.not==null) {
+      console.log('Entrando al useEffect de data');
+      const Navigate = async () => {
         try {
-          // Use AsyncStorage for React Native
-          await AsyncStorage.setItem('userToken', token);
           Alert.alert('Inicio de Sesión Exitoso', `Bienvenido, ${rol}.`);
 
           // Navigate based on the role from the API response
@@ -40,7 +39,7 @@ export default function LoginScreen() {
         }
       };
 
-      storeTokenAndNavigate();
+      Navigate();
     }
   }, [data]); // This effect runs when the 'data' object changes
 
@@ -56,6 +55,12 @@ export default function LoginScreen() {
     if (usuario && contrasena) {
       logIn(usuario, contrasena);
       Alert.alert('Login', 'Iniciando sesión...');
+      console.log('datos obtenidos', data, data.data.rol)
+      if (data.message === 'Inicio de sesión exitoso' && data.token && data.data.rol) {
+        console.log('store credentials', 'guardando datos...');
+        AsyncStorage.setItem('userToken', data.token);
+        AsyncStorage.setItem('rol', data.data.rol);
+      }
     } else {
       Alert.alert('Campos incompletos', 'Por favor, introduce tu usuario y contraseña.');
     }
