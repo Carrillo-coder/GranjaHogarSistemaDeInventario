@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import LotesServiceProxy from '../proxies/lotesServiceProxy';
+import LotesServiceProxy from '../proxies/LotesServiceProxy';
 
 const useLotes = () => {
 	const { crearLote } = LotesServiceProxy();

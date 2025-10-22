@@ -1,9 +1,12 @@
 import 'expo-router/entry'
-import {useRouter} from 'expo-router';
-import React, { useState } from 'react';
-import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Image, Modal, TextInput} from 'react-native';
+import {useRouter, useLocalSearchParams} from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Image, Modal, TextInput}from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../../components/Footer';
+import { LoteVO } from '../../valueobjects/LoteVO';
+import useLotes from '../../hooks/useLotes';
+import useEntradas from '../../hooks/useEntradas';
 
 const CustomAvatar = ({ name, size = 40 }) => {
   const getInitials = (name) => {
@@ -51,17 +54,24 @@ const ConfirmationModal = ({ visible, onConfirm, onCancel, message }) => {
 
 const RegistrarEntradaForm = () => {
   const router = useRouter();
+  console.log('RegistrarEntradaForm render');
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showProductList, setShowProductList] = useState(false);
+  const [selectedLote, setSelectedLote] = useState(null);
+  const [showLoteList, setShowLoteList] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [provider, setProvider] = useState('');
   const [notes, setNotes] = useState('');
-  const [products] = useState([
-    { id: 1, producto: 'Arroz', presentacion: 'Bolsa 1kg', categoria: 'Granos', cantidadExistente: 50, fechaCaducidad: '2025-12-31' },
-    { id: 2, producto: 'Zucaritas', presentacion: 'Caja 500g', categoria: 'Cereales', cantidadExistente: 30, fechaCaducidad: '2025-11-30' },
-    { id: 3, producto: 'Leche', presentacion: 'Caja 1L', categoria: 'Lácteos', cantidadExistente: 20, fechaCaducidad: '2025-10-31' },
+  const [lotes, setLotes] = useState([
+    new LoteVO({ idLote: 1, cantidad: 10, caducidad: '21-10-2025', idProducto: 101, nombre: 'Arroz' }),
+    // new LoteVO({ idLote: 2, cantidad: 5, caducidad: '01-11-2025', idProducto: 102, nombre: 'Zucaritas' }),
+    // new LoteVO({ idLote: 3, cantidad: 20, caducidad: '15-12-2025', idProducto: 103, nombre: 'Leche' })
   ]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { createLote } = useLotes();
+  const { createEntrada } = useEntradas();
+  const params = useLocalSearchParams();
+  const loteParam = params.lote;
 
   const handleCreateProduct = () => {
     console.log('Crear producto');
@@ -69,33 +79,38 @@ const RegistrarEntradaForm = () => {
   };
 
   const handleConfirmPress = () => {
-    if (selectedProduct) {
+    if (selectedLote) {
       setModalVisible(true);
     } else {
-      alert('Agrega un producto para continuar');
+      alert('Agrega un lote para continuar');
     }
   };
 
-  const handleConfirm = () => {
-    console.log('Registro de producto:', selectedProduct);
-    console.log('Proveedor:', provider);
-    console.log('Notas:', notes);
+  const handleConfirm = async () => {
+    setLoading(true);
+    setError('');
     setModalVisible(false);
     try {
-      // 1. Enviar todos los lotes (puedes ajustar para enviar sólo los nuevos si lo deseas)
-      const loteResults = [];
-      for (const lote of lotes) {
-        // Puedes usar lote.toApi() si necesitas el formato plano
-        const res = await createLote(lote.toApi ? lote.toApi() : lote);
-        loteResults.push(res);
-      }
-      // 2. Enviar la entrada (puedes ajustar el payload según tu modelo)
+      // 1. Crear la entrada primero (backend necesita idEntrada para crear lotes)
+      const today = new Date();
+      const fecha = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
       const entradaPayload = {
         proveedor: provider,
         notas: notes,
-        lotes: loteResults.map(r => r.data ? r.data : r), // asume que el backend responde con el lote creado
+        fecha,
       };
       const entradaRes = await createEntrada(entradaPayload);
+      const idEntrada = entradaRes?.data?.idEntrada ?? entradaRes?.data?.id ?? null;
+      if (!idEntrada) throw new Error('No se obtuvo idEntrada del servidor');
+
+      // 2. Enviar todos los lotes vinculándolos a idEntrada
+      const loteResults = [];
+      for (const lote of lotes) {
+        const payload = lote.toApi ? lote.toApi() : lote;
+        payload.idEntrada = idEntrada;
+        const res = await createLote(payload);
+        loteResults.push(res);
+      }
       // 3. Limpiar y navegar o mostrar éxito
       setProvider('');
       setNotes('');
@@ -115,12 +130,12 @@ const RegistrarEntradaForm = () => {
     setModalVisible(false);
   };
 
-  const handleProductSelect = (product) => {
-    setSelectedProduct(product);
+  const handleLoteSelect = (lote) => {
+    setSelectedLote(lote);
   };
 
-  const toggleProductList = () => {
-    setShowProductList(!showProductList);
+  const toggleLoteList = () => {
+    setShowLoteList(!showLoteList);
   };
 
   const handleHomePress = () => {
@@ -160,34 +175,35 @@ const RegistrarEntradaForm = () => {
         <View style={styles.userListCard}>
           <TouchableOpacity 
             style={styles.userListHeader} 
-            onPress={toggleProductList}
+            onPress={toggleLoteList}
           >
             <Ionicons name="cube" size={20} color="#666" style={styles.listIcon} />
             <Text style={styles.userListTitle}>
-              {selectedProduct ? selectedProduct.producto : "Resumen de entrada"}
+              {selectedLote
+                ? (selectedLote.nombre || `Lote #${selectedLote.idLote ?? selectedLote.idProducto}`)
+                : "Resumen de entrada"}
             </Text>
             <Ionicons 
-              name={showProductList ? "chevron-up" : "chevron-down"} 
+              name={showLoteList ? "chevron-up" : "chevron-down"} 
               size={20} 
               color="#666" 
             />
           </TouchableOpacity>
-
-          {showProductList && (
+          {showLoteList && (
             <View style={styles.userList}>
-              {products.map((product) => (
+              {lotes.map((lote, idx) => (
                 <Pressable
-                  key={product.id}
-                  onPress={() => handleProductSelect(product)}
+                  key={lote.idLote ?? idx}
+                  onPress={() => handleLoteSelect(lote)}
                   style={[
                     styles.userItem,
-                    selectedProduct?.id === product.id && styles.selectedUserItem
+                    selectedLote?.idLote === lote.idLote && styles.selectedUserItem
                   ]}
                 >
-                  <CustomAvatar name={product.producto} size={35} />
+                  <CustomAvatar name={lote.nombre || String(lote.idProducto ?? lote.idLote ?? '')} size={35} />
                   <View style={styles.userInfo}>
-                    <Text style={styles.userName}>{product.producto}</Text>
-                    <Text style={styles.userRole}>{product.categoria}</Text>
+                    <Text style={styles.userName}>{lote.nombre || `Lote ${lote.idLote ?? idx}`}</Text>
+                    <Text style={styles.userRole}>Cantidad: {lote.cantidad ?? '-'}</Text>
                   </View>
                   <Ionicons name="chevron-forward" size={16} color="#999" />
                 </Pressable>
@@ -196,18 +212,17 @@ const RegistrarEntradaForm = () => {
           )}
         </View>
 
-        {selectedProduct && (
+        {selectedLote && (
           <View style={styles.selectedUserCard}>
-            <Text style={styles.selectedUserTitle}>Producto Seleccionado</Text>
+            <Text style={styles.selectedUserTitle}>Lote Seleccionado</Text>
             <View style={styles.divider} />
             <View style={styles.selectedUserInfo}>
-              <CustomAvatar name={selectedProduct.producto} size={50} />
+              <CustomAvatar name={selectedLote.nombre || String(selectedLote.idProducto)} size={50} />
               <View style={styles.selectedUserDetails}>
-                <Text style={styles.selectedUserName}>{selectedProduct.producto}</Text>
-                <Text style={styles.selectedUserRole}>Presentación: {selectedProduct.presentacion}</Text>
-                <Text style={styles.selectedUserRole}>Categoría: {selectedProduct.categoria}</Text>
-                <Text style={styles.selectedUserRole}>Cantidad: {selectedProduct.cantidadExistente}</Text>
-                <Text style={styles.selectedUserRole}>Caducidad: {selectedProduct.fechaCaducidad}</Text>
+                <Text style={styles.selectedUserName}>{selectedLote.nombre || `Producto ${selectedLote.idProducto}`}</Text>
+                <Text style={styles.selectedUserRole}>ID Producto: {selectedLote.idProducto ?? '-'}</Text>
+                <Text style={styles.selectedUserRole}>Cantidad: {selectedLote.cantidad ?? '-'}</Text>
+                <Text style={styles.selectedUserRole}>Caducidad: {selectedLote.caducidad ?? '-'}</Text>
               </View>
             </View>
           </View>
