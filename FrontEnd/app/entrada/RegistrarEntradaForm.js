@@ -5,6 +5,8 @@ import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOp
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../../components/Footer';
 import { LoteVO } from '../../valueobjects/LoteVO';
+import useLotes from '../../hooks/useLotes';
+import useEntradas from '../../hooks/useEntradas';
 
 const CustomAvatar = ({ name, size = 40 }) => {
   const getInitials = (name) => {
@@ -60,9 +62,13 @@ const RegistrarEntradaForm = () => {
   const [notes, setNotes] = useState('');
   const [lotes, setLotes] = useState([
     new LoteVO({ idLote: 1, cantidad: 10, caducidad: '21-10-2025', idProducto: 101, nombre: 'Arroz' }),
-    new LoteVO({ idLote: 2, cantidad: 5, caducidad: '01-11-2025', idProducto: 102, nombre: 'Zucaritas' }),
+    // new LoteVO({ idLote: 2, cantidad: 5, caducidad: '01-11-2025', idProducto: 102, nombre: 'Zucaritas' }),
     // new LoteVO({ idLote: 3, cantidad: 20, caducidad: '15-12-2025', idProducto: 103, nombre: 'Leche' })
   ]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { createLote } = useLotes();
+  const { createEntrada } = useEntradas();
   const params = useLocalSearchParams();
   const loteParam = params.lote;
 
@@ -95,12 +101,38 @@ const RegistrarEntradaForm = () => {
     }
   };
 
-  const handleConfirm = () => {
-    console.log('Registro de lote:', selectedLote);
-    console.log('Proveedor:', provider);
-    console.log('Notas:', notes);
+  const handleConfirm = async () => {
+    setLoading(true);
+    setError('');
     setModalVisible(false);
-    router.navigate('/entrada/RegistrarEntradaForm');
+    try {
+      // 1. Enviar todos los lotes (puedes ajustar para enviar sólo los nuevos si lo deseas)
+      const loteResults = [];
+      for (const lote of lotes) {
+        // Puedes usar lote.toApi() si necesitas el formato plano
+        const res = await createLote(lote.toApi ? lote.toApi() : lote);
+        loteResults.push(res);
+      }
+      // 2. Enviar la entrada (puedes ajustar el payload según tu modelo)
+      const entradaPayload = {
+        proveedor: provider,
+        notas: notes,
+        lotes: loteResults.map(r => r.data ? r.data : r), // asume que el backend responde con el lote creado
+      };
+      const entradaRes = await createEntrada(entradaPayload);
+      // 3. Limpiar y navegar o mostrar éxito
+      setProvider('');
+      setNotes('');
+      setLotes([]);
+      setSelectedLote(null);
+      alert('Entrada registrada correctamente');
+      router.navigate('/entrada/RegistrarEntradaForm');
+    } catch (e) {
+      setError(e.message || 'Error al registrar entrada');
+      alert('Error: ' + (e.message || 'Error al registrar entrada'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -133,8 +165,13 @@ const RegistrarEntradaForm = () => {
         visible={modalVisible}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
-        message="¿Estás seguro que quieres continuar?"
+        message={loading ? "Enviando..." : "¿Estás seguro que quieres continuar?"}
       />
+      {error ? (
+        <View style={{ padding: 10, backgroundColor: '#ffd2d2', borderRadius: 8, margin: 10 }}>
+          <Text style={{ color: '#b71c1c' }}>{error}</Text>
+        </View>
+      ) : null}
 
       <ScrollView style={styles.content}>
         <CustomButton
