@@ -10,6 +10,7 @@ import useEntradas from '../../hooks/useEntradas';
 
 const CustomAvatar = ({ name, size = 40 }) => {
   const getInitials = (name) => {
+    if (!name || typeof name !== 'string') return '';
     return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   };
 
@@ -56,13 +57,23 @@ const RegistrarEntradaForm = () => {
   const router = useRouter();
   console.log('RegistrarEntradaForm render');
 
+  const getLoteDisplayName = (lote) => {
+    if (!lote) return '';
+    return (
+      lote.nombre ??
+      (lote.producto && lote.producto.nombre) ??
+      lote.nombreProducto ??
+      (lote.idProducto ? `Producto ${lote.idProducto}` : (lote.idLote ? `Lote ${lote.idLote}` : 'Lote'))
+    );
+  };
+
   const [selectedLote, setSelectedLote] = useState(null);
   const [showLoteList, setShowLoteList] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [provider, setProvider] = useState('');
   const [notes, setNotes] = useState('');
   const [lotes, setLotes] = useState([
-    new LoteVO({ idLote: 1, cantidad: 10, caducidad: '21-10-2025', idProducto: 101, nombre: 'Arroz' }),
+    // new LoteVO({ idLote: 1, cantidad: 10, caducidad: '21-10-2025', idProducto: 101, nombre: 'Arroz' }),
     // new LoteVO({ idLote: 2, cantidad: 5, caducidad: '01-11-2025', idProducto: 102, nombre: 'Zucaritas' }),
     // new LoteVO({ idLote: 3, cantidad: 20, caducidad: '15-12-2025', idProducto: 103, nombre: 'Leche' })
   ]);
@@ -179,9 +190,7 @@ const RegistrarEntradaForm = () => {
           >
             <Ionicons name="cube" size={20} color="#666" style={styles.listIcon} />
             <Text style={styles.userListTitle}>
-              {selectedLote
-                ? (selectedLote.nombre || `Lote #${selectedLote.idLote ?? selectedLote.idProducto}`)
-                : "Resumen de entrada"}
+              {selectedLote ? getLoteDisplayName(selectedLote) : "Resumen de entrada"}
             </Text>
             <Ionicons 
               name={showLoteList ? "chevron-up" : "chevron-down"} 
@@ -200,9 +209,9 @@ const RegistrarEntradaForm = () => {
                     selectedLote?.idLote === lote.idLote && styles.selectedUserItem
                   ]}
                 >
-                  <CustomAvatar name={lote.nombre || String(lote.idProducto ?? lote.idLote ?? '')} size={35} />
+                  <CustomAvatar name={getLoteDisplayName(lote)} size={35} />
                   <View style={styles.userInfo}>
-                    <Text style={styles.userName}>{lote.nombre || `Lote ${lote.idLote ?? idx}`}</Text>
+                    <Text style={styles.userName}>{getLoteDisplayName(lote)}</Text>
                     <Text style={styles.userRole}>Cantidad: {lote.cantidad ?? '-'}</Text>
                   </View>
                   <Ionicons name="chevron-forward" size={16} color="#999" />
@@ -217,9 +226,9 @@ const RegistrarEntradaForm = () => {
             <Text style={styles.selectedUserTitle}>Lote Seleccionado</Text>
             <View style={styles.divider} />
             <View style={styles.selectedUserInfo}>
-              <CustomAvatar name={selectedLote.nombre || String(selectedLote.idProducto)} size={50} />
+              <CustomAvatar name={getLoteDisplayName(selectedLote)} size={50} />
               <View style={styles.selectedUserDetails}>
-                <Text style={styles.selectedUserName}>{selectedLote.nombre || `Producto ${selectedLote.idProducto}`}</Text>
+                <Text style={styles.selectedUserName}>{getLoteDisplayName(selectedLote)}</Text>
                 <Text style={styles.selectedUserRole}>ID Producto: {selectedLote.idProducto ?? '-'}</Text>
                 <Text style={styles.selectedUserRole}>Cantidad: {selectedLote.cantidad ?? '-'}</Text>
                 <Text style={styles.selectedUserRole}>Caducidad: {selectedLote.caducidad ?? '-'}</Text>
