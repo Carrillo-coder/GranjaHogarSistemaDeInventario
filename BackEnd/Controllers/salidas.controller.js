@@ -62,19 +62,15 @@ class SalidaController {
         }
     }
 
-    // ==========================================================
-    // Lógica principal: CREAR SALIDA (ÚNICA O POR LOTE)
-    // ==========================================================
     static async createSalida(req, res) {
         console.log('--- INICIANDO CREATE SALIDA ---');
         console.log('BODY RECIBIDO:', JSON.stringify(req.body, null, 2));
 
         const body = req.body;
 
-        // Si el cuerpo es un array, procesar como lote
         if (Array.isArray(body)) {
             console.log('Detectado lote de salidas. Cantidad de productos:', body.length);
-            const idGrupoSalida = Date.now(); // ID de grupo único para el lote
+            const idGrupoSalida = Date.now(); 
             const transaction = await db.sequelize.transaction();
             const salidasCreadas = [];
 

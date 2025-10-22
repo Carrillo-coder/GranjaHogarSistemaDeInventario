@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react';
 import { Platform, Alert } from 'react-native';
 
-// Almacenamiento temporal global para persistir las salidas entre pantallas
+
 let globalSalidas = [];
 
-// Cambia aquí tu IP si usas dispositivo físico
+
 const DEFAULT_BASE =
   Platform.OS === 'android'
     ? 'http://10.34.18.74:5000' 
@@ -37,8 +37,8 @@ export const useSalidas = () => {
       return false;
     }
 
-    const usuarioActual = 1; // Aquí tu usuario logueado
-    const fechaActual = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const usuarioActual = 1; 
+    const fechaActual = new Date().toISOString().split('T')[0]; 
 
     const salidasPayload = globalSalidas.map(s => ({
       ...s,

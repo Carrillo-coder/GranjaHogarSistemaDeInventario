@@ -72,7 +72,6 @@ const SalidaForm = () => {
       return;
     }
 
-    // --- VALIDACIÓN DE STOCK ---
     if (selectedProducto.cantidadTotal < cantidadNum) {
       Alert.alert(
         'Stock Insuficiente',
@@ -87,7 +86,6 @@ const SalidaForm = () => {
       cantidad: cantidadNum,
       tipoSalida: selectedTipo.name,
       depto: selectedDepto.name,
-      // IDs que usará el backend:
       idProducto: selectedProducto.idProducto,
       idTipo: selectedTipo.id,
       idDepartamento: selectedDepto.id,
@@ -174,7 +172,6 @@ const SalidaForm = () => {
             placeholder="Cantidad..."
             value={cantidad}
             onChangeText={(text) => {
-              // Permite solo números (y vacío)
               if (/^\d*$/.test(text)) setCantidad(text); 
             }}
             keyboardType="numeric"
