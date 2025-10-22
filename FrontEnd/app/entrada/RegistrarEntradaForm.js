@@ -1,12 +1,9 @@
 import 'expo-router/entry'
-import {useRouter, useLocalSearchParams} from 'expo-router';
-import React, { useState, useEffect } from 'react';
+import {useRouter} from 'expo-router';
+import React, { useState } from 'react';
 import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, Pressable, Image, Modal, TextInput} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../../components/Footer';
-import { LoteVO } from '../../valueobjects/LoteVO';
-import useLotes from '../../hooks/useLotes';
-import useEntradas from '../../hooks/useEntradas';
 
 const CustomAvatar = ({ name, size = 40 }) => {
   const getInitials = (name) => {
@@ -55,8 +52,8 @@ const ConfirmationModal = ({ visible, onConfirm, onCancel, message }) => {
 const RegistrarEntradaForm = () => {
   const router = useRouter();
 
-  const [selectedLote, setSelectedLote] = useState(null);
-  const [showLoteList, setShowLoteList] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showProductList, setShowProductList] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [provider, setProvider] = useState('');
   const [notes, setNotes] = useState('');
@@ -87,6 +84,11 @@ const RegistrarEntradaForm = () => {
       console.warn('Failed parsing lote param', e);
     }
   }, [loteParam]);
+  const [products] = useState([
+    { id: 1, producto: 'Arroz', presentacion: 'Bolsa 1kg', categoria: 'Granos', cantidadExistente: 50, fechaCaducidad: '2025-12-31' },
+    { id: 2, producto: 'Zucaritas', presentacion: 'Caja 500g', categoria: 'Cereales', cantidadExistente: 30, fechaCaducidad: '2025-11-30' },
+    { id: 3, producto: 'Leche', presentacion: 'Caja 1L', categoria: 'Lácteos', cantidadExistente: 20, fechaCaducidad: '2025-10-31' },
+  ]);
 
   const handleCreateProduct = () => {
     console.log('Crear producto');
@@ -94,16 +96,17 @@ const RegistrarEntradaForm = () => {
   };
 
   const handleConfirmPress = () => {
-    if (selectedLote) {
+    if (selectedProduct) {
       setModalVisible(true);
     } else {
-      alert('Agrega un lote para continuar');
+      alert('Agrega un producto para continuar');
     }
   };
 
-  const handleConfirm = async () => {
-    setLoading(true);
-    setError('');
+  const handleConfirm = () => {
+    console.log('Registro de producto:', selectedProduct);
+    console.log('Proveedor:', provider);
+    console.log('Notas:', notes);
     setModalVisible(false);
     try {
       // 1. Enviar todos los lotes (puedes ajustar para enviar sólo los nuevos si lo deseas)
@@ -139,12 +142,12 @@ const RegistrarEntradaForm = () => {
     setModalVisible(false);
   };
 
-  const handleLoteSelect = (lote) => {
-    setSelectedLote(lote);
+  const handleProductSelect = (product) => {
+    setSelectedProduct(product);
   };
 
-  const toggleLoteList = () => {
-    setShowLoteList(!showLoteList);
+  const toggleProductList = () => {
+    setShowProductList(!showProductList);
   };
 
   const handleHomePress = () => {
@@ -184,35 +187,34 @@ const RegistrarEntradaForm = () => {
         <View style={styles.userListCard}>
           <TouchableOpacity 
             style={styles.userListHeader} 
-            onPress={toggleLoteList}
+            onPress={toggleProductList}
           >
             <Ionicons name="cube" size={20} color="#666" style={styles.listIcon} />
             <Text style={styles.userListTitle}>
-              {selectedLote
-                ? (selectedLote.nombre || `Lote #${selectedLote.idLote ?? selectedLote.idProducto}`)
-                : "Resumen de entrada"}
+              {selectedProduct ? selectedProduct.producto : "Resumen de entrada"}
             </Text>
             <Ionicons 
-              name={showLoteList ? "chevron-up" : "chevron-down"} 
+              name={showProductList ? "chevron-up" : "chevron-down"} 
               size={20} 
               color="#666" 
             />
           </TouchableOpacity>
-          {showLoteList && (
+
+          {showProductList && (
             <View style={styles.userList}>
-              {lotes.map((lote, idx) => (
+              {products.map((product) => (
                 <Pressable
-                  key={lote.idLote ?? idx}
-                  onPress={() => handleLoteSelect(lote)}
+                  key={product.id}
+                  onPress={() => handleProductSelect(product)}
                   style={[
                     styles.userItem,
-                    selectedLote?.idLote === lote.idLote && styles.selectedUserItem
+                    selectedProduct?.id === product.id && styles.selectedUserItem
                   ]}
                 >
-                  <CustomAvatar name={lote.nombre || String(lote.idProducto ?? lote.idLote ?? '')} size={35} />
+                  <CustomAvatar name={product.producto} size={35} />
                   <View style={styles.userInfo}>
-                    <Text style={styles.userName}>{lote.nombre || `Lote ${lote.idLote ?? idx}`}</Text>
-                    <Text style={styles.userRole}>Cantidad: {lote.cantidad ?? '-'}</Text>
+                    <Text style={styles.userName}>{product.producto}</Text>
+                    <Text style={styles.userRole}>{product.categoria}</Text>
                   </View>
                   <Ionicons name="chevron-forward" size={16} color="#999" />
                 </Pressable>
@@ -221,17 +223,18 @@ const RegistrarEntradaForm = () => {
           )}
         </View>
 
-        {selectedLote && (
+        {selectedProduct && (
           <View style={styles.selectedUserCard}>
-            <Text style={styles.selectedUserTitle}>Lote Seleccionado</Text>
+            <Text style={styles.selectedUserTitle}>Producto Seleccionado</Text>
             <View style={styles.divider} />
             <View style={styles.selectedUserInfo}>
-              <CustomAvatar name={selectedLote.nombre || String(selectedLote.idProducto ?? selectedLote.idLote)} size={50} />
+              <CustomAvatar name={selectedProduct.producto} size={50} />
               <View style={styles.selectedUserDetails}>
-                <Text style={styles.selectedUserName}>{selectedLote.nombre || `Lote ${selectedLote.idLote ?? ''}`}</Text>
-                <Text style={styles.selectedUserRole}>ID Producto: {selectedLote.idProducto ?? '-'}</Text>
-                <Text style={styles.selectedUserRole}>Cantidad: {selectedLote.cantidad ?? '-'}</Text>
-                <Text style={styles.selectedUserRole}>Caducidad: {selectedLote.caducidad ?? '-'}</Text>
+                <Text style={styles.selectedUserName}>{selectedProduct.producto}</Text>
+                <Text style={styles.selectedUserRole}>Presentación: {selectedProduct.presentacion}</Text>
+                <Text style={styles.selectedUserRole}>Categoría: {selectedProduct.categoria}</Text>
+                <Text style={styles.selectedUserRole}>Cantidad: {selectedProduct.cantidadExistente}</Text>
+                <Text style={styles.selectedUserRole}>Caducidad: {selectedProduct.fechaCaducidad}</Text>
               </View>
             </View>
           </View>
@@ -533,9 +536,3 @@ const styles = StyleSheet.create({
 });
 
 export default RegistrarEntradaForm;
-
-// ¿Qué es mejor hacer primero? Construir los proxys necesarios en base a los endpoints del backend de POST entradas y POST lote, o integrar el loteVO y realizar ajustes en la lógica del formulario para que utilice los loteVO que va recibiendo desde el backend y finalmente enviarlos a la base de datos cuando se le de confirmar?
-// // Mi recomendación es integrar primero el LoteVO en la lógica del formulario. Esto te permitirá asegurarte de que los datos que estás manejando en el frontend están correctamente estructurados y validados antes de enviarlos al backend. Una vez que tengas el LoteVO funcionando correctamente en el formulario, puedes proceder a construir los proxys para los endpoints de POST entradas y POST lote, sabiendo que los datos que enviarás estarán en el formato correcto. Esto también facilitará la depuración y el mantenimiento del código a largo plazo.
-// Vale, muchas gracias. 
-
-// 
