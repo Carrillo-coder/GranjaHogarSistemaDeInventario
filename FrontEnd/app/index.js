@@ -21,8 +21,6 @@ export default function LoginScreen() {
 
         if (userToken && rol) {
           Alert.alert('Inicio de Sesión Automático', `Bienvenido de nuevo, ${rol}.`);
-          console.log('Token encontrado:', userToken);
-          console.log('Rol encontrado:', rol);
           if (rol === 'Administrador') {
             router.replace('/main/adminForm');
           } else if (rol === 'Cocina') {
@@ -41,13 +39,8 @@ export default function LoginScreen() {
 
   useEffect(() => {
     const handleLoginSuccess = async () => {
-      console.log('Datos de respuesta del inicio de sesión:', data);
       if (data && data.message === 'Inicio de sesión exitoso' && data.token && data.data.rol) {
         try {
-          console.log('Guardando token y rol en AsyncStorage');
-          console.log('Token:', data.token);
-          console.log('Rol:', data.data.rol);
-
           await AsyncStorage.setItem('userToken', data.token);
           await AsyncStorage.setItem('rol', data.data.rol);
           
@@ -80,7 +73,6 @@ export default function LoginScreen() {
   const handleLogin = () => {
     if (usuario && contrasena) {
       logIn(usuario, contrasena);
-      console.log('Intentando iniciar sesión con:', { usuario, contrasena });
     } else {
       Alert.alert('Campos incompletos', 'Por favor, introduce tu usuario y contraseña.');
     }
