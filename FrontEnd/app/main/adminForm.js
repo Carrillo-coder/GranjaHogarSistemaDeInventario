@@ -1,6 +1,5 @@
 import 'expo-router/entry';
-import { useRouter, useFocusEffect } from 'expo-router';
-import React, { useCallback } from 'react';
+import { useRouter } from 'expo-router';
 import {
   View, StatusBar, SafeAreaView, ScrollView,
   Text, TouchableOpacity, Pressable, Image
@@ -8,7 +7,6 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import styles from './Estilos/adminFormStyles.styles.js'; 
 import Footer from '../../components/Footer.js';  
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CustomButton = ({ title, onPress, style, textStyle, icon }) => (
   <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
@@ -19,20 +17,6 @@ const CustomButton = ({ title, onPress, style, textStyle, icon }) => (
 
 const MainForm = () => {
   const router = useRouter();
-
-  useFocusEffect(
-    useCallback(() => {
-      const handleRolCheck = async () => {
-        const rol = await AsyncStorage.getItem("rol");
-        if (rol !== "Administrador") {
-          console.log("Rol no autorizado, redirigiendo...");
-          router.replace('/');
-        }
-      };
-
-      handleRolCheck();
-    }, [router])
-  );
 
   return (
     <SafeAreaView style={styles.container}>

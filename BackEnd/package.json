@@ -29,7 +29,6 @@
     "express-validator": "^7.2.1",
     "get-stream": "^9.0.1",
     "json2csv": "^6.0.0-alpha.2",
-    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
     "mysql2": "^3.15.2",
     "pdfkit-table": "^0.1.99",
