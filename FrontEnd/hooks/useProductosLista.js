@@ -1,4 +1,3 @@
-// src/hooks/useProductos.js
 import { useEffect, useState, useCallback } from 'react';
 import ProductosListaProxy from '../proxies/ProductosListaProxy';
 
