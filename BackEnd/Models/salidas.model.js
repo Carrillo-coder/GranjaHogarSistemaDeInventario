@@ -33,12 +33,12 @@ module.exports = (sequelize, Sequelize) => {
             field: 'idUsuario'
         },
         fecha: {
-            type: Sequelize.DATEONLY,
+            type: Sequelize.DATE,
             allowNull: true,
             field: 'fecha'
         },
         notas: {
-            type: Sequelize.STRING(225),
+            type: Sequelize.STRING(255),
             allowNull: true,
             field: 'notas'
         }
@@ -47,5 +47,5 @@ module.exports = (sequelize, Sequelize) => {
         timestamps: false
     });
 
-    return Salida;
+    return Salida;
 };

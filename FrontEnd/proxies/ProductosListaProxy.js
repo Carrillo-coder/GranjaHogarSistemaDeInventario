@@ -14,8 +14,8 @@ async function _parseBody(response) {
 
 const ProductosListaProxy = () => {
   /**
-   * Obtiene todos los productos desde el backend.
-   * @returns {Promise<Array>} - Lista de productos
+
+   * @returns {Promise<Array>} 
    */
   async function getAllProductos() {
     const url = `${BASE}/api/inventario/productos`;
@@ -31,7 +31,6 @@ const ProductosListaProxy = () => {
       throw err;
     }
 
-    // asumimos que el backend devuelve { data: [ {Nombre, idProducto, ...} ] }
     return body.data || [];
   }
 
