@@ -1,5 +1,5 @@
 import 'expo-router/entry';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,8 +14,10 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import ProductosServiceProxy from '../../proxies/ProductosServiceProxy';
 import Footer from '../../components/Footer';
+import CustomDropdownModule from '../../components/CustomDropdown';
+const CustomDropdown = CustomDropdownModule?.CustomDropdown || CustomDropdownModule;
+import useCrearProductos from '../../hooks/useCrearProductos';
 
 const COLORS = {
   primary: '#1976D2',
@@ -25,16 +27,17 @@ const COLORS = {
   text: '#333333',
   hint: '#666666',
   border: '#e0e0e0',
-  accent: '#8BC34A',
 };
+
+const CATEGORY_OPTIONS = [
+  { label: 'Perecederos', value: 'Perecederos' },
+  { label: 'No Perecederos', value: 'No Perecederos' },
+  { label: 'Sanitarios', value: 'Sanitarios' },
+];
 
 const CustomButton = ({ title, onPress, style, textStyle, icon, disabled }) => (
   <TouchableOpacity
-    style={[
-      styles.button,
-      style,
-      disabled && { opacity: 0.6 },
-    ]}
+    style={[styles.button, style, disabled && { opacity: 0.6 }]}
     onPress={onPress}
     disabled={disabled}
   >
@@ -43,7 +46,6 @@ const CustomButton = ({ title, onPress, style, textStyle, icon, disabled }) => (
   </TouchableOpacity>
 );
 
-// Validaciones
 const sqlOrCodePattern =
   /(select|insert|update|delete|drop|create|alter)\b|<|>|\/\*|\*\/|--|;|["'`]|[{()}=+*\\/]/i;
 const onlyLettersPattern = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]+$/;
@@ -55,8 +57,7 @@ const isPresValid = (v) => presAllowedPattern.test(v || '');
 
 const CrearProductoForm = () => {
   const router = useRouter();
-  const api = useMemo(() => ProductosServiceProxy(), []);
-  const [loading, setLoading] = useState(false);
+  const { crearProducto, loading } = useCrearProductos();
 
   const [form, setForm] = useState({
     producto: '',
@@ -69,6 +70,8 @@ const CrearProductoForm = () => {
     presentacion: '',
     categoria: '',
   });
+
+  const [catFocused, setCatFocused] = useState(false);
 
   const validateProducto = (v) => {
     if (!v) return 'Requerido.';
@@ -83,10 +86,9 @@ const CrearProductoForm = () => {
     return '';
   };
   const validateCategoria = (v) => {
-    if (!v) return 'Requerido.';
-    if (hasCode(v)) return 'No se permite código/SQL.';
-    if (!isOnlyLetters(v)) return 'Solo letras y espacios.';
-    return '';
+    if (!v) return 'Selecciona una categoría.';
+    const ok = CATEGORY_OPTIONS.some((opt) => opt.value === v);
+    return ok ? '' : 'Categoría inválida.';
   };
 
   const runAllValidations = (state = form) => {
@@ -108,8 +110,6 @@ const CrearProductoForm = () => {
     setErrors((prev) => ({ ...prev, [key]: e }));
   };
 
-  const handleBackPress = () => router.back();
-
   const handleCreate = async () => {
     if (loading) return;
     const ok = runAllValidations();
@@ -118,47 +118,48 @@ const CrearProductoForm = () => {
       return;
     }
 
-    setLoading(true);
-    try {
-      const payload = {
-        nombre: form.producto.trim(),
-        presentacion: form.presentacion.trim(),
-        categoria: form.categoria.trim(),
-      };
+    const payload = {
+      nombre: form.producto.trim(),
+      presentacion: form.presentacion.trim(),
+      categoria: form.categoria,
+    };
 
-      const resp = await api.crearProducto(payload);
+    const result = await crearProducto(payload);
 
+    if (result.ok) {
+      const resp = result.data;
       Alert.alert(
         'Éxito',
-        resp?.message || 'Producto creado correctamente',
+        (resp?.message?.replace(/\(.*\)/, '') || 'Producto creado correctamente').trim(),
         [
           {
             text: 'OK',
             onPress: () => {
               setForm({ producto: '', presentacion: '', categoria: '' });
               setErrors({ producto: '', presentacion: '', categoria: '' });
+              router.back();
             },
           },
         ],
         { cancelable: false }
       );
-    } catch (e) {
-      const rawMsg = (e && e.message) ? String(e.message) : 'No se pudo crear el producto';
-      const msg = rawMsg.trim();
-      const lower = msg.toLowerCase();
-      const isDuplicate =
-        e?.status === 400 ||
-        lower.includes('existe') ||
-        lower.includes('duplic') ||
-        lower.includes('ya existe');
+      return;
+    }
 
-      if (isDuplicate) {
-        Alert.alert('Advertencia', msg || 'Este producto ya existe en el inventario.');
-      } else {
-        Alert.alert('Error', msg || 'No se pudo crear el producto. Intenta nuevamente.');
-      }
-    } finally {
-      setLoading(false);
+    const e = result.error;
+    const rawMsg = e?.message ? String(e.message) : 'No se pudo crear el producto';
+    const msg = rawMsg.trim();
+    const lower = msg.toLowerCase();
+    const isDuplicate =
+      e?.status === 400 ||
+      lower.includes('existe') ||
+      lower.includes('duplic') ||
+      lower.includes('ya existe');
+
+    if (isDuplicate) {
+      Alert.alert('Advertencia', msg || 'Este producto ya existe en el inventario.');
+    } else {
+      Alert.alert('Error', msg || 'No se pudo crear el producto. Intenta nuevamente.');
     }
   };
 
@@ -196,15 +197,16 @@ const CrearProductoForm = () => {
           </View>
 
           <View style={styles.row}>
-            <Text style={styles.label}>Categoría</Text>
-            <TextInput
+            <CustomDropdown
+              label="Categoría"
+              data={CATEGORY_OPTIONS}
               value={form.categoria}
-              onChangeText={(v) => onChangeField('categoria', v)}
-              placeholder="Categoría"
-              placeholderTextColor={COLORS.hint}
-              style={[styles.input, errors.categoria && styles.inputError]}
-              autoCapitalize="words"
-              autoCorrect={false}
+              onValueChange={(v) => onChangeField('categoria', v)}
+              placeholder="Selecciona una categoría"
+              isFocused={catFocused}
+              onFocus={() => setCatFocused(true)}
+              onBlur={() => setCatFocused(false)}
+              style={{ marginBottom: errors.categoria ? 0 : 8 }}
             />
             {errors.categoria ? <Text style={styles.errorText}>{errors.categoria}</Text> : null}
           </View>
