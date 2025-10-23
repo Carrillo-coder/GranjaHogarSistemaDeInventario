@@ -1,27 +1,11 @@
 import { Platform } from 'react-native';
-
-/**
- * Dirección base del backend.
- * - Si existe EXPO_PUBLIC_API_BASE_URL (definida en .env), se usa esa.
- * - Si no, se usa una IP local por defecto dependiendo de la plataforma.
- */
+import { API_BASE_URL } from '@env';
 
 const DEFAULT_BASE =
-  Platform.OS === 'android'
-    ? 'http://10.34.18.74:5000'
-    : 'http://localhost:5000';
+  Platform.OS === 'android' ? 'http://10.0.2.2:5000' : 'http://localhost:5000';
 
-// Toma la variable de entorno de Expo (solo funciona con prefijo EXPO_PUBLIC_)
-const envBase = process.env.EXPO_PUBLIC_API_BASE_URL;
+const BASE = API_BASE_URL.trim() || DEFAULT_BASE;
 
-// Usa la base que exista y limpia cualquier "/" extra al final
-const BASE = (envBase ? envBase.trim() : DEFAULT_BASE).replace(/\/+$/, '');
-
-console.log('🌍 BASE URL usada en LogInServiceProxy:', BASE);
-
-/**
- * Función auxiliar para parsear el cuerpo de las respuestas.
- */
 async function _parseBody(response) {
   const text = await response.text().catch(() => '');
   if (!text) return {};
@@ -32,29 +16,20 @@ async function _parseBody(response) {
   }
 }
 
-/**
- * Proxy de autenticación / login.
- */
 const LogInServiceProxy = () => {
-  /**
-   * Envía credenciales para iniciar sesión.
-   * @param {Object} credentials { email, password }
-   * @returns {Promise<Object>} Respuesta del servidor
-   */
-  async function login(credentials) {
-    const url = `${BASE}/api/login`;
-    const response = await fetch(url, {
+  async function logInUser(UserName, password) {
+    const url = `${BASE}/api/inventario/logIn/${UserName}`; 
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(credentials),
+      body: JSON.stringify({ password }),
     });
+    const body = await _parseBody(res);
 
-    const body = await _parseBody(response);
-
-    if (!response.ok) {
-      const msg = body?.message || response.statusText || 'Error de inicio de sesión';
+    if (!res.ok) {
+      const msg = body?.message || res.statusText || 'Error al iniciar sesión';
       const err = new Error(msg);
-      err.status = response.status;
+      err.status = res.status;
       err.body = body;
       throw err;
     }
@@ -62,7 +37,8 @@ const LogInServiceProxy = () => {
     return body;
   }
 
-  return { login };
+  return { logInUser };
 };
 
 export default LogInServiceProxy;
+

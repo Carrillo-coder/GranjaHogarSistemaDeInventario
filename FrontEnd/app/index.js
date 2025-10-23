@@ -1,28 +1,90 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Image, Alert } from 'react-native';
-import { TextInput, Button, Provider as PaperProvider } from 'react-native-paper'; 
-import { router } from 'expo-router'; 
+import { TextInput, Button, Provider as PaperProvider } from 'react-native-paper';
+import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import useLogIn from '../hooks/useLogIn';
 
 export default function LoginScreen() {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
+  // Correctly destructure what the hook returns
+  const { logIn, loading, error, data } = useLogIn();
+
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        console.log('Comprobando sesión almacenada en AsyncStorage');
+        const userToken = await AsyncStorage.getItem('userToken');
+        const rol = await AsyncStorage.getItem('rol');
+
+        if (userToken && rol) {
+          Alert.alert('Inicio de Sesión Automático', `Bienvenido de nuevo, ${rol}.`);
+          console.log('Token encontrado:', userToken);
+          console.log('Rol encontrado:', rol);
+          if (rol === 'Administrador') {
+            router.replace('/main/adminForm');
+          } else if (rol === 'Cocina') {
+            router.replace('/main/CocinaForm');
+          } else if (rol === 'Comedor') {
+            router.replace('/main/ComedorForm');
+          }
+        }
+      } catch (e) {
+        Alert.alert('Error', 'No se pudo recuperar la sesión.');
+      }
+    };
+
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    const handleLoginSuccess = async () => {
+      console.log('Datos de respuesta del inicio de sesión:', data);
+      if (data && data.message === 'Inicio de sesión exitoso' && data.token && data.data.rol) {
+        try {
+          console.log('Guardando token y rol en AsyncStorage');
+          console.log('Token:', data.token);
+          console.log('Rol:', data.data.rol);
+
+          await AsyncStorage.setItem('userToken', data.token);
+          await AsyncStorage.setItem('rol', data.data.rol);
+          
+          Alert.alert('Inicio de Sesión Exitoso', `Bienvenido, ${data.data.rol}.`);
+
+          if (data.data.rol === 'Administrador') {
+            router.replace('/main/adminForm');
+          } else if (data.data.rol === 'Cocina') {
+            router.replace('/main/CocinaForm');
+          } else if (data.data.rol === 'Comedor') {
+            router.replace('/main/ComedorForm');
+          } else {
+            Alert.alert('Error de Rol', 'No tienes un rol asignado para acceder.');
+          }
+        } catch (e) {
+          Alert.alert('Error', 'No se pudo guardar la sesión.');
+        }
+      }
+    };
+
+    handleLoginSuccess();
+  }, [data]);
+
+  useEffect(() => {
+    if (error) {
+      Alert.alert('Error de Inicio de Sesión', error);
+    }
+  }, [error]);
 
   const handleLogin = () => {
     if (usuario && contrasena) {
-      Alert.alert('Inicio de Sesión Exitoso', 'Redirigiendo a la pantalla principal...');
-      
-      if (usuario === 'admin') {
-        router.replace('/main/adminForm');
-      } else if (usuario === 'cocina') {
-        router.replace('/main/CocinaForm');
-      } else if (usuario === 'comedor') {
-        router.replace('/main/ComedorForm'); 
-      }
+      logIn(usuario, contrasena);
+      console.log('Intentando iniciar sesión con:', { usuario, contrasena });
     } else {
-      Alert.alert('Error', 'Por favor, introduce tu usuario y contraseña.');
+      Alert.alert('Campos incompletos', 'Por favor, introduce tu usuario y contraseña.');
     }
   };
-
 
   return (
     <PaperProvider>
@@ -30,7 +92,7 @@ export default function LoginScreen() {
         
         <View style={styles.logoContainer}>
           <Image 
-            source={require('../assets/images/GranjaHogarLogo.png')} // ⬅️ Revisa tu ruta
+            source={require('../assets/images/GranjaHogarLogo.png')} 
             style={styles.logo}
             resizeMode="contain"
           />
@@ -44,7 +106,7 @@ export default function LoginScreen() {
             value={usuario}
             onChangeText={setUsuario}
             style={styles.input}
-            mode="outlined" // Puedes usar 'flat' o 'outlined'
+            mode="outlined"
             autoCapitalize="none"
           />
           
@@ -58,13 +120,14 @@ export default function LoginScreen() {
           />
           
           <Button
-            mode="contained" // Fondo sólido
+            mode="contained"
             onPress={handleLogin}
             style={styles.button}
             labelStyle={styles.buttonLabel}
             icon="arrow-right-bold-box" 
+            disabled={loading} // Disable button while loading
           >
-            Iniciar sesión
+            {loading ? 'Iniciando...' : 'Iniciar sesión'}
           </Button>
           
         </View>

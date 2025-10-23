@@ -9,6 +9,7 @@ export function useUsuarios() {
   const {
     getAllUsuarios,
     getUsuarioById,
+    getUsuarioByUserName,
     createUsuario,
     updateUsuario,
     deleteUsuario,
@@ -35,6 +36,23 @@ export function useUsuarios() {
     setError(null)
     try {
       const data = await getUsuarioById(id)
+      if (data.success) {
+        return data.data
+      }
+    } catch (err) {
+      setError(err.message)
+      console.error('Error al obtener usuario:', err)
+      return null
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchUsuarioByUserName = async (UserName) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await getUsuarioByUserName(UserName)
       if (data.success) {
         return data.data
       }
@@ -107,6 +125,7 @@ export function useUsuarios() {
     error,
     fetchUsuarios,
     fetchUsuarioById,
+    fetchUsuarioByUserName,
     handleCreateUsuario,
     handleUpdateUsuario,
     handleDeleteUsuario,
