@@ -10,12 +10,36 @@ class ProductosService {
       if (nombre)       where.nombre       = { [Op.like]: `%${nombre}%` };
       if (presentacion) where.presentacion = { [Op.like]: `%${presentacion}%` };
 
-      const data = await db.Producto.findAll({
+      // Verificamos si la relación con Categoria existe antes de incluir
+      const includeCategoria = db.Producto.associations?.categoria
+        ? [{ model: db.Categoria, as: 'categoria', attributes: ['idCategoria', 'nombre'] }]
+        : [];
+
+      const productos = await db.Producto.findAll({
         where,
-        include: [
-          { model: db.Categoria, as: 'categoria', attributes: ['idCategoria', 'nombre'] }
-        ],
+        include: includeCategoria,
         order: [['nombre', 'ASC']]
+      });
+
+      // Calcular stock total para los productos obtenidos de forma eficiente
+      const productIds = productos.map(p => p.idProducto);
+      const lotesActivos = await db.Lote.findAll({
+        where: {
+          idProducto: { [Op.in]: productIds },
+          activo: true
+        },
+        attributes: ['idProducto', 'unidadesExistentes']
+      });
+
+      const stockMap = {};
+      for (const lote of lotesActivos) {
+        stockMap[lote.idProducto] = (stockMap[lote.idProducto] || 0) + lote.unidadesExistentes;
+      }
+
+      const data = productos.map(producto => {
+        const productoJson = producto.toJSON();
+        productoJson.cantidadTotal = stockMap[producto.idProducto] || 0;
+        return productoJson;
       });
 
       return {
@@ -25,17 +49,18 @@ class ProductosService {
         statusCode: 200
       };
     } catch (error) {
+      console.error('Error en ProductosService.getAll:', error); // Muestra el error completo en consola
       return { success: false, message: 'Error al obtener productos', error: error.message, statusCode: 500 };
     }
   }
 
   static async getById(id) {
     try {
-      const data = await db.Producto.findByPk(id, {
-        include: [
-          { model: db.Categoria, as: 'categoria', attributes: ['idCategoria', 'nombre'] }
-        ]
-      });
+      const includeCategoria = db.Producto.associations?.categoria
+        ? [{ model: db.Categoria, as: 'categoria', attributes: ['idCategoria', 'nombre'] }]
+        : [];
+
+      const data = await db.Producto.findByPk(id, { include: includeCategoria });
 
       if (!data) {
         return { success: false, message: 'Producto no encontrado', data: null, statusCode: 404 };
@@ -43,12 +68,15 @@ class ProductosService {
 
       return { success: true, message: 'Producto obtenido correctamente', data, statusCode: 200 };
     } catch (error) {
+      console.error('Error en ProductosService.getById:', error);
       return { success: false, message: 'Error al obtener producto', error: error.message, statusCode: 500 };
     }
   }
 
   static async create(body) {
     try {
+      if (body['categoría'] && !body['categoria']) body['categoria'] = body['categoría'];
+
       const vo = new ProductoVO(body);
       const val = vo.validate();
       if (!val.isValid)
@@ -67,7 +95,6 @@ class ProductosService {
         if (!exists) return { success: false, message: 'La categoría especificada no existe', statusCode: 400 };
       }
 
-      // Duplicado por (nombre, presentacion)
       const duplicado = await db.Producto.findOne({
         where: { nombre: vo.nombre, presentacion: vo.presentacion }
       });
@@ -81,14 +108,15 @@ class ProductosService {
         idCategoria
       });
 
-      const data = await db.Producto.findByPk(created.idProducto, {
-        include: [
-          { model: db.Categoria, as: 'categoria', attributes: ['idCategoria', 'nombre'] }
-        ]
-      });
+      const includeCategoria = db.Producto.associations?.categoria
+        ? [{ model: db.Categoria, as: 'categoria', attributes: ['idCategoria', 'nombre'] }]
+        : [];
+
+      const data = await db.Producto.findByPk(created.idProducto, { include: includeCategoria });
 
       return { success: true, message: 'Producto creado correctamente', data, statusCode: 201 };
     } catch (error) {
+      console.error('Error en ProductosService.create:', error);
       if (error?.name === 'SequelizeUniqueConstraintError') {
         return { success: false, message: 'Ya existe un producto con el mismo nombre y presentación', statusCode: 400 };
       }
@@ -119,7 +147,6 @@ class ProductosService {
         if (!exists) return { success: false, message: 'La categoría especificada no existe', statusCode: 400 };
       }
 
-      // Duplicado con otro id
       const dup = await db.Producto.findOne({
         where: {
           idProducto: { [Op.ne]: id },
@@ -134,31 +161,30 @@ class ProductosService {
         { where: { idProducto: id } }
       );
 
-      const data = await db.Producto.findByPk(id, {
-        include: [
-          { model: db.Categoria, as: 'categoria', attributes: ['idCategoria', 'nombre'] }
-        ]
-      });
+      const includeCategoria = db.Producto.associations?.categoria
+        ? [{ model: db.Categoria, as: 'categoria', attributes: ['idCategoria', 'nombre'] }]
+        : [];
+
+      const data = await db.Producto.findByPk(id, { include: includeCategoria });
 
       return { success: true, message: 'Producto actualizado correctamente', data, statusCode: 200 };
     } catch (error) {
+      console.error('Error en ProductosService.update:', error);
       return { success: false, message: 'Error al actualizar producto', error: error.message, statusCode: 500 };
     }
   }
 
   static async remove(id) {
     try {
-      // No eliminar si hay lotes activos
       const lotes = await db.Lote.count({ where: { idProducto: id, activo: true } });
-      if (lotes > 0) {
-        return { success: false, message: 'No se puede eliminar: existen lotes activos asociados', statusCode: 400 };
-      }
+      if (lotes > 0) return { success: false, message: 'No se puede eliminar: existen lotes activos asociados', statusCode: 400 };
 
       const rows = await db.Producto.destroy({ where: { idProducto: id } });
       if (!rows) return { success: false, message: 'Producto no encontrado', statusCode: 404 };
 
       return { success: true, message: 'Producto eliminado correctamente', statusCode: 200 };
     } catch (error) {
+      console.error('Error en ProductosService.remove:', error);
       return { success: false, message: 'Error al eliminar producto', error: error.message, statusCode: 500 };
     }
   }
@@ -179,6 +205,7 @@ class ProductosService {
         statusCode: 200
       };
     } catch (error) {
+      console.error('Error en ProductosService.getCantidadTotal:', error);
       return { success: false, message: 'Error al calcular cantidad total', error: error.message, statusCode: 500 };
     }
   }
@@ -190,12 +217,11 @@ class ProductosService {
         order: [['caducidad', 'ASC']]
       });
 
-      if (!lote) {
-        return { success: true, message: 'No hay lotes activos para este producto', data: { idProducto, caducidad: null }, statusCode: 200 };
-      }
+      if (!lote) return { success: true, message: 'No hay lotes activos para este producto', data: { idProducto, caducidad: null }, statusCode: 200 };
 
       return { success: true, message: 'Fecha de caducidad más próxima obtenida correctamente', data: { idProducto, caducidad: lote.caducidad }, statusCode: 200 };
     } catch (error) {
+      console.error('Error en ProductosService.getCaducidadMasProxima:', error);
       return { success: false, message: 'Error al obtener caducidad más próxima', error: error.message, statusCode: 500 };
     }
   }
