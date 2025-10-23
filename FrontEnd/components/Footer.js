@@ -2,23 +2,29 @@ import React from "react";
 import { View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Footer = ({ onBackPress, onHomePress, logoSource }) => {
+const Footer = ({ onLogout, onHomePress, logoSource }) => {
   const router = useRouter();
 
-  const handleBack = React.useCallback(() => {
-    if (typeof onBackPress === "function") {
-      onBackPress();
+  const handleLogout = React.useCallback(async () => {
+    await AsyncStorage.removeItem("userToken");
+    await AsyncStorage.removeItem("rol");
+
+    console.log("Sesión cerrada, token y rol eliminados de AsyncStorage");
+    
+    if (typeof onLogout === "function") {
+      onLogout();
     } else {
       router.replace('/');
     }
-  }, [onBackPress, router]);
+  }, [onLogout, router]);
 
-  const handleHome = React.useCallback(() => {
+  const handleHome = React.useCallback(async () => {
     if (typeof onHomePress === "function") {
-      onHomePress();
-    } else {
-      router.replace("/main/adminForm");
+      await AsyncStorage.getItem("rol").then((rol) => {
+        router.replace('/main/' + (rol === 'Administrador' ? 'adminForm' : rol === 'Cocina' ? 'CocinaForm' : 'ComedorForm'));
+      });
     }
   }, [onHomePress, router]);
 
@@ -26,9 +32,9 @@ const Footer = ({ onBackPress, onHomePress, logoSource }) => {
     <View style={styles.bottomNav}>
       <TouchableOpacity
         style={styles.navButton}
-        onPress={handleBack}
+        onPress={handleLogout}
         accessibilityRole="button"
-        accessibilityLabel="Volver"
+        accessibilityLabel="Cerrar Sesión"
       >
         <Ionicons name="exit-outline" size={28} color="#8BC34A" />
       </TouchableOpacity>
