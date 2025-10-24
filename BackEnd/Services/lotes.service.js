@@ -239,7 +239,13 @@ class LotesService {
             buffer = await generatePDF(flattenedData, metadata, tableHeaders);
         }
 
-        return { buffer, filename };
+        return { 
+            success: true,
+            message: 'Reporte de inventario generado correctamente',
+            buffer: buffer, 
+            filename: filename,
+            statusCode: 200 
+        };
     }
 };
 

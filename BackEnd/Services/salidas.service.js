@@ -72,8 +72,6 @@ class SalidasService {
 
     static async generarReporteSalidas(reporteFiltros, departamento) {
         const { fechaInicio, fechaFin, formato } = reporteFiltros;
-        console.log({ fechaInicio, fechaFin, formato, departamento });
-
         const tableHeaders = [
             'No.', 'Fecha', 'Departamento', 'Producto', 'Categoría', 'Presentación', 'Cantidad Retirada',
             'Tipo Salida', 'Usuario Responsable', 'Rol Usuario', 'Notas'
@@ -144,7 +142,13 @@ class SalidasService {
             buffer = await generatePDF(flattenedData, metadata, tableHeaders);
         }
 
-        return { buffer, filename };
+        return { 
+            success: true,
+            message: 'Reporte de salidas generado correctamente',
+            buffer: buffer, 
+            filename: filename,
+            statusCode: 200 
+        };
     }
 };
 

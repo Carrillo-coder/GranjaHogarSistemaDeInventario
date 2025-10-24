@@ -127,7 +127,13 @@ class EntradasService {
             buffer = await generatePDF(flattenedData, metadata, tableHeaders);
         }
 
-        return { buffer, filename };
+        return { 
+            success: true,
+            message: 'Reporte de entradas generado correctamente',
+            buffer: buffer, 
+            filename: filename,
+            statusCode: 200 
+        };
     }
 };
 
