@@ -123,7 +123,7 @@ class SalidasService {
 
         const metadata = {
             titulo: 'Reporte de Salidas del Inventario',
-            generadoPor: 'usuario',
+            generadoPor: 'Rocio Rodriguez',
             fechaGeneracion: new Date().toLocaleDateString(),
             periodo: { inicio: fechaInicio, fin: fechaFin },
             totales: {

@@ -241,7 +241,7 @@ class LotesService {
 
         const metadata = {
             titulo: 'Reporte General de Inventario',
-            generadoPor: 'usuario', // si tienes auth => req.user.nombreCompleto
+            generadoPor: 'Rocio Rodriguez', // si tienes auth => req.user.nombreCompleto
             fechaGeneracion: new Date().toLocaleDateString(),
             totales: {
                 productosDistintos: productos.length,

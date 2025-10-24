@@ -109,7 +109,7 @@ class EntradasService {
 
         const metadata = {
             titulo: 'Reporte de Entradas al Inventario',
-            generadoPor: 'usuario', 
+            generadoPor: 'Rocio Rodriguez', 
             fechaGeneracion: new Date().toLocaleString(),
             periodo: { inicio: fechaInicio, fin: fechaFin },
             totales: {
