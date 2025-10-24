@@ -1,16 +1,11 @@
 import { useState, useCallback } from 'react';
 import { Platform, Alert } from 'react-native';
-
+import { API_BASE_URL } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let globalSalidas = [];
 
-
-const DEFAULT_BASE =
-  Platform.OS === 'android'
-    ? 'http://10.34.18.74:5000' 
-    : 'http://127.0.0.1:5000';
-
-const BASE_URL = DEFAULT_BASE;
+const BASE_URL = API_BASE_URL;
 
 export const useSalidas = () => {
   const [salidas, setSalidas] = useState(globalSalidas);
@@ -37,12 +32,11 @@ export const useSalidas = () => {
       return false;
     }
 
-    const usuarioActual = 1; 
     const fechaActual = new Date().toISOString().split('T')[0]; 
 
     const salidasPayload = globalSalidas.map(s => ({
       ...s,
-      idUsuario: usuarioActual,
+      idUsuario: AsyncStorage.getItem('nombreCompleto'),
       fecha: fechaActual,
     }));
 
