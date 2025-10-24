@@ -9,7 +9,11 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:verbose": "jest --verbose"
+    "test:verbose": "jest --verbose",
+    "test:perf": "k6 run tests/k6-usuarios-test.js",
+    "test:perf:roles": "k6 run tests/k6-roles-test.js",
+    "test:stress": "k6 run tests/k6-stress-test.js",
+    "test:perf:cloud": "k6 run --out cloud tests/k6-usuarios-test.js"
   },
   "keywords": [
     "express",
@@ -32,6 +36,7 @@
     "morgan": "^1.10.1",
     "mysql2": "^3.15.2",
     "pdfkit-table": "^0.1.99",
+    "react-native-dotenv": "^3.4.11",
     "sequelize": "^6.37.7",
     "stream": "^0.0.3"
   },
