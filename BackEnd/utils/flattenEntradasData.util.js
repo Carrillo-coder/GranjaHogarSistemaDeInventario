@@ -1,4 +1,4 @@
-export function flattenEntradasData(entradas) {
+function flattenEntradasData(entradas) {
     const flattened = [];
 
     entradas.forEach((entrada, index) => {
@@ -33,3 +33,4 @@ export function flattenEntradasData(entradas) {
 
     return flattened;
 }
+module.exports = { flattenEntradasData };

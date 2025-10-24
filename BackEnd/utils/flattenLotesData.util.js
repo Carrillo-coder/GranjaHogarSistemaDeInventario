@@ -1,4 +1,4 @@
-exports.flattenLotesData = (productos) => {
+const flattenLotesData = (productos) => {
     const flattened = [];
 
     productos.forEach((producto, index) => {
@@ -41,3 +41,5 @@ exports.flattenLotesData = (productos) => {
 
     return flattened;
 };
+
+module.exports = { flattenLotesData };

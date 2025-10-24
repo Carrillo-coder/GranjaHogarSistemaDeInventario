@@ -7,7 +7,6 @@
  */
 
 export const ReporteVO = function (fechaInicio, fechaFin, formato) {
-    console.log('Creating ReporteVO with:', { fechaInicio, fechaFin, formato });
     this.fechaInicio = fechaInicio;
     this.fechaFin = fechaFin;
     this.formato = formato;

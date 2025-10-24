@@ -72,8 +72,6 @@ class SalidasService {
 
     static async generarReporteSalidas(reporteFiltros, departamento) {
         const { fechaInicio, fechaFin, formato } = reporteFiltros;
-        console.log({ fechaInicio, fechaFin, formato, departamento });
-
         const tableHeaders = [
             'No.', 'Fecha', 'Departamento', 'Producto', 'Categoría', 'Presentación', 'Cantidad Retirada',
             'Tipo Salida', 'Usuario Responsable', 'Rol Usuario', 'Notas'

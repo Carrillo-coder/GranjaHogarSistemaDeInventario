@@ -18,8 +18,7 @@ const ReportesForm = () => {
         areDatesDisabled, isDepartmentDisabled,
         formatDate, onStartDateChange, onEndDateChange,
         showStartDatepicker, showEndDatepicker,
-        modalVisible, handleDownload,
-        handleConfirmDownload, handleCancelDownload,
+        handleConfirmDownload,
         generatingReport,
 
     } = useReportesForm();

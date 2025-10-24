@@ -42,10 +42,11 @@ app.get('/', (req, res) => {
 });
 
 // Sincronización con la Base de Datos
-db.sequelize.sync({ alter: true })
-  .then(() => console.log('✅ Sequelize sincronizado'))
-  .catch(err => console.error('❌ Error al sincronizar Sequelize:', err.message));
-
+if (process.env.NODE_ENV !== 'test') {
+    db.sequelize.sync({ alter: true })
+        .then(() => console.log('✅ Sequelize sincronizado'))
+        .catch(err => console.error('❌ Error al sincronizar Sequelize:', err.message));
+}
 
 // --- Rutas de la API (Registradas una sola vez) ---
 app.use('/api/inventario/usuarios', usuariosRoutes);
@@ -89,9 +90,9 @@ function printRoutes() {
             middleware.handle.stack.forEach((handler) => {
                 if (handler.route) {
                     const methods = Object.keys(handler.route.methods).map(m => m.toUpperCase()).join(', ');
-                    table.push({ 
-                        Method: methods, 
-                        Path: `/${pathPrefix}${handler.route.path}`.replace(/\/$/, '') || '/' 
+                    table.push({
+                        Method: methods,
+                        Path: `/${pathPrefix}${handler.route.path}`.replace(/\/$/, '') || '/'
                     });
                 }
             });
@@ -102,11 +103,11 @@ function printRoutes() {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`\n🚀 Servidor corriendo en http://localhost:${PORT}`);
-    printRoutes();
-});
-
+if (process.env.NODE_ENV !== 'test') {
+    const server = app.listen(3000, () => {
+        console.log('🚀 Servidor corriendo en http://localhost:3000');
+    });
+}
 module.exports = app;
 
 

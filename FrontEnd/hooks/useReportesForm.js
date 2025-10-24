@@ -24,7 +24,6 @@ export const useReportesForm = () => {
   const [exportFormat, setExportFormat] = useState('');
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
 
   const [generatingReport, setGeneratingReport] = useState(false);
   const { getAll } = DepartamentosServiceProxy();
@@ -79,8 +78,6 @@ export const useReportesForm = () => {
   const showStartDatepicker = () => { if (!areDatesDisabled) setShowStartDatePicker(true); };
   const showEndDatepicker = () => { if (!areDatesDisabled) setShowEndDatePicker(true); };
   const handleDepartmentChange = (value) => { if (!isDepartmentDisabled) setDepartment(value); };
-  console.log(department)
-
 
   const validateForm = () => {
     if (!reportType) { Alert.alert('Error', 'Por favor selecciona un tipo de reporte antes de descargar.'); return; }
@@ -90,12 +87,8 @@ export const useReportesForm = () => {
     return true;
   };
 
-  const handleDownload = () => { if (validateForm()) setModalVisible(true); };
-
-
   const handleConfirmDownload = async () => {
     if (!validateForm()) return;
-    setModalVisible(false);
     setGeneratingReport(true);
     try {
       let response;
@@ -103,7 +96,6 @@ export const useReportesForm = () => {
 
       if (reportType === '3') { response = await generarReporteLotes(formato);
       } else {
-        console.log('tipo:', reportType);
         const fechaInicio = formatDate(startDate);
         const fechaFin = formatDate(endDate);
         if (reportType === '1') { response = await generarReporteEntradas(fechaInicio, fechaFin, formato);
@@ -162,12 +154,9 @@ export const useReportesForm = () => {
     } catch (error) {
       Alert.alert('Error', `No se pudo generar el reporte: ${error.message}`);
     } finally {
-      console.log('Generación de reporte finalizada');
       setGeneratingReport(false);
     }
   };
-
-  const handleCancelDownload = () => { setModalVisible(false); };
 
   return {
     reportTypes, reportType, setReportType,
@@ -180,8 +169,7 @@ export const useReportesForm = () => {
     areDatesDisabled, isDepartmentDisabled,
     formatDate, onStartDateChange, onEndDateChange,
     showStartDatepicker, showEndDatepicker,
-    modalVisible, handleDownload,
-    handleConfirmDownload, handleCancelDownload,
+    handleConfirmDownload,
     generatingReport,
   };
 };
