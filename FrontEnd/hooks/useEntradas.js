@@ -12,21 +12,25 @@ export const useEntradas = () => {
     setLoading(true);
     setError('');
     try {
-      // Crear la entrada principal
+      // 1) Crear la entrada principal
       const proxy = EntradasServiceProxy();
       const entradaRes = await proxy.createEntrada(entradaPayload);
       const idEntrada = entradaRes?.data?.idEntrada || entradaRes?.idEntrada;
 
       if (!idEntrada) throw new Error('No se recibió el ID de la entrada');
 
-      // Crear lotes asociados
+      // 2) Crear lotes asociados (cantidad y unidadesExistentes iguales al inicio)
       for (const lote of lotes) {
         const body = {
-          unidadesExistentes: lote.cantidad,
-          caducidad: lote.caducidad,
-          idProducto: lote.idProducto,
+          cantidad: Number(lote.cantidad),
+          unidadesExistentes: Number(lote.cantidad),
+          caducidad: lote.caducidad || null,   // MySQL DATE acepta null
+          activo: 1,                            // opcional: BIT (1 = true)
+          idProducto: Number(lote.idProducto),
           idEntrada,
         };
+
+        console.log('[POST Lote] =>', body);
 
         const resp = await fetch(`${BASE}/api/inventario/lotes`, {
           method: 'POST',
