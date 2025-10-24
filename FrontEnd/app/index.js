@@ -43,7 +43,7 @@ export default function LoginScreen() {
         try {
           await AsyncStorage.setItem('userToken', data.token);
           await AsyncStorage.setItem('rol', data.data.rol);
-          
+          console.log(data);
           Alert.alert('Inicio de Sesión Exitoso', `Bienvenido, ${data.data.rol}.`);
 
           if (data.data.rol === 'Administrador') {
@@ -73,6 +73,7 @@ export default function LoginScreen() {
   const handleLogin = () => {
     if (usuario && contrasena) {
       logIn(usuario, contrasena);
+      
     } else {
       Alert.alert('Campos incompletos', 'Por favor, introduce tu usuario y contraseña.');
     }

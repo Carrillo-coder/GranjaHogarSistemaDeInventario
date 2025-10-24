@@ -1,8 +1,8 @@
 module.exports = {
     HOST: "localhost",      // tu host, en XAMPP normalmente localhost
     USER: "root",           // usuario de MySQL, por defecto "root"
-    PASSWORD: "kalsjdad",           // contraseña de MySQL, por defecto vacío en XAMPP
-    DB: "granja-hogar",      // nombre de tu base de datos
+    PASSWORD: "",           // contraseña de MySQL, por defecto vacío en XAMPP
+    DB: "granjahogar",      // nombre de tu base de datos
     dialect: "mysql",       // porque usamos MySQL
     pool: {
         max: 5,             // conexiones máximas
