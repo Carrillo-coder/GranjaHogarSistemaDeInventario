@@ -7,6 +7,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import Footer from '../../components/Footer';
 import useProductosLista from '../../hooks/useProductosLista';
+import { useLocalSearchParams } from 'expo-router';
+
 
 // 🔎 Normaliza acentos y espacios para la búsqueda
 const normalize = (s = '') =>
@@ -31,11 +33,23 @@ const InventarioForm = () => {
     });
   }, [query, productos]);
 
+  const params = useLocalSearchParams();
+
   const handlePressProduct = (producto) => {
-    router.navigate({
-      pathname: 'inventario/DetalleProductoForm',
-      params: { idProducto: producto.idProducto },
-    });
+    if (params.context === 'entrada') {
+      router.navigate({
+        pathname: '/entrada/AgregarProductoForm',
+        params: {
+          idProducto: producto.idProducto,
+          productName: producto.nombre,
+        },
+      });
+    } else {
+      router.navigate({
+        pathname: 'inventario/DetalleProductoForm',
+        params: { idProducto: producto.idProducto },
+      });
+    }
   };
 
   const handleCreateProduct = () => {

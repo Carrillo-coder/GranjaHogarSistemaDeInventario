@@ -1,21 +1,17 @@
+// src/app/_layout.js
 import { Stack } from 'expo-router';
 
 export default function Layout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: {
-          backgroundColor: '#04538A',
-        },
+        headerStyle: { backgroundColor: '#04538A' },
         headerTintColor: '#ffffff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-          fontSize: 20,
-        },
+        headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
         headerTitleAlign: 'center',
         headerShadowVisible: true,
-        headerBackVisible: true, // Ensures back button is visible
-        gestureEnabled: true, // Enables swipe back gesture
+        headerBackVisible: true,
+        gestureEnabled: true,
       }}
     >
       <Stack.Screen name="index" options={{ title: 'Inicio de sesión' }} />
@@ -32,7 +28,6 @@ export default function Layout() {
       <Stack.Screen name="usuarios/UsuariosForm" options={{ title: 'Usuarios' }} />
       <Stack.Screen name="salida/SalidaForm" options={{ title: 'Salida' }} />
       <Stack.Screen name="usuarios/CrearUsuarioForm" options={{ title: 'Crear Usuario' }} />
-
     </Stack>
   );
 }

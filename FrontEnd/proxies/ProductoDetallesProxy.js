@@ -1,5 +1,5 @@
 //import { API_BASE_URL as BASE} from '@env';
-const BASE = "http://192.168.1.66:5000";
+const BASE = "http://10.34.18.73:5000";
 import { Platform } from 'react-native';
 
 async function _parseBody(response) {

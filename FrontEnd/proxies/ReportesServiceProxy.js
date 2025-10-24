@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 //import { API_BASE_URL} from '@env';
-const API_BASE_URL = "http://192.168.1.66:5000";
+const API_BASE_URL = "http://10.34.18.73:5000";
 
 const ReportesServiceProxy = () => {
 
