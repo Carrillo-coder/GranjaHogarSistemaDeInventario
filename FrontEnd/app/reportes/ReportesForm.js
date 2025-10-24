@@ -4,13 +4,14 @@ import { useReportesForm } from '../../hooks/useReportesForm';
 import CustomDropdown from '../../components/CustomDropdown';
 import DatePickerField from '../../components/DatePickerField';
 import CustomButton from '../../components/CustomButton';
+import ConfirmationModal from '../../components/ConfirmationModal';
 import Footer from '../../components/Footer';
 import { useRouter } from 'expo-router';
 
 const ReportesForm = () => {
     const router = useRouter();
     const {
-        reportTypes, setReportType,
+       reportTypes, setReportType,
         reportType, departments, handleDepartmentChange,
         department, startDate, endDate,
         exportFormat, setExportFormat,
@@ -18,7 +19,8 @@ const ReportesForm = () => {
         areDatesDisabled, isDepartmentDisabled,
         formatDate, onStartDateChange, onEndDateChange,
         showStartDatepicker, showEndDatepicker,
-        handleConfirmDownload,
+        modalVisible, handleDownload,
+        handleConfirmDownload, handleCancelDownload,
         generatingReport,
 
     } = useReportesForm();
@@ -85,7 +87,7 @@ const ReportesForm = () => {
                     <CustomButton
                         title="Descargar reporte"
                         icon="download"
-                        onPress={handleConfirmDownload}
+                        onPress={handleDownload}
                         disabled={generatingReport}
                     />
                 </View>
@@ -93,6 +95,12 @@ const ReportesForm = () => {
             <Footer
                 onBackPress={() => router.replace('/')}
                 onHomePress={() => router.replace('/main/adminForm')}
+            />
+            <ConfirmationModal
+                visible={modalVisible}
+                message="Confirmar descarga del reporte:"
+                onConfirm={handleConfirmDownload}
+                onCancel={handleCancelDownload}
             />
         </View>
     );

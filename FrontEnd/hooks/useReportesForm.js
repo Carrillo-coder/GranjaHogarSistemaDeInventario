@@ -24,6 +24,7 @@ export const useReportesForm = () => {
   const [exportFormat, setExportFormat] = useState('');
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const [generatingReport, setGeneratingReport] = useState(false);
   const { getAll } = DepartamentosServiceProxy();
@@ -87,8 +88,10 @@ export const useReportesForm = () => {
     return true;
   };
 
+  const handleDownload = () => { if (validateForm()) setModalVisible(true); };
+
   const handleConfirmDownload = async () => {
-    if (!validateForm()) return;
+    setModalVisible(false);
     setGeneratingReport(true);
     try {
       let response;
@@ -158,6 +161,8 @@ export const useReportesForm = () => {
     }
   };
 
+  const handleCancelDownload = () => { setModalVisible(false); };
+
   return {
     reportTypes, reportType, setReportType,
     departments, department, handleDepartmentChange,
@@ -169,7 +174,8 @@ export const useReportesForm = () => {
     areDatesDisabled, isDepartmentDisabled,
     formatDate, onStartDateChange, onEndDateChange,
     showStartDatepicker, showEndDatepicker,
-    handleConfirmDownload,
+    modalVisible, handleDownload,
+    handleConfirmDownload, handleCancelDownload,
     generatingReport,
   };
 };
