@@ -100,7 +100,6 @@ class SalidaController {
 
         } else {
             console.log('Detectada salida única.');
-            // Procesar como una salida única
             const transaction = await db.sequelize.transaction();
             try {
                 const nuevaSalida = await SalidaController._procesarSalidaUnica(body, transaction, null);
@@ -123,10 +122,6 @@ class SalidaController {
         }
     }
 
-    /**
-     * Método privado para procesar una única salida, descontando de lotes (PEPS).
-     * Este método está diseñado para ser llamado con una transacción existente.
-     */
     static async _procesarSalidaUnica(salidaData, transaction, idGrupoSalida) {
         const { idTipo, idDepartamento, idProducto, nombreProducto, cantidad, idUsuario, fecha, notas } = salidaData;
 

@@ -1,4 +1,5 @@
 module.exports = {
   testEnvironment: 'node',
-  verbose: true,
+  roots: ['<rootDir>'],
+  moduleFileExtensions: ['js', 'json'],
 };

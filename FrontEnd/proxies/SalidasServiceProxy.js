@@ -16,9 +16,7 @@ async function _parseBody(response) {
 }
 
 const SalidasProxyService = () => {
-  /**
-   * Obtiene todas las salidas registradas
-   */
+
   async function getAllSalidas() {
     const url = `${BASE}/api/inventario/salidas`;
     let response;
@@ -42,8 +40,7 @@ const SalidasProxyService = () => {
   }
 
   /**
-   * Agrega una nueva salida
-   * @param {Object} salida - { idProducto, cantidad, tipoSalida, idDepartamento, notas }
+   * @param {Object} salida 
    */
   async function agregarSalida(salida) {
     const url = `${BASE}/api/inventario/salidas`;
