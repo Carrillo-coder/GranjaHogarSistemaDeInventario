@@ -1,74 +1,54 @@
-import { Platform } from 'react-native';
-
+// import { API_BASE_URL as BASE } from '@env';
 const BASE = "http://192.168.1.66:5000";
+
 async function _parseBody(response) {
   const text = await response.text().catch(() => '');
   if (!text) return {};
-  try {
-    return JSON.parse(text);
-  } catch {
-    return { message: text };
-  }
+  try { return JSON.parse(text); } catch { return { message: text }; }
 }
 
 const SalidasProxyService = () => {
-  /**
-   * Obtiene todas las salidas registradas
-   */
   async function getAllSalidas() {
     const url = `${BASE}/api/inventario/salidas`;
-    let response;
-    try {
-      response = await fetch(url);
-    } catch (err) {
-      throw new Error('No se pudo conectar al servidor: ' + err.message);
+    const res = await fetch(url);
+    const body = await _parseBody(res);
+    if (!res.ok) {
+      const msg = body?.message || res.statusText || 'Error al obtener salidas';
+      const err = new Error(msg); err.status = res.status; err.body = body; throw err;
     }
-
-    const body = await _parseBody(response);
-
-    if (!response.ok) {
-      const msg = body?.message || response.statusText || 'Error al obtener salidas';
-      const err = new Error(msg);
-      err.status = response.status;
-      err.body = body;
-      throw err;
-    }
-
     return body.data || [];
   }
 
-  /**
-   * Agrega una nueva salida
-   * @param {Object} salida - { idProducto, cantidad, tipoSalida, idDepartamento, notas }
-   */
+  // POST UNA salida (por compatibilidad)
   async function agregarSalida(salida) {
     const url = `${BASE}/api/inventario/salidas`;
-
-    let response;
-    try {
-      response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(salida),
-      });
-    } catch (err) {
-      throw new Error('No se pudo conectar al servidor: ' + err.message);
+    const res = await fetch(url, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(salida),
+    });
+    const body = await _parseBody(res);
+    if (!res.ok) {
+      const msg = body?.message || res.statusText || 'Error al agregar salida';
+      const err = new Error(msg); err.status = res.status; err.body = body; throw err;
     }
-
-    const body = await _parseBody(response);
-
-    if (!response.ok) {
-      const msg = body?.message || response.statusText || 'Error al agregar salida';
-      const err = new Error(msg);
-      err.status = response.status;
-      err.body = body;
-      throw err;
-    }
-
     return body.data || {};
   }
 
-  return { getAllSalidas, agregarSalida };
+  // ✅ POST LOTE de salidas (array) — preferido
+  async function agregarSalidasLote(salidasArray) {
+    const url = `${BASE}/api/inventario/salidas`;
+    const res = await fetch(url, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(salidasArray),
+    });
+    const body = await _parseBody(res);
+    if (!res.ok) {
+      const msg = body?.message || res.statusText || 'Error al agregar salidas';
+      const err = new Error(msg); err.status = res.status; err.body = body; throw err;
+    }
+    // backend responde { message, salidas } en éxito de lote
+    return body.salidas || body.data || [];
+  }
+
+  return { getAllSalidas, agregarSalida, agregarSalidasLote };
 };
 
 export default SalidasProxyService;
