@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let globalSalidas = [];
 
-const BASE_URL = "http://192.168.0.16:5000";
+const BASE_URL = "http://192.168.1.66:5000";
 
 export const useSalidas = () => {
   const [salidas, setSalidas] = useState(globalSalidas);

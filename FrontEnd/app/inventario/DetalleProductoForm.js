@@ -27,8 +27,8 @@ const DetalleProductoForm = () => {
   const { producto, loading, error, reload } = useProductoDetalle(idProducto);
 
   const handleConfirmarActualizacion = () => {
-    Alert.alert('Producto actualizado con éxito');
-    console.log('Producto actualizado en la BD...');
+    //Alert.alert('Producto actualizado con éxito');
+    //console.log('Producto actualizado en la BD...');
     router.back();
   };
 

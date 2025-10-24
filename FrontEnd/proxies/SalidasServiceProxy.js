@@ -1,10 +1,6 @@
 import { Platform } from 'react-native';
 
-const DEFAULT_BASE =
-  Platform.OS === 'android' ? 'http://10.34.18.74:5000' : 'http://127.0.0.1:5000';
-
-const BASE = DEFAULT_BASE;
-
+const BASE = "http://192.168.1.66:5000";
 async function _parseBody(response) {
   const text = await response.text().catch(() => '');
   if (!text) return {};
