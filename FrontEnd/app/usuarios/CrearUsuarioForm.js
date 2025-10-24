@@ -1,11 +1,12 @@
 import 'expo-router/entry'
-import { useRouter, useLocalSearchParams } from 'expo-router'
+import { Stack, useRouter, useLocalSearchParams } from 'expo-router'
 import React, { useState, useEffect } from 'react'
 import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOpacity, TextInput, Alert, ActivityIndicator, Platform} from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import Footer from '../../components/Footer'
 import { useUsuarios } from '../../hooks/useUsuarios'
 import { useRoles } from '../../hooks/useRoles'
+import CustomButton from '../components/CustomButton' 
 
 const showAlert = (title, message, onPress) => {
   if (Platform.OS === 'web') {
@@ -14,19 +15,6 @@ const showAlert = (title, message, onPress) => {
   } else {
     Alert.alert(title, message, [{ text: 'OK', onPress }])
   }
-}
-
-const CustomButton = ({ title, onPress, style, textStyle, icon, disabled }) => {
-  return (
-    <TouchableOpacity 
-      style={[styles.button, style, disabled && styles.buttonDisabled]} 
-      onPress={onPress}
-      disabled={disabled}
-    >
-      {icon && <Ionicons name={icon} size={20} color="white" style={styles.buttonIcon} />}
-      <Text style={[styles.buttonText, textStyle]}>{title}</Text>
-    </TouchableOpacity>
-  )
 }
 
 const CustomInput = ({ placeholder, value, onChangeText, secureTextEntry, style }) => {
@@ -235,18 +223,17 @@ const CrearUsuarioScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Stack.Screen 
+        options={{ 
+          title: isEditMode ? 'Editar Usuario' : 'Crear Usuario',
+
+          headerStyle: { backgroundColor: '#04538A' },
+          headerTintColor: 'white', 
+          headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
+          headerTitleAlign: 'center', 
+        }} 
+      />  
       <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>
-          {isEditMode ? 'Editar Usuario' : 'Crear Usuario'}
-        </Text>
-        <View style={{ width: 24 }} />
-      </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.formContainer}>
