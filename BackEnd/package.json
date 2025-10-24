@@ -21,6 +21,8 @@
   "author": "BigT",
   "license": "ISC",
   "dependencies": {
+    "@babel/runtime": "^7.28.4",
+    "babel": "^5.8.38",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -34,7 +36,8 @@
     "mysql2": "^3.15.2",
     "pdfkit-table": "^0.1.99",
     "sequelize": "^6.37.7",
-    "stream": "^0.0.3"
+    "stream": "^0.0.3",
+    "supertest": "^7.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
