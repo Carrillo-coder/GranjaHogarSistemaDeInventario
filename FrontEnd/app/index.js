@@ -43,6 +43,7 @@ export default function LoginScreen() {
         try {
           await AsyncStorage.setItem('userToken', data.token);
           await AsyncStorage.setItem('rol', data.data.rol);
+          await AsyncStorage.setItem('nombreCompleto', data.data.nombreCompleto);
           console.log(data);
           Alert.alert('Inicio de Sesión Exitoso', `Bienvenido, ${data.data.rol}.`);
 

@@ -30,6 +30,7 @@ class LoginService {
                     token, usuario: {
                         idUsuario: usuario.data.idUsuario,
                         nombreUsuario: usuario.data.nombreUsuario,
+                        nombreCompleto: usuario.data.nombreCompleto,
                         rol: usuario.data.rol.nombre
                     }
                 },
