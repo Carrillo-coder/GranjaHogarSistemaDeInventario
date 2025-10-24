@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let globalSalidas = [];
 
-const BASE_URL = API_BASE_URL;
+const BASE_URL = "http://192.168.0.16:5000";
 
 export const useSalidas = () => {
   const [salidas, setSalidas] = useState(globalSalidas);
@@ -33,10 +33,11 @@ export const useSalidas = () => {
     }
 
     const fechaActual = new Date().toISOString().split('T')[0]; 
+    const idUsuario = await AsyncStorage.getItem('idUsuario');
 
     const salidasPayload = globalSalidas.map(s => ({
       ...s,
-      idUsuario: AsyncStorage.getItem('nombreCompleto'),
+      idUsuario: idUsuario ? parseInt(idUsuario, 10) : null,
       fecha: fechaActual,
     }));
 

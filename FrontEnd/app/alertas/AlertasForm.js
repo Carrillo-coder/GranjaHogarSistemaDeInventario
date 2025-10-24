@@ -1,7 +1,7 @@
 // AlertasForm.jsx
 import 'expo-router/entry';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View, SafeAreaView, StatusBar, ScrollView,
   Text, RefreshControl
@@ -13,9 +13,13 @@ import useAlertas from '../../hooks/useAlertas';
 
 const AlertasForm = () => {
   const router = useRouter();
-  const { expiring, lowStock, overStock, loading, error, refresh } = useAlertas({
+
+  // Memoiza los opts para no crear un objeto nuevo por render
+  const alertasOpts = useMemo(() => ({
     dias: 10, umbralBajo: 10, umbralAlto: 100
-  });
+  }), []);
+
+  const { expiring, lowStock, overStock, loading, error, refresh } = useAlertas(alertasOpts);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -30,7 +34,11 @@ const AlertasForm = () => {
       <ScrollView
         style={styles.content}
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={refresh} colors={['#04538A']} />
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={refresh}          // ← respeta cool-down de 5s
+            colors={['#04538A']}
+          />
         }
       >
         <Card title="Productos por caducar" icon="time-outline">
@@ -123,4 +131,4 @@ const Table = ({ headers = ['Producto', 'Valor'], rows = [], metaAlign = 'right'
   );
 };
 
-export default AlertasForm;
+export default AlertasForm;
