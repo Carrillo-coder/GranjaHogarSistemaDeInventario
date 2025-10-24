@@ -5,7 +5,6 @@ import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOp
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../../components/Footer';
 import { LoteVO } from '../../valueobjects/LoteVO';
-import { takePendingLotes, hasPendingLotes } from '../../lib/transferStore';
 import useLotes from '../../hooks/useLotes';
 import useEntradas from '../../hooks/useEntradas';
 
@@ -54,6 +53,7 @@ const ConfirmationModal = ({ visible, onConfirm, onCancel, message }) => {
   );
 };
 
+
 const RegistrarEntradaForm = () => {
   const router = useRouter();
   console.log('RegistrarEntradaForm render');
@@ -85,40 +85,20 @@ const RegistrarEntradaForm = () => {
   const params = useLocalSearchParams();
   const loteParam = params.lote;
 
-  // Aquí cominza el intento del useEffect
-  useEffect(() => {
-    if (!loteParam) return;
+useEffect(() => {
+  if (params.lote) {
     try {
-      // loteParam is passed as an encoded JSON string from AgregarProductoForm
-      console.log('RegistrarEntradaForm: received loteParam ->', loteParam);
-      const decoded = typeof loteParam === 'string' ? decodeURIComponent(loteParam) : loteParam;
-      const raw = typeof decoded === 'string' ? JSON.parse(decoded) : decoded;
-      console.log('RegistrarEntradaForm: parsed lote object ->', raw);
-      const newLote = new LoteVO(raw);
-      setLotes(prev => [...prev, newLote]);
-      setSelectedLote(newLote);
-      setShowLoteList(true);
-      // clear the param from the route so reloading doesn't duplicate the lote
-      try { router.replace('/entrada/RegistrarEntradaForm'); } catch (e) { /* ignore */ }
-    } catch (e) {
-      console.warn('No se pudo parsear loteParam', e);
+      const nuevoLote = JSON.parse(params.lote);
+      setLotes((prevLotes) => [...prevLotes, nuevoLote]); // acumula los lotes
+      console.log('Lote agregado desde params:', nuevoLote);
+      console.log('Lotes actuales:', [...lotes, nuevoLote]);
+    } catch (error) {
+      console.error('Error al parsear lote recibido:', error);
     }
-  }, [loteParam]);
+  }
+}, [params.lote]);
 
-  // Also check transferStore for pending lotes (more reliable than URL params on some platforms)
-  useEffect(() => {
-    if (hasPendingLotes()) {
-      const pendings = takePendingLotes();
-      if (pendings && pendings.length) {
-        const newItems = pendings.map(p => new LoteVO(p));
-        setLotes(prev => [...prev, ...newItems]);
-        setSelectedLote(newItems[newItems.length - 1] ?? null);
-        setShowLoteList(true);
-        console.log('RegistrarEntradaForm: imported pending lotes from transferStore', newItems);
-      }
-    }
-  }, []);
-// Aquí acaba el intento del useEffect
+
 
   const handleCreateProduct = () => {
     console.log('Crear producto');
@@ -141,71 +121,7 @@ const RegistrarEntradaForm = () => {
     setLoading(true);
     setError('');
     setModalVisible(false);
-    try {
-      // 1. Preparar payload de entrada con idTipo e idUsuario (si vienen en params)
-      const today = new Date();
-      const fecha = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-      const idTipo = params?.idTipo ? Number(params.idTipo) : 1; // asumir tipo 1 si no viene
-      const idUsuario = params?.idUsuario ? Number(params.idUsuario) : 1; // fallback a 1 si no hay usuario
-
-      const entradaPayload = {
-        idTipo,
-        proveedor: provider,
-        idUsuario,
-        fecha,
-        notas: notes,
-      };
-
-      // 2. Crear la entrada en backend
-      const entradaRes = await createEntrada(entradaPayload);
-      // Normalize response shapes: the backend returns { success, message, data: nuevaEntrada }
-      // while the hook returns { ok: true, data: body } so we may have multiple nesting levels.
-      const normalizeEntradaBody = (res) => {
-        if (!res) return null;
-        // If hook returned { ok: true, data: body }
-        const top = res.data ?? res;
-        // If backend wrapped the created object under .data
-        const inner = (top && top.data) ? top.data : top;
-        return inner;
-      };
-
-      const entradaBody = normalizeEntradaBody(entradaRes) || {};
-      const idEntrada = entradaBody?.idEntrada ?? entradaBody?.id ?? null;
-      if (!idEntrada) {
-        console.error('Entrada response (raw):', entradaRes, 'normalized:', entradaBody);
-        throw new Error('No se obtuvo idEntrada del servidor');
-      }
-
-      // 3. Enviar todos los lotes vinculándolos a idEntrada
-      const loteResults = [];
-      for (const lote of lotes) {
-        const payload = lote.toApi ? lote.toApi() : { ...lote };
-        payload.idEntrada = idEntrada;
-        try {
-          const res = await createLote(payload);
-          loteResults.push(res);
-        } catch (le) {
-          // Registrar error por lote y continuar con el siguiente
-          console.error('Error creando lote', le);
-          loteResults.push({ ok: false, error: le });
-        }
-      }
-
-      // 4. Actualizar UI local y navegar/mostrar éxito
-      setProvider('');
-      setNotes('');
-      setLotes([]);
-      setSelectedLote(null);
-      alert('Entrada y lotes registrados correctamente');
-      try { router.replace('/entrada/RegistrarEntradaForm'); } catch (e) { /* ignore */ }
-      return { ok: true, entrada: entradaRes, lotes: loteResults };
-    } catch (e) {
-      setError(e.message || 'Error al registrar entrada');
-      alert('Error: ' + (e.message || 'Error al registrar entrada'));
-      return { ok: false, error: e };
-    } finally {
-      setLoading(false);
-    }
+    
   };
 
   const handleCancel = () => {
@@ -220,15 +136,6 @@ const RegistrarEntradaForm = () => {
     setShowLoteList(!showLoteList);
   };
 
-  const handleHomePress = () => {
-    console.log('Ir a inicio');
-    router.navigate('/');
-  };
-
-  const handleBackPress = () => {
-    console.log('Volver atrás');
-    router.back();
-  };
 
   return (
     <SafeAreaView style={styles.container}>

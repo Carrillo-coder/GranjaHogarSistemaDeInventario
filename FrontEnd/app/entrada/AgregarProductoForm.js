@@ -26,20 +26,13 @@ const AgregarProductoScreen = ({ productName = 'Producto x' }) => {
       cantidad: Number(cantidad),
       caducidad: caducidad,
     });
+    console.log('Lote a agregar:', lote);
 
-    // Pass the lote back to RegistrarEntradaForm via URL param (encoded JSON)
-    const plain = lote.toApi ? lote.toApi() : lote;
-    const payload = encodeURIComponent(JSON.stringify(plain));
-    console.log('AgregarProductoForm: sending lote payload ->', plain);
-    return new LoteVO;
-
-    // Use push so the destination can read the param reliably in the navigation stack
-    try {
-      router.push(`/entrada/RegistrarEntradaForm?lote=${payload}`);
-    } catch (e) {
-      // fallback to replace if push not supported in the environment
-      router.replace(`/entrada/RegistrarEntradaForm?lote=${payload}`);
-    }
+    // Navigate back with the new lote data
+    router.replace({
+      pathname: '/entrada/RegistrarEntradaForm',
+      params: { lote: JSON.stringify(lote) },
+    });
   };
 
   return (
