@@ -5,6 +5,7 @@ import {View, StyleSheet, StatusBar, SafeAreaView, ScrollView, Text, TouchableOp
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../../components/Footer';
 import { LoteVO } from '../../valueobjects/LoteVO';
+import { takePendingLotes, hasPendingLotes } from '../../lib/transferStore';
 import useLotes from '../../hooks/useLotes';
 import useEntradas from '../../hooks/useEntradas';
 
@@ -73,9 +74,9 @@ const RegistrarEntradaForm = () => {
   const [provider, setProvider] = useState('');
   const [notes, setNotes] = useState('');
   const [lotes, setLotes] = useState([
-    new LoteVO({ idLote: 1, cantidad: 10, caducidad: '21-10-2025', idProducto: 101, nombre: 'Arroz' }),
-    new LoteVO({ idLote: 2, cantidad: 5, caducidad: '01-11-2025', idProducto: 102, nombre: 'Zucaritas' }),
-    new LoteVO({ idLote: 3, cantidad: 20, caducidad: '15-12-2025', idProducto: 103, nombre: 'Leche' })
+    // new LoteVO({ idLote: 1, cantidad: 10, caducidad: '21-10-2025', idProducto: 101, nombre: 'Arroz' }),
+    // new LoteVO({ idLote: 2, cantidad: 5, caducidad: '01-11-2025', idProducto: 102, nombre: 'Zucaritas' }),
+    // new LoteVO({ idLote: 3, cantidad: 20, caducidad: '15-12-2025', idProducto: 103, nombre: 'Leche' })
   ]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -84,14 +85,53 @@ const RegistrarEntradaForm = () => {
   const params = useLocalSearchParams();
   const loteParam = params.lote;
 
+  // Aquí cominza el intento del useEffect
+  useEffect(() => {
+    if (!loteParam) return;
+    try {
+      // loteParam is passed as an encoded JSON string from AgregarProductoForm
+      console.log('RegistrarEntradaForm: received loteParam ->', loteParam);
+      const decoded = typeof loteParam === 'string' ? decodeURIComponent(loteParam) : loteParam;
+      const raw = typeof decoded === 'string' ? JSON.parse(decoded) : decoded;
+      console.log('RegistrarEntradaForm: parsed lote object ->', raw);
+      const newLote = new LoteVO(raw);
+      setLotes(prev => [...prev, newLote]);
+      setSelectedLote(newLote);
+      setShowLoteList(true);
+      // clear the param from the route so reloading doesn't duplicate the lote
+      try { router.replace('/entrada/RegistrarEntradaForm'); } catch (e) { /* ignore */ }
+    } catch (e) {
+      console.warn('No se pudo parsear loteParam', e);
+    }
+  }, [loteParam]);
+
+  // Also check transferStore for pending lotes (more reliable than URL params on some platforms)
+  useEffect(() => {
+    if (hasPendingLotes()) {
+      const pendings = takePendingLotes();
+      if (pendings && pendings.length) {
+        const newItems = pendings.map(p => new LoteVO(p));
+        setLotes(prev => [...prev, ...newItems]);
+        setSelectedLote(newItems[newItems.length - 1] ?? null);
+        setShowLoteList(true);
+        console.log('RegistrarEntradaForm: imported pending lotes from transferStore', newItems);
+      }
+    }
+  }, []);
+// Aquí acaba el intento del useEffect
+
   const handleCreateProduct = () => {
     console.log('Crear producto');
-    router.navigate('/inventario/CrearProductoForm');
+    // Redirect to the AgregarProductoForm screen under the entrada folder
+    router.navigate('/entrada/AgregarProductoForm');
   };
 
   const handleConfirmPress = () => {
-    if (selectedLote) {
+    // allow confirming if there is at least one lote in the list
+    if (Array.isArray(lotes) && lotes.length > 0) {
       setModalVisible(true);
+      // ensure list is visible so user can see what's being sent
+      setShowLoteList(true);
     } else {
       alert('Agrega un lote para continuar');
     }
@@ -102,36 +142,67 @@ const RegistrarEntradaForm = () => {
     setError('');
     setModalVisible(false);
     try {
-      // 1. Crear la entrada primero (backend necesita idEntrada para crear lotes)
+      // 1. Preparar payload de entrada con idTipo e idUsuario (si vienen en params)
       const today = new Date();
       const fecha = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-      const entradaPayload = {
-        proveedor: provider,
-        notas: notes,
-        fecha,
-      };
-      const entradaRes = await createEntrada(entradaPayload);
-      const idEntrada = entradaRes?.data?.idEntrada ?? entradaRes?.data?.id ?? null;
-      if (!idEntrada) throw new Error('No se obtuvo idEntrada del servidor');
+      const idTipo = params?.idTipo ? Number(params.idTipo) : 1; // asumir tipo 1 si no viene
+      const idUsuario = params?.idUsuario ? Number(params.idUsuario) : 1; // fallback a 1 si no hay usuario
 
-      // 2. Enviar todos los lotes vinculándolos a idEntrada
+      const entradaPayload = {
+        idTipo,
+        proveedor: provider,
+        idUsuario,
+        fecha,
+        notas: notes,
+      };
+
+      // 2. Crear la entrada en backend
+      const entradaRes = await createEntrada(entradaPayload);
+      // Normalize response shapes: the backend returns { success, message, data: nuevaEntrada }
+      // while the hook returns { ok: true, data: body } so we may have multiple nesting levels.
+      const normalizeEntradaBody = (res) => {
+        if (!res) return null;
+        // If hook returned { ok: true, data: body }
+        const top = res.data ?? res;
+        // If backend wrapped the created object under .data
+        const inner = (top && top.data) ? top.data : top;
+        return inner;
+      };
+
+      const entradaBody = normalizeEntradaBody(entradaRes) || {};
+      const idEntrada = entradaBody?.idEntrada ?? entradaBody?.id ?? null;
+      if (!idEntrada) {
+        console.error('Entrada response (raw):', entradaRes, 'normalized:', entradaBody);
+        throw new Error('No se obtuvo idEntrada del servidor');
+      }
+
+      // 3. Enviar todos los lotes vinculándolos a idEntrada
       const loteResults = [];
       for (const lote of lotes) {
-        const payload = lote.toApi ? lote.toApi() : lote;
+        const payload = lote.toApi ? lote.toApi() : { ...lote };
         payload.idEntrada = idEntrada;
-        const res = await createLote(payload);
-        loteResults.push(res);
+        try {
+          const res = await createLote(payload);
+          loteResults.push(res);
+        } catch (le) {
+          // Registrar error por lote y continuar con el siguiente
+          console.error('Error creando lote', le);
+          loteResults.push({ ok: false, error: le });
+        }
       }
-      // 3. Limpiar y navegar o mostrar éxito
+
+      // 4. Actualizar UI local y navegar/mostrar éxito
       setProvider('');
       setNotes('');
       setLotes([]);
       setSelectedLote(null);
-      alert('Entrada registrada correctamente');
-      router.navigate('/entrada/RegistrarEntradaForm');
+      alert('Entrada y lotes registrados correctamente');
+      try { router.replace('/entrada/RegistrarEntradaForm'); } catch (e) { /* ignore */ }
+      return { ok: true, entrada: entradaRes, lotes: loteResults };
     } catch (e) {
       setError(e.message || 'Error al registrar entrada');
       alert('Error: ' + (e.message || 'Error al registrar entrada'));
+      return { ok: false, error: e };
     } finally {
       setLoading(false);
     }
