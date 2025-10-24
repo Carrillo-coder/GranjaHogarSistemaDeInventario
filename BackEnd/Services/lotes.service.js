@@ -248,7 +248,7 @@ class LotesService {
                 unidadesTotales: flattenedData
                     .filter(d => d['Unidades Existentes'])
                     .reduce((sum, d) => sum + (Number(d['Unidades Existentes']) || 0), 0),
-                registros: flattenedData.length / 2
+                registros: Math.ceil(flattenedData.length / 2)
             }
         };
 
