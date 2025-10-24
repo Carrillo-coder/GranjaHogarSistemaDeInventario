@@ -1,6 +1,6 @@
 process.env.NODE_ENV = 'test';
 const request = require('supertest');
-const server = require('../../app'); // import app, not server
+const app = require('../../app'); // import app, not server
 const EntradasService = require('../../Services/entradas.service');
 
 jest.mock('../../Services/entradas.service', () => ({
@@ -15,7 +15,7 @@ describe('Entradas Controller Tests', () => {
   describe('getReporteEntradas', () => {
 
     test('Given missing fechaInicio When getReporteEntradas Then Error 400', async () => {
-      const res = await request(server)
+      const res = await request(app)
         .post('/api/inventario/entradas/reportes')
         .send({ fechaFin: '2025-10-20', formato: 'PDF' });
       expect(res.status).toBe(400);
@@ -23,7 +23,7 @@ describe('Entradas Controller Tests', () => {
     });
 
     test('Given missing fechaFinal When getReporteEntradas Then Error 400', async () => {
-      const res = await request(server)
+      const res = await request(app)
         .post('/api/inventario/entradas/reportes')
         .send({ fechaInicio: '2025-10-01', formato: 'PDF' });
       expect(res.status).toBe(400);
@@ -31,7 +31,7 @@ describe('Entradas Controller Tests', () => {
     });
 
     test('Given missing formato When getReporteEntradas Then Error 400', async () => {
-      const res = await request(server)
+      const res = await request(app)
         .post('/api/inventario/entradas/reportes')
         .send({ fechaFin: '2025-10-20', fechaInicio: '2025-10-01' });
       expect(res.status).toBe(400);
@@ -46,7 +46,7 @@ describe('Entradas Controller Tests', () => {
         filename: mockFilename,
       });
 
-      const res = await request(server)
+      const res = await request(app)
         .post('/api/inventario/entradas/reportes')
         .send({
           fechaInicio: '2025-10-01',

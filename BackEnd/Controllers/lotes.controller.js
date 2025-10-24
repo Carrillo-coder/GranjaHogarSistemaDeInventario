@@ -8,9 +8,9 @@ class LotesController {
             const { formato } = req.query;
 
             if (!formato || formato.trim() === '') {
-                return res.status(400).json({ success: false, message: 'El parámetro "formato" es obligatorio.' });
+                return res.status(400).json({ success: false, error: 'El parámetro "formato" es obligatorio.' });
             } else if (!['XLSX', 'PDF'].includes(formato)) {
-                return res.status(400).json({ success: false, message: 'El formato debe ser XLSX o PDF.' });
+                return res.status(400).json({ success: false, error: 'El formato debe ser XLSX o PDF.' });
             }
 
             const { buffer, filename } = await LotesService.generarReporteLotes(formato);
