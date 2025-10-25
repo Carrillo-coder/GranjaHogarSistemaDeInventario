@@ -8,7 +8,7 @@ export const options = {
     loginStressTest: {
       executor: 'constant-vus',
       exec: 'logIn',
-      vus: 50, // Número de usuarios virtuales
+      vus: 100, // Número de usuarios virtuales
       duration: '1m', // Duración de la prueba
     },
   },
@@ -29,4 +29,4 @@ export function logIn() {
   });
 
   sleep(1); // Espera entre solicitudes
-}
+}  
