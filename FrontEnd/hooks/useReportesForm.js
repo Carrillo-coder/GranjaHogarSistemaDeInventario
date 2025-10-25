@@ -25,8 +25,8 @@ export const useReportesForm = () => {
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-
   const [generatingReport, setGeneratingReport] = useState(false);
+
   const { getAll } = DepartamentosServiceProxy();
   const { generarReporteEntradas, generarReporteSalidas, generarReporteLotes } = ReportesServiceProxy();
 
@@ -79,8 +79,6 @@ export const useReportesForm = () => {
   const showStartDatepicker = () => { if (!areDatesDisabled) setShowStartDatePicker(true); };
   const showEndDatepicker = () => { if (!areDatesDisabled) setShowEndDatePicker(true); };
   const handleDepartmentChange = (value) => { if (!isDepartmentDisabled) setDepartment(value); };
-  console.log(department)
-
 
   const validateForm = () => {
     if (!reportType) { Alert.alert('Error', 'Por favor selecciona un tipo de reporte antes de descargar.'); return; }
@@ -92,10 +90,8 @@ export const useReportesForm = () => {
 
   const handleDownload = () => { if (validateForm()) setModalVisible(true); };
 
-
   const handleConfirmDownload = async () => {
     if (!validateForm()) return;
-
     setModalVisible(false);
     setGeneratingReport(true);
 
@@ -178,11 +174,9 @@ export const useReportesForm = () => {
     } catch (error) {
       Alert.alert('Error', `No se pudo generar el reporte: ${error.message}`);
     } finally {
-      console.log('Generación de reporte finalizada');
       setGeneratingReport(false);
     }
   };
-
 
   const handleCancelDownload = () => { setModalVisible(false); };
 
