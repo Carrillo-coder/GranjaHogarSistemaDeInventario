@@ -3,18 +3,19 @@ const db = require('../../Models');
 const { flattenSalidasData } = require('../../utils/flattenSalidasData.util');
 const { generateXLSX, generatePDF } = require('../../utils/fileGenerator.util');
 
-jest.mock('../../Models', () => ({
-  Salida: { findAll: jest.fn() },
-},
-  db.Sequelize = {
-    Op: {
-      between: Symbol('between')
-    }
-  }
-));
+jest.mock('../../Models', () => {
+  return {
+    Salida: { findAll: jest.fn() },
+    Sequelize: {
+      Op: { between: 'between' },
+    },
+  };
+});
+
 jest.mock('../../utils/flattenSalidasData.util', () => ({
   flattenSalidasData: jest.fn(),
 }));
+
 jest.mock('../../utils/fileGenerator.util', () => ({
   generateXLSX: jest.fn(),
   generatePDF: jest.fn(),
@@ -92,7 +93,7 @@ describe('SalidasService Unit Tests', () => {
           fechaFin: mockFechaFin,
           formato: 'PDF',
         })
-      ).rejects.toThrow('No se encontraron salidas para el rango de fechas dado.');
+      ).rejects.toThrow('No se encontraron salidas para el departamento \"undefined\" en el rango de fechas dado.');
     });
   });
 });

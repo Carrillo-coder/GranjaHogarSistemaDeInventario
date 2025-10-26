@@ -44,5 +44,8 @@ process.on('uncaughtException', (error) => {
   console.error('❌ Error no manejado (Sync):', error);
   process.exit(1);
 });
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
 
-startServer();
+module.exports = { app, startServer }; // Exportar app para pruebas

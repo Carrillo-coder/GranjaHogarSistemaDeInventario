@@ -6,9 +6,11 @@ const { generateXLSX, generatePDF } = require('../../utils/fileGenerator.util');
 jest.mock('../../Models', () => ({
   Entrada: { findAll: jest.fn() },
 }));
+
 jest.mock('../../utils/flattenEntradasData.util', () => ({
   flattenEntradasData: jest.fn(),
 }));
+
 jest.mock('../../utils/fileGenerator.util', () => ({
   generateXLSX: jest.fn(),
   generatePDF: jest.fn(),
