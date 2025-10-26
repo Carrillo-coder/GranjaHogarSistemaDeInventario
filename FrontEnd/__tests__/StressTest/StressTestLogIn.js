@@ -26,6 +26,7 @@ export function logIn() {
   check(response, {
     "POST login status code is 200": (r) => r.status === 200,
     "Response contains token": (r) => r.json().hasOwnProperty('token'),
+    "Response contains data": (r) => r.json().hasOwnProperty('data'),
   });
 
   sleep(1); // Espera entre solicitudes
