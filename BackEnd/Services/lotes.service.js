@@ -147,52 +147,74 @@ class LotesService {
 
     // POST /api/inventario/lotes
     static async createLote(data) {
-        try {
-            const { unidadesExistentes, caducidad, idProducto, idEntrada } = data;
+    try {
+        // Acepta ambos nombres, y sincroniza valores si uno falta
+        let { cantidad, unidadesExistentes, caducidad, idProducto, idEntrada, activo } = data;
 
-            // Validar datos requeridos
-            if (!unidadesExistentes || !caducidad || !idProducto || !idEntrada) {
-                return {
-                    success: false,
-                    message: 'Faltan datos obligatorios del lote',
-                    statusCode: 400
-                };
-            }
-
-            // Validar existencia de producto
-            const productoExiste = await Producto.findByPk(idProducto);
-            if (!productoExiste) {
-                return {
-                    success: false,
-                    message: 'El producto asociado no existe',
-                    statusCode: 400
-                };
-            }
-
-            // Crear el lote
-            const nuevoLote = await Lote.create({
-                unidadesExistentes,
-                caducidad,
-                activo: 1,
-                idProducto,
-                idEntrada
-            });
-
-            return {
-                success: true,
-                message: 'Lote creado correctamente',
-                data: nuevoLote,
-                statusCode: 201
-            };
-        } catch (error) {
-            return {
-                success: false,
-                message: 'Error al crear lote',
-                error: error.message,
-                statusCode: 400
-            };
+        // Requeridos mínimos (según tu tabla): idProducto e idEntrada siempre;
+        // al menos uno de {cantidad, unidadesExistentes}; caducidad puede ser null.
+        if (!idProducto || !idEntrada) {
+        return { success: false, message: 'idProducto e idEntrada son obligatorios', statusCode: 400 };
         }
+
+        // Normaliza números
+        const cantNum = cantidad != null ? Number(cantidad) : null;
+        const existNum = unidadesExistentes != null ? Number(unidadesExistentes) : null;
+
+        // Si viene uno solo, úsalo para poblar el otro
+        const finalCantidad = cantNum != null ? cantNum : existNum;
+        const finalExistentes = existNum != null ? existNum : cantNum;
+
+        if (finalCantidad == null || finalExistentes == null) {
+        return { success: false, message: 'Debe enviarse cantidad o unidadesExistentes', statusCode: 400 };
+        }
+        if (finalCantidad < 0 || finalExistentes < 0) {
+        return { success: false, message: 'Valores no pueden ser negativos', statusCode: 400 };
+        }
+
+        // caducidad: permite null (tu DDL lo permite)
+        const finalCaducidad = caducidad ? new Date(caducidad) : null;
+        if (caducidad && Number.isNaN(finalCaducidad.getTime())) {
+        return { success: false, message: 'caducidad inválida (use YYYY-MM-DD)', statusCode: 400 };
+        }
+
+        // Validar existencia del producto (opcional: también la entrada)
+        const productoExiste = await Producto.findByPk(idProducto);
+        if (!productoExiste) {
+        return { success: false, message: 'El producto asociado no existe', statusCode: 400 };
+        }
+        // Opcional: valida entrada si tienes el modelo:
+        // const entradaExiste = await Entrada.findByPk(idEntrada);
+        // if (!entradaExiste) { ... }
+
+        // BIT/BOOLEAN: guarda 1 por defecto
+        const finalActivo = (activo === 0 || activo === false) ? 0 : 1;
+
+        const nuevoLote = await Lote.create({
+        cantidad: finalCantidad,
+        unidadesExistentes: finalExistentes,
+        caducidad: finalCaducidad,   // puede ser null
+        activo: finalActivo,
+        idProducto,
+        idEntrada
+        });
+
+        return {
+        success: true,
+        message: 'Lote creado correctamente',
+        data: nuevoLote,
+        statusCode: 201
+        };
+    } catch (error) {
+        return {
+        success: false,
+        message: 'Error al crear lote',
+        error: error.message,
+        statusCode: 400
+        };
     }
+    }
+
 
     // GET /api/inventario/lotes/reporte?formato=CSV|PDF
     static async generarReporteLotes(formato) {
@@ -219,14 +241,14 @@ class LotesService {
 
         const metadata = {
             titulo: 'Reporte General de Inventario',
-            generadoPor: 'usuario', // si tienes auth => req.user.nombreCompleto
+            generadoPor: 'Rocio Rodriguez', // si tienes auth => req.user.nombreCompleto
             fechaGeneracion: new Date().toLocaleDateString(),
             totales: {
                 productosDistintos: productos.length,
                 unidadesTotales: flattenedData
                     .filter(d => d['Unidades Existentes'])
                     .reduce((sum, d) => sum + (Number(d['Unidades Existentes']) || 0), 0),
-                registros: flattenedData.length / 2
+                registros: Math.ceil(flattenedData.length / 2)
             }
         };
 
@@ -239,7 +261,13 @@ class LotesService {
             buffer = await generatePDF(flattenedData, metadata, tableHeaders);
         }
 
-        return { buffer, filename };
+        return { 
+            success: true,
+            message: 'Reporte de inventario generado correctamente',
+            buffer: buffer, 
+            filename: filename,
+            statusCode: 200 
+        };
     }
 };
 

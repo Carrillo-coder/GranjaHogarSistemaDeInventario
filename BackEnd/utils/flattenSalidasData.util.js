@@ -1,4 +1,4 @@
-export function flattenSalidasData(salidas) {
+function flattenSalidasData(salidas) {
   const flattened = [];
 
   salidas.forEach((salida, index) => {
@@ -27,3 +27,5 @@ export function flattenSalidasData(salidas) {
 
   return flattened;
 }
+
+module.exports = { flattenSalidasData };

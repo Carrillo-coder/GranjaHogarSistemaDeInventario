@@ -12,7 +12,7 @@ class SalidaController {
             const data = req.body;
             const reporteVO = new ReportesVO(data);
             const validation = reporteVO.validate();
-            
+
             if (!validation.isValid) {
                 return res.status(400).json({ errors: validation.errors });
             }
@@ -23,20 +23,23 @@ class SalidaController {
 
             const { buffer, filename } = await SalidasService.generarReporteSalidas(reporteVO, departamento);
 
-            if (reporteVO.formato === 'PDF') {
-                res.setHeader('Content-Type', 'application/pdf');
-            } else if (reporteVO.formato === 'CSV') {
-                res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-            }
+            const base64 = buffer.toString('base64');
+            const mimeType = reporteVO.formato === 'PDF'
+            ? 'application/pdf'
+            : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
-            res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
-            return res.send(buffer);
+            return res.json({
+                success: true,
+                filename,
+                mimeType,
+                base64,
+            });
 
         } catch (error) {
             console.error('Error al generar el reporte de salidas:', error);
             return res.status(500).json({
                 success: false,
-                message: 'Error interno del servidor',
+                message: 'No se encontraron registros para el reporte de salidas',
                 error: error.message
             });
         }

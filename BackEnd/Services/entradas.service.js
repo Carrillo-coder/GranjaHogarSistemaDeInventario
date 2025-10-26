@@ -109,7 +109,7 @@ class EntradasService {
 
         const metadata = {
             titulo: 'Reporte de Entradas al Inventario',
-            generadoPor: 'usuario', 
+            generadoPor: 'Rocio Rodriguez', 
             fechaGeneracion: new Date().toLocaleString(),
             periodo: { inicio: fechaInicio, fin: fechaFin },
             totales: {
@@ -127,7 +127,13 @@ class EntradasService {
             buffer = await generatePDF(flattenedData, metadata, tableHeaders);
         }
 
-        return { buffer, filename };
+        return { 
+            success: true,
+            message: 'Reporte de entradas generado correctamente',
+            buffer: buffer, 
+            filename: filename,
+            statusCode: 200 
+        };
     }
 };
 
