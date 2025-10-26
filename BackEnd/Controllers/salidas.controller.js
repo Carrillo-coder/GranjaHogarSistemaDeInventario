@@ -28,7 +28,7 @@ class SalidaController {
             ? 'application/pdf'
             : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
-            return res.json({
+            return res.status(200).json({
                 success: true,
                 filename,
                 mimeType,

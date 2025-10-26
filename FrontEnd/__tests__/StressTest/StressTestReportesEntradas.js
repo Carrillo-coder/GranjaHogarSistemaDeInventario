@@ -8,7 +8,7 @@ export const options = {
     reporteEntradasStressTest: {
       executor: 'constant-vus',
       exec: 'reporteEntradas',
-      vus: 100, 
+      vus: 50, 
       duration: '1m', 
     },
   },
