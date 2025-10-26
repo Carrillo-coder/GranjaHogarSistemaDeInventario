@@ -1,28 +1,21 @@
 //import { API_BASE_URL as BASE } from '@env';
-import { Platform } from 'react-native';
 const BASE = "http://10.34.18.73:5000";
 
 async function _parseBody(response) {
   const text = await response.text().catch(() => '');
   if (!text) return {};
-  try {
-    return JSON.parse(text);
-  } catch {
-    return { message: text };
-  }
+  try { return JSON.parse(text); } catch { return { message: text }; }
 }
 
-const ProductosServiceProxy = () => {
-  async function crearProducto(payload) {
-    const url = `${BASE}/api/inventario/productos`;
+const EntradasServiceProxy = () => {
+  async function createEntrada(payload) {
+    const url = `${BASE.replace(/\/$/, '')}/api/inventario/entradas`;
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-
     const body = await _parseBody(response);
-
     if (!response.ok) {
       const msg = body?.message || response.statusText || 'Error del servidor';
       const err = new Error(msg);
@@ -30,11 +23,10 @@ const ProductosServiceProxy = () => {
       err.body = body;
       throw err;
     }
-    
     return body;
   }
 
-  return { crearProducto };
+  return { createEntrada };
 };
 
-export default ProductosServiceProxy;
+export default EntradasServiceProxy;

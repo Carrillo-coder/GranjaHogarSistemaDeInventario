@@ -39,7 +39,7 @@ class SalidaController {
             console.error('Error al generar el reporte de salidas:', error);
             return res.status(500).json({
                 success: false,
-                message: 'Error interno del servidor',
+                message: 'No se encontraron registros para el reporte de salidas',
                 error: error.message
             });
         }

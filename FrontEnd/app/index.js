@@ -142,44 +142,45 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'space-between', 
+    justifyContent: 'center', // Centrar verticalmente
     paddingHorizontal: 20,
-    paddingVertical: 50, 
+    marginTop: -100, // Mover todos los componentes 90px hacia arriba
   },
-  
+
   logoContainer: {
     alignItems: 'center',
-    marginTop: 50,
+    marginBottom: 20, // Reducido para evitar desplazamiento hacia abajo
   },
   logo: {
-    width: 150, 
-    height: 150, 
+    width: 150,
+    height: 150,
   },
   logoText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#04538A', 
-    marginBottom: 50,
+    color: '#04538A',
+    marginBottom: 20, // Ajustado para mejor alineación
   },
-  
+
   formContainer: {
     width: '100%',
     alignItems: 'center',
     maxWidth: 400,
+    marginBottom: 20, // Añadido para separar del footer
   },
   input: {
     width: '90%',
-    marginBottom: 25, 
+    marginBottom: 15, // Reducido para mejor alineación
     backgroundColor: '#fff',
   },
-  
+
   button: {
     width: '60%',
     height: 55,
-    borderRadius: 30, 
-    marginTop: 20,
-    justifyContent: 'center', 
-    backgroundColor: '#04538A', 
+    borderRadius: 30,
+    marginTop: 10, // Reducido para evitar separación excesiva
+    justifyContent: 'center',
+    backgroundColor: '#04538A',
   },
   buttonLabel: {
     fontSize: 20,
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
 
   footer: {
     alignItems: 'center',
-    marginTop: 'auto', 
+    marginTop: 10, // Reducido para evitar desplazamiento hacia abajo
   },
   footerText: {
     fontSize: 12,
