@@ -1,4 +1,3 @@
-// __tests__/services/producto.service.test.js
 const ProductoService = require('../../Services/productos.service');
 
 jest.mock('../../Models', () => ({
@@ -23,12 +22,11 @@ jest.mock('../../Models', () => ({
     Op: {
       like: 'LIKE',
       ne: 'NE',
-      in: 'IN', // <- necesario para el where { [Op.in]: [...] }
+      in: 'IN',
     },
   },
 }));
 
-// Mock del VO para controlar validaciones desde el test
 jest.mock('../../ValueObjects/productos.vo', () => {
   const state = { isValid: true, errors: [] };
   function ProductoVO(data) {
@@ -51,13 +49,11 @@ const ProductoVO = require('../../ValueObjects/productos.vo');
 describe('ProductoService unit tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // Por defecto, entradas válidas
     ProductoVO.__setValidate(true, []);
   });
 
   describe('getAll', () => {
     test('Given filters nombre & presentacion When getAll Then returns 200 with data', async () => {
-      // Productos simulando instancias de Sequelize -> con toJSON()
       const p1 = {
         idProducto: 1,
         nombre: 'Manzana',
@@ -73,11 +69,10 @@ describe('ProductoService unit tests', () => {
 
       db.Producto.findAll.mockResolvedValue([p1, p2]);
 
-      // Lotes activos para calcular cantidadTotal
       db.Lote.findAll.mockResolvedValue([
         { idProducto: 1, unidadesExistentes: 3 },
-        { idProducto: 1, unidadesExistentes: 2 }, // total p1 = 5
-        { idProducto: 2, unidadesExistentes: 0 }, // total p2 = 0
+        { idProducto: 1, unidadesExistentes: 2 },
+        { idProducto: 2, unidadesExistentes: 0 },
       ]);
 
       const result = await ProductoService.getAll({
@@ -88,7 +83,6 @@ describe('ProductoService unit tests', () => {
       expect(result.success).toBe(true);
       expect(result.statusCode).toBe(200);
 
-      // Debe agregar cantidadTotal a cada producto
       expect(result.data).toEqual([
         { idProducto: 1, nombre: 'Manzana', presentacion: 'bolsa', cantidadTotal: 5 },
         { idProducto: 2, nombre: 'Leche', presentacion: '1L', cantidadTotal: 0 },
@@ -108,7 +102,7 @@ describe('ProductoService unit tests', () => {
       expect(db.Lote.findAll).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
-            idProducto: expect.any(Object), // { [Op.in]: [1,2] }
+            idProducto: expect.any(Object),
             activo: true,
           }),
           attributes: ['idProducto', 'unidadesExistentes'],
@@ -118,7 +112,7 @@ describe('ProductoService unit tests', () => {
 
     test('Given no results When getAll Then returns 200 with empty array', async () => {
       db.Producto.findAll.mockResolvedValue([]);
-      db.Lote.findAll.mockResolvedValue([]); // por si el service lo invoca con Op.in []
+      db.Lote.findAll.mockResolvedValue([]);
 
       const result = await ProductoService.getAll({ nombre: 'X', presentacion: 'Y' });
 

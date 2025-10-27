@@ -1,10 +1,8 @@
-// __tests__/performance/StressTestProductos.js
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 const API_URL = 'http://localhost:5000/api/inventario';
 
-// Escenarios iguales; solo cambiamos el payload para respetar las validaciones del backend
 export const options = {
   scenarios: {
     getAllProductos: {
@@ -42,13 +40,10 @@ export const options = {
   },
   thresholds: {
     http_req_duration: ['p(95)<800'],
-    // No tocamos este; cuando los POST ya sean 201, la tasa de fallos bajará sola:
-    // 'rate<0.02' significa menos de 2% de requests fallidos.
     http_req_failed: ['rate<0.02'],
   },
 };
 
-// Helpers válidos con las reglas del backend
 const NOMBRES_VALIDOS = [
   'Jabon Liquido',
   'Leche Entera',
@@ -63,9 +58,7 @@ const NOMBRES_VALIDOS = [
 
 const CATEGORIAS = ['Perecederos', 'No Perecederos', 'Sanitarios'];
 
-// Presentación permite números y varios símbolos; la usamos para unicidad.
 function buildPresentacion(prefix) {
-  // __VU y __ITER garantizan que no se repita entre VUs/iteraciones
   return `${prefix} VU${__VU} I${__ITER}`;
 }
 
@@ -74,12 +67,10 @@ export function getAllProductos() {
     headers: { 'Content-Type': 'application/json' },
   });
 
-  // Aceptamos 200 aun si la lista está vacía
   check(res, {
     'GET /productos -> 200': (r) => r.status === 200,
   });
 
-  // Intento adicional (como hacía Diego) por si cambia el endpoint
   if (res.status !== 200) {
     const fallback = http.get(`${API_URL}/productos`, {
       headers: { 'Content-Type': 'application/json' },
@@ -93,13 +84,11 @@ export function getAllProductos() {
 }
 
 export function getProductoById() {
-  // Usa un ID que exista (ajústalo si tu tabla empieza en otro)
   const id = 1;
   const res = http.get(`${API_URL}/productos/${id}`, {
     headers: { 'Content-Type': 'application/json' },
   });
 
-  // Si no existe, igual no nos tumba el test principal; pero marcamos el check
   check(res, {
     'GET /productos/:id -> 200': (r) => r.status === 200,
   });
@@ -109,10 +98,9 @@ export function getProductoById() {
 
 export function createProducto() {
   const nombre = NOMBRES_VALIDOS[Math.floor(Math.random() * NOMBRES_VALIDOS.length)];
-  const presentacion = buildPresentacion('C'); // C = create scenario
+  const presentacion = buildPresentacion('C');
   const categoria = CATEGORIAS[Math.floor(Math.random() * CATEGORIAS.length)];
 
-  // Usa la clave 'categoría' (con acento) como tú en Postman; tu backend también acepta 'categoria'
   const payload = JSON.stringify({
     nombre,
     presentacion,
@@ -142,13 +130,11 @@ export function stressTestProductos() {
   const roll = Math.random();
 
   if (roll < 0.55) {
-    // GET
     const res = http.get(`${API_URL}/productos`, { headers: { 'Content-Type': 'application/json' } });
     check(res, { 'Stress GET /productos -> 200': (r) => r.status === 200 });
   } else {
-    // POST (misma lógica que createProducto, pero con prefijo distinto para no chocar)
     const nombre = NOMBRES_VALIDOS[Math.floor(Math.random() * NOMBRES_VALIDOS.length)];
-    const presentacion = buildPresentacion('S'); // S = stress scenario
+    const presentacion = buildPresentacion('S');
     const categoria = CATEGORIAS[Math.floor(Math.random() * CATEGORIAS.length)];
 
     const payload = JSON.stringify({
