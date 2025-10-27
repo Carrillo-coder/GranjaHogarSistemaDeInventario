@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react';
 import EntradasServiceProxy from '../proxies/EntradasServiceProxy';
 //import { API_BASE_URL as BASE } from '@env';
-const BASE = "http://10.34.18.73:5000";
+const BASE = "http://192.168.1.67:5000";
 
 export const useEntradas = () => {
   const [loading, setLoading] = useState(false);

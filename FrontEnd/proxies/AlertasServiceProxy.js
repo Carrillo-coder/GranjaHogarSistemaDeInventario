@@ -2,7 +2,7 @@
 import { AlertaVO } from '../valueobjects/AlertaVO';
 
 // IP/puerto fijos para dev (ajusta a tu red)
-const API_BASE_URL = "http://10.34.18.73:5000";
+const API_BASE_URL = "http://192.168.1.67:5000";
 const baseRoot = API_BASE_URL.replace(/\/+$/, '');
 const base = `${baseRoot}/api/inventario/alertas`;
 
