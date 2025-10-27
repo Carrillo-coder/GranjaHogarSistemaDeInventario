@@ -1,50 +1,34 @@
-# Welcome to your Expo app 👋
+# Granja Hogar Sistema de Inventario - Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Manual de Instalación del APK
 
-## Get started
+### Prerrequisitos
+A continuación, se mostrarán los elementos necesarios para instalar y ejecutar la aplicación en un dispositivo Android:
 
-1. Install dependencies
+- Un dispositivo Android con versión 5.0 (Lollipop) o superior.
+- El archivo APK generado previamente.
 
-   ```bash
-   npm install
-   ```
+### Instalación del APK en un dispositivo Android
 
-2. Start the app
+1. **Transferir el archivo APK al dispositivo Android**:
+   - Conecta tu dispositivo Android a tu computadora mediante un cable USB.
+   - Copia el archivo APK al almacenamiento interno o a la tarjeta SD del dispositivo.
+   - O escanea el siguiente QR
+   ![alt text](image.png)
 
-   ```bash
-   npx expo start
-   ```
+2. **Habilitar la instalación desde fuentes desconocidas**:
+   - Ve a **Configuración > Seguridad > Fuentes desconocidas** y actívalo.
+   - En algunos dispositivos, esta opción puede estar en **Configuración > Aplicaciones > Acceso especial > Instalar aplicaciones desconocidas**.
 
-In the output, you'll find options to open the app in a
+3. **Instalar el archivo APK**:
+   - Usa un explorador de archivos en tu dispositivo para localizar el archivo APK transferido.
+   - Toca el archivo APK para iniciar la instalación.
+   - Sigue las instrucciones en pantalla para completar la instalación.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+4. **Abrir la aplicación**:
+   - Una vez instalada, abre la aplicación desde el menú de aplicaciones de tu dispositivo.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
 
-When you're ready, run:
 
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

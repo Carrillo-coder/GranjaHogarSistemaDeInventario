@@ -21,8 +21,6 @@ export default function LoginScreen() {
 
         if (userToken && rol) {
           Alert.alert('Inicio de Sesión Automático', `Bienvenido de nuevo, ${rol}.`);
-          console.log('Token encontrado:', userToken);
-          console.log('Rol encontrado:', rol);
           if (rol === 'Administrador') {
             router.replace('/main/adminForm');
           } else if (rol === 'Cocina') {
@@ -41,16 +39,13 @@ export default function LoginScreen() {
 
   useEffect(() => {
     const handleLoginSuccess = async () => {
-      console.log('Datos de respuesta del inicio de sesión:', data);
       if (data && data.message === 'Inicio de sesión exitoso' && data.token && data.data.rol) {
         try {
-          console.log('Guardando token y rol en AsyncStorage');
-          console.log('Token:', data.token);
-          console.log('Rol:', data.data.rol);
-
           await AsyncStorage.setItem('userToken', data.token);
           await AsyncStorage.setItem('rol', data.data.rol);
-          
+          await AsyncStorage.setItem('nombreCompleto', data.data.nombreCompleto);
+          await AsyncStorage.setItem('idUsuario', data.data.id.toString());
+          console.log(data);
           Alert.alert('Inicio de Sesión Exitoso', `Bienvenido, ${data.data.rol}.`);
 
           if (data.data.rol === 'Administrador') {
@@ -80,7 +75,7 @@ export default function LoginScreen() {
   const handleLogin = () => {
     if (usuario && contrasena) {
       logIn(usuario, contrasena);
-      console.log('Intentando iniciar sesión con:', { usuario, contrasena });
+      
     } else {
       Alert.alert('Campos incompletos', 'Por favor, introduce tu usuario y contraseña.');
     }
@@ -147,44 +142,45 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'space-between', 
+    justifyContent: 'center', // Centrar verticalmente
     paddingHorizontal: 20,
-    paddingVertical: 50, 
+    marginTop: -100, // Mover todos los componentes 90px hacia arriba
   },
-  
+
   logoContainer: {
     alignItems: 'center',
-    marginTop: 50,
+    marginBottom: 20, // Reducido para evitar desplazamiento hacia abajo
   },
   logo: {
-    width: 150, 
-    height: 150, 
+    width: 150,
+    height: 150,
   },
   logoText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#04538A', 
-    marginBottom: 50,
+    color: '#04538A',
+    marginBottom: 20, // Ajustado para mejor alineación
   },
-  
+
   formContainer: {
     width: '100%',
     alignItems: 'center',
     maxWidth: 400,
+    marginBottom: 20, // Añadido para separar del footer
   },
   input: {
     width: '90%',
-    marginBottom: 25, 
+    marginBottom: 15, // Reducido para mejor alineación
     backgroundColor: '#fff',
   },
-  
+
   button: {
     width: '60%',
     height: 55,
-    borderRadius: 30, 
-    marginTop: 20,
-    justifyContent: 'center', 
-    backgroundColor: '#04538A', 
+    borderRadius: 30,
+    marginTop: 10, // Reducido para evitar separación excesiva
+    justifyContent: 'center',
+    backgroundColor: '#04538A',
   },
   buttonLabel: {
     fontSize: 20,
@@ -193,7 +189,7 @@ const styles = StyleSheet.create({
 
   footer: {
     alignItems: 'center',
-    marginTop: 'auto', 
+    marginTop: 10, // Reducido para evitar desplazamiento hacia abajo
   },
   footerText: {
     fontSize: 12,

@@ -237,16 +237,6 @@ const CrearUsuarioScreen = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>
-          {isEditMode ? 'Editar Usuario' : 'Crear Usuario'}
-        </Text>
-        <View style={{ width: 24 }} />
-      </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.formContainer}>

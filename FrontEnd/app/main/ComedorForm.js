@@ -1,13 +1,14 @@
 import 'expo-router/entry';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View, StatusBar, SafeAreaView, ScrollView,
-  Text, TouchableOpacity, Pressable, Image
+  Text, TouchableOpacity, Pressable
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './Estilos/ComedorForm.styles';
 import Footer from '../../components/Footer';
+import useAlertas from '../../hooks/useAlertas';
 
 const CustomButton = ({ title, onPress, style, textStyle, icon }) => (
   <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
@@ -16,19 +17,37 @@ const CustomButton = ({ title, onPress, style, textStyle, icon }) => (
   </TouchableOpacity>
 );
 
-const MainForm = () => {
+function buildAlertText(expiringCount, lowCount, overCount) {
+  const parts = [];
+  if (expiringCount > 0) parts.push(expiringCount === 1 ? '1 producto por caducar' : `${expiringCount} productos por caducar`);
+  if (lowCount > 0) parts.push(lowCount === 1 ? '1 producto bajo en stock' : `${lowCount} productos bajos en stock`);
+  if (overCount > 0) parts.push(overCount === 1 ? '1 producto alto en inventario' : `${overCount} productos altos en inventario`);
+  if (parts.length === 0) return '';
+  if (parts.length === 1) return `Tienes ${parts[0]}. Pulsa para ver.`;
+  if (parts.length === 2) return `Tienes ${parts[0]} y ${parts[1]}. Pulsa para ver.`;
+  return `Tienes ${parts[0]}, ${parts[1]} y ${parts[2]}. Pulsa para ver.`;
+}
+
+const ComedorForm = () => {
   const router = useRouter();
+
+  // Alertas dinámicas
+  const alertasOpts = useMemo(() => ({ dias: 10, umbralBajo: 10, umbralAlto: 100 }), []);
+  const { expiring, lowStock, overStock } = useAlertas(alertasOpts);
+  const total = expiring.length + lowStock.length + overStock.length;
+  const alertText = buildAlertText(expiring.length, lowStock.length, overStock.length);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#04538A" barStyle="light-content" />
       <ScrollView style={styles.content}>
-        <Pressable style={styles.alert} onPress={() => router.navigate('/alertas/AlertasForm')}>
-          <Ionicons name="alert-circle" size={20} color="#b91c1c" style={styles.listIcon} />
-          <Text style={styles.alertText}>
-            Tienes un producto por caducar. <Text style={styles.alertLink}>Pulsa para ver.</Text>
-          </Text>
-          <Ionicons name="chevron-forward" size={16} color="#b91c1c" />
-        </Pressable>
+        {total > 0 && (
+          <Pressable style={styles.alert} onPress={() => router.navigate('/alertas/AlertasForm')}>
+            <Ionicons name="alert-circle" size={20} color="#b91c1c" style={styles.listIcon} />
+            <Text style={styles.alertText}>{alertText}</Text>
+            <Ionicons name="chevron-forward" size={16} color="#b91c1c" />
+          </Pressable>
+        )}
 
         <View style={styles.row}>
           <CustomButton
@@ -54,11 +73,11 @@ const MainForm = () => {
         <View style={{ height: 80 }} />
       </ScrollView>
       <Footer
-        onLogOutPress={  () => router.replace('/')}
-        onHomePress={ () => router.replace('/main/adminForm')}    
+        onLogOutPress={() => router.replace('/')}
+        onHomePress={() => router.replace('/main/adminForm')}
       />
     </SafeAreaView>
   );
 };
 
-export default MainForm;
+export default ComedorForm;

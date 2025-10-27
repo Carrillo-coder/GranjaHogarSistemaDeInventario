@@ -1,10 +1,7 @@
-import { Platform } from 'react-native';
-import { API_BASE_URL } from '@env';
+//import { API_BASE_URL } from '@env';
+const API_BASE_URL = "http://192.168.1.67:5000";
 
-const DEFAULT_BASE =
-  Platform.OS === 'android' ? 'http://10.0.2.2:5000' : 'http://localhost:5000';
-
-const BASE = API_BASE_URL.trim() || DEFAULT_BASE;
+const BASE = API_BASE_URL;
 
 async function _parseBody(response) {
   const text = await response.text().catch(() => '');

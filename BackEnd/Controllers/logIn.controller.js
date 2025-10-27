@@ -36,6 +36,7 @@ class LogInController {
                 data: {
                     id: usuario.idUsuario,
                     nombreUsuario: usuario.nombreUsuario,
+                    nombreCompleto: usuario.nombreCompleto,
                     rol: usuario.rol
                 }
             });

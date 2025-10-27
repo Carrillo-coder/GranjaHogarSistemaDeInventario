@@ -19,13 +19,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/GranjaHogarSplashLogo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.carrillo05.granjahogarsistemadeinventario"
     },
     "web": {
       "favicon": "./assets/images/GranjaHogarSplashLogo.png"
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1d7cc2c0-241d-4bfe-a80a-969ad89cf5c3"
+      }
+    }
   }
 }

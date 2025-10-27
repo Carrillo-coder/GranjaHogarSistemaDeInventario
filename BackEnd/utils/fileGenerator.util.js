@@ -1,6 +1,6 @@
-import PDFDocument from 'pdfkit';
-import { PassThrough } from 'stream';
-import ExcelJS from 'exceljs';
+const PDFDocument = require('pdfkit');
+const { PassThrough } = require('stream');
+const ExcelJS = require('exceljs');
 
 /**
  * Genera un Excel a partir de flattenedData y metadata
@@ -8,7 +8,7 @@ import ExcelJS from 'exceljs';
  * @param {Object} metadata - Información adicional del reporte
  * @param {Buffer} - Buffer del archivo XLSX generado
  */
-export async function generateXLSX(flattenedData, metadata) {
+async function generateXLSX(flattenedData, metadata) {
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Reporte');
@@ -63,7 +63,7 @@ export async function generateXLSX(flattenedData, metadata) {
  * @param {Array} tableHeaders - Encabezados de la tabla
  * @returns {Promise<Buffer>} - Buffer del archivo PDF generado
  */
-export async function generatePDF(flattenedData, metadata, tableHeaders) {
+async function generatePDF(flattenedData, metadata, tableHeaders) {
 
     return new Promise(async (resolve, reject) => {
         try {
@@ -145,3 +145,5 @@ export async function generatePDF(flattenedData, metadata, tableHeaders) {
         }
     });
 }
+
+module.exports = { generateXLSX, generatePDF };
