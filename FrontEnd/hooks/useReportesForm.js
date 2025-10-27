@@ -25,8 +25,8 @@ export const useReportesForm = () => {
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-
   const [generatingReport, setGeneratingReport] = useState(false);
+
   const { getAll } = DepartamentosServiceProxy();
   const { generarReporteEntradas, generarReporteSalidas, generarReporteLotes } = ReportesServiceProxy();
 
@@ -79,8 +79,6 @@ export const useReportesForm = () => {
   const showStartDatepicker = () => { if (!areDatesDisabled) setShowStartDatePicker(true); };
   const showEndDatepicker = () => { if (!areDatesDisabled) setShowEndDatePicker(true); };
   const handleDepartmentChange = (value) => { if (!isDepartmentDisabled) setDepartment(value); };
-  console.log(department)
-
 
   const validateForm = () => {
     if (!reportType) { Alert.alert('Error', 'Por favor selecciona un tipo de reporte antes de descargar.'); return; }
@@ -92,77 +90,90 @@ export const useReportesForm = () => {
 
   const handleDownload = () => { if (validateForm()) setModalVisible(true); };
 
-
   const handleConfirmDownload = async () => {
     if (!validateForm()) return;
     setModalVisible(false);
     setGeneratingReport(true);
+
     try {
       let response;
       const formato = exportFormat === 'Excel' ? 'XLSX' : exportFormat;
 
-      if (reportType === '3') { response = await generarReporteLotes(formato);
+      // Obtener reporte según tipo
+      if (reportType === '3') {
+        response = await generarReporteLotes(formato);
       } else {
-        console.log('tipo:', reportType);
         const fechaInicio = formatDate(startDate);
         const fechaFin = formatDate(endDate);
-        if (reportType === '1') { response = await generarReporteEntradas(fechaInicio, fechaFin, formato);
-        } else if (reportType === '2') { response = await generarReporteSalidas(fechaInicio, fechaFin, formato, department); }
+
+        if (reportType === '1') {
+          response = await generarReporteEntradas(fechaInicio, fechaFin, formato);
+        } else if (reportType === '2') {
+          response = await generarReporteSalidas(fechaInicio, fechaFin, formato, department);
+        }
       }
 
+      // --- WEB ---
       if (Platform.OS === 'web') {
+        let blob;
         if (response.base64) {
-          const blob = await fetch(`data:${response.mimeType};base64,${response.base64}`).then(r => r.blob());
+          blob = await fetch(`data:${response.mimeType};base64,${response.base64}`).then(r => r.blob());
+        } else if (response.blob) {
+          blob = response.blob;
+        }
+
+        if (blob) {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
           a.download = response.filename;
           a.click();
           URL.revokeObjectURL(url);
-
-        } else if (response.blob) {
-          const url = URL.createObjectURL(response.blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = response.filename;
-          a.click();
-          URL.revokeObjectURL(url);
+          Alert.alert('Reporte generado con éxito (web)');
         }
-        Alert.alert('Reporte generado con éxito (web)');
 
+        // --- ANDROID ---
+      } else if (Platform.OS === 'android') {
+        if (!response.base64) throw new Error('No se recibió base64 del servidor');
+
+        try {
+          const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
+          if (!permissions.granted) throw new Error('Permisos denegados');
+
+          const newUri = await StorageAccessFramework.createFileAsync(
+            permissions.directoryUri,
+            response.filename,
+            response.mimeType
+          );
+          await FileSystem.writeAsStringAsync(newUri, response.base64, { encoding: FileSystem.EncodingType.Base64 });
+          Alert.alert('Éxito', 'Reporte guardado correctamente en la carpeta seleccionada.');
+        } catch (err) {
+          console.error(err);
+          Alert.alert('Error', 'No se pudo guardar el reporte.');
+        }
+
+        // --- iOS ---
       } else {
         if (!response.base64) throw new Error('No se recibió base64 del servidor');
 
         const fileUri = `${FileSystem.documentDirectory}${response.filename}`;
-        await FileSystem.writeAsStringAsync(fileUri, response.base64, { encoding: FileSystem.EncodingType.Base64, });
+        await FileSystem.writeAsStringAsync(fileUri, response.base64, { encoding: FileSystem.EncodingType.Base64 });
 
-        if (Platform.OS === 'android') {
-          try {
-            const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
-            if (permissions.granted) {
-              const base64Data = response.base64;
-              const newUri = await StorageAccessFramework.createFileAsync( permissions.directoryUri, response.filename, response.mimeType );
-              await FileSystem.writeAsStringAsync(newUri, base64Data, { encoding: FileSystem.EncodingType.Base64, });
-              Alert.alert('Éxito', 'Reporte guardado correctamente en la carpeta seleccionada.');
-            } else {
-              Alert.alert('Aviso', 'No se otorgaron permisos para guardar el archivo.');
-            }
-          } catch (err) {
-            console.error('Error al guardar el archivo:', err);
-            Alert.alert('Error', 'No se pudo guardar el reporte.');
-          }
+        const isAvailable = await Sharing.isAvailableAsync();
+        if (isAvailable) {
+          await Sharing.shareAsync(fileUri, {
+            mimeType: response.mimeType,
+            dialogTitle: 'Abrir o compartir reporte',
+            UTI: response.mimeType.includes('pdf') ? 'com.adobe.pdf' : undefined,
+          });
         } else {
-          const isAvailable = await Sharing.isAvailableAsync();
-          if (isAvailable) { await Sharing.shareAsync(fileUri, { mimeType: response.mimeType, dialogTitle: 'Abrir o compartir reporte', });
-          } else {
-            Alert.alert('Reporte guardado', `Ruta interna: ${fileUri}`);
-          }
+          Alert.alert('Reporte guardado', `Ruta interna: ${fileUri}`);
         }
       }
+
     } catch (error) {
       Alert.alert('Error', `No se pudo generar el reporte: ${error.message}`);
     } finally {
-      console.log('Generación de reporte finalizada');
       setGeneratingReport(false);
     }
   };
